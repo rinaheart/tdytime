@@ -121,16 +121,6 @@ Nhanh. Gọn. Ổn định. Hoạt động tốt kể cả khi offline.
 
 Rất mong nhận được phản hồi và góp ý để cải thiện ứng dụng.
 
-Nếu muốn đóng góp trực tiếp:
-
-```bash
-git checkout -b feature/YourFeature
-git commit -m "Add YourFeature"
-git push origin feature/YourFeature
-```
-
-Sau đó tạo Pull Request.
-
 ---
 
 ## 📄 Giấy phép

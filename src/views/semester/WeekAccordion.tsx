@@ -41,7 +41,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({ week, weekIdx, isExpanded
         return (
             <div
                 id={`week-card-${weekIdx}`}
-                className={`relative z-10 bg-white dark:bg-slate-950/40 rounded-2xl border ${isCurrent ? 'border-blue-400 dark:border-blue-500 ring-4 ring-blue-100/50 dark:ring-blue-900/20 shadow-lg shadow-blue-500/10' : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'} overflow-hidden transition-all duration-300`}
+                className={`relative z-10 bg-white dark:bg-slate-950/40 rounded-xl border ${isCurrent ? 'border-blue-400 dark:border-blue-500 ring-4 ring-blue-100/50 dark:ring-blue-900/20 shadow-lg shadow-blue-500/10' : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'} overflow-hidden transition-all duration-300`}
                 style={{ contentVisibility: 'auto', containIntrinsicSize: '100px 500px' }}
             >
                 {/* Timeline dot */}
@@ -50,7 +50,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({ week, weekIdx, isExpanded
                 {/* Header */}
                 <button onClick={onToggle} className={`w-full flex items-center justify-between p-3 md:p-4 text-left transition-colors ${isExpanded ? 'bg-slate-50/50 dark:bg-slate-800/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800/20'}`}>
                     <div className="flex items-center gap-4 pl-6 md:pl-8">
-                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center font-black text-lg md:text-xl shadow-sm tracking-tighter shrink-0 ${isCurrent ? 'bg-blue-600 text-white shadow-blue-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
+                        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center font-black text-lg md:text-xl shadow-sm tracking-tighter shrink-0 ${isCurrent ? 'bg-blue-600 text-white shadow-blue-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
                             {week.weekNumber}
                         </div>
                         <div>
@@ -121,7 +121,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({ week, weekIdx, isExpanded
             </button>
 
             {isExpanded && (
-                <div className={`bg-white dark:bg-slate-900 rounded-2xl border transition-all duration-500 overflow-hidden animate-in fade-in zoom-in-95 ${isCurrent ? 'border-blue-400 dark:border-blue-500 ring-4 ring-blue-100/50 dark:ring-blue-900/20 shadow-xl shadow-blue-500/10' : 'border-slate-200 dark:border-slate-800 shadow-xl'}`}>
+                <div className={`bg-white dark:bg-slate-900 rounded-xl border transition-all duration-500 overflow-hidden animate-in fade-in zoom-in-95 ${isCurrent ? 'border-blue-400 dark:border-blue-500 ring-4 ring-blue-100/50 dark:ring-blue-900/20 shadow-xl shadow-blue-500/10' : 'border-slate-200 dark:border-slate-800 shadow-xl'}`}>
                     <div className="overflow-x-auto w-full custom-scrollbar touch-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
                         <div className="min-w-[1024px]">
                             <table className="w-full border-collapse border-hidden">

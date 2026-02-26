@@ -136,7 +136,7 @@ const WeeklyView: React.FC = () => {
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none md:hidden animate-pulse">
                         <div className="bg-blue-600/20 text-blue-600 p-2 rounded-full backdrop-blur-sm"><ChevronRight size={20} /></div>
                     </div>
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
                         <div className="overflow-x-auto w-full custom-scrollbar touch-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
                             <div className="min-w-[1024px]">
                                 <table className="w-full border-collapse border-hidden">
@@ -196,7 +196,7 @@ const WeeklyView: React.FC = () => {
                         if (!hasAny && (filters.search || filters.className || filters.room || filters.teacher)) return null;
 
                         return (
-                            <div key={day} className={`bg-white dark:bg-slate-900 rounded-2xl border ${isToday ? 'border-blue-400 dark:border-blue-500 ring-4 ring-blue-100/50 dark:ring-blue-900/20' : 'border-slate-200/60 dark:border-slate-800/60'} shadow-sm overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md relative group`}>
+                            <div key={day} className={`bg-white dark:bg-slate-900 rounded-xl border ${isToday ? 'border-blue-400 dark:border-blue-500 ring-4 ring-blue-100/50 dark:ring-blue-900/20' : 'border-slate-200/60 dark:border-slate-800/60'} shadow-sm overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md relative group`}>
                                 <div className={`md:w-32 ${isToday ? 'bg-blue-600 text-white' : 'bg-slate-50 dark:bg-slate-800/30'} p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800 transition-colors`}>
                                     {isToday && <span className="text-[8px] font-black uppercase tracking-widest mb-1 opacity-80">{t('weekly.today')}</span>}
                                     <p className={`text-xs font-black uppercase tracking-widest ${isToday ? 'text-white' : 'text-blue-600 dark:text-blue-400'}`}>{t(`days.${idx}`)}</p>

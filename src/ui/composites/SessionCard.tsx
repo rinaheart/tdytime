@@ -44,7 +44,7 @@ const WeeklyCard: React.FC<{ session: CourseSession; displayName: string; curren
 }) => {
     const { startTime, endTime } = getTimeStrings(session);
     return (
-        <div className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-[1px] hover:border-slate-300 dark:hover:border-slate-600 group">
+        <div className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-[1px] hover:border-slate-300 dark:hover:border-slate-600 group">
             {/* Row 1: Time + Room */}
             <div className="flex items-center justify-between text-[10px] mb-1">
                 <div className="flex items-center font-bold">
@@ -73,7 +73,7 @@ const WeeklyCard: React.FC<{ session: CourseSession; displayName: string; curren
 
             {/* Optional Teacher Footer Strip */}
             {showTeacher && (
-                <div className="mt-2.5 -mx-2.5 -mb-2.5 px-2.5 py-1.5 bg-blue-50 dark:bg-blue-900/40 rounded-b-xl text-[10px] font-bold border-t border-blue-100/50 dark:border-blue-800/30">
+                <div className="mt-2.5 -mx-2.5 -mb-2.5 px-2.5 py-1.5 bg-blue-50 dark:bg-blue-900/40 rounded-b-lg text-[10px] font-bold border-t border-blue-100/50 dark:border-blue-800/30">
                     <span className="text-slate-900 dark:text-blue-100">{session.teacher}</span>
                 </div>
             )}
@@ -85,7 +85,7 @@ const WeeklyCard: React.FC<{ session: CourseSession; displayName: string; curren
 const CompletedCard: React.FC<{ session: CourseSession; displayName: string }> = ({ session, displayName }) => {
     const { startTime, endTime } = getTimeStrings(session);
     return (
-        <div className="bg-slate-100 dark:bg-slate-800/80 rounded-xl p-3 border border-slate-200 dark:border-slate-700 opacity-70 transition-all">
+        <div className="bg-slate-100 dark:bg-slate-800/80 rounded-lg p-3 border border-slate-200 dark:border-slate-700 opacity-70 transition-all">
             <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
                     <Clock size={12} />
@@ -107,7 +107,7 @@ const TodayCard: React.FC<{ session: CourseSession; displayName: string; current
 }) => {
     const { startTime, endTime } = getTimeStrings(session);
     return (
-        <div className={`relative rounded-2xl p-5 transition-all duration-200 ${isLive
+        <div className={`relative rounded-xl p-5 transition-all duration-200 ${isLive
             ? 'bg-white dark:bg-slate-900 border border-blue-500 dark:border-blue-500 ring-2 ring-blue-500/20 shadow-sm hover:shadow-lg'
             : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600'
             }`}>
@@ -147,7 +147,7 @@ const TodayCard: React.FC<{ session: CourseSession; displayName: string; current
 
             {/* Optional Teacher Footer Strip */}
             {showTeacher && (
-                <div className="mt-5 -mx-5 -mb-5 px-5 py-3 bg-blue-50 dark:bg-blue-900/20 rounded-b-2xl border-t border-blue-100 dark:border-blue-800/50 text-[13px] font-black">
+                <div className="mt-5 -mx-5 -mb-5 px-5 py-3 bg-blue-50 dark:bg-blue-900/20 rounded-b-xl border-t border-blue-100 dark:border-blue-800/50 text-[13px] font-black">
                     <span className="text-slate-900 dark:text-blue-50">{session.teacher}</span>
                 </div>
             )}
