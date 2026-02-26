@@ -1,57 +1,108 @@
 <div align="center">
-  <img src="public/favicon.svg" alt="TdyTime Logo" width="80" height="80">
-  
-  <h1 style="margin-bottom: 0;">TdyTime <sub style="font-size: 0.5em; opacity: 0.5;">v1.0.0</sub></h1>
-  <p style="color: #2563eb; font-size: 0.9em; margin-top: 4px;"><b>Your Today, Your Time</b></p>
+  <img src="public/favicon.svg" alt="TdyTime Logo" width="96" height="96">
 
-  <p style="max-width: 400px; color: #64748b; font-size: 0.85em; line-height: 1.6;">
-    Tiện ích trực quan hóa và quản lý lịch trình giảng dạy thông minh. <br>
-    Thiết kế đặc biệt cho GV Khoa KTYH - Trường ĐHYD, ĐH Huế.
-  </p>
+  # TdyTime <sup><small>v1.0.0</small></sup>
 
-  <p>
-    <a href="https://tdytime.vercel.app"><b>Trải nghiệm ngay →</b></a>
-  </p>
+  Your Today, Your Time  
+  _Tiện ích quản lý lịch giảng dạy dành cho Giảng viên KTYH – Trường ĐHYD, Đại học Huế_
 
-  <p>
-    <img src="https://img.shields.io/badge/version-v1.0.0-blue.svg" alt="Version">
-    <img src="https://img.shields.io/badge/PWA-Ready-orange.svg" alt="PWA">
-    <img src="https://img.shields.io/badge/UI-Modern-61DAFB.svg" alt="UI">
-  </p>
+  [🚀 Trải nghiệm ngay](https://tdytime.vercel.app)
 </div>
 
 ---
+![Version](https://img.shields.io/badge/version-1.0.0-2563eb?style=flat-square)
+![PWA](https://img.shields.io/badge/PWA-Ready-10b981?style=flat-square)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square)
+---
 
-**TdyTime** là một ứng dụng Web (PWA) chuyên nghiệp được thiết kế để biến những lịch giảng dạy phức tạp thành các nhiệm vụ hàng ngày gọn gàng và dễ theo dõi. Với tiêu chí nhanh, gọn và hoạt động ổn định kể cả khi không có mạng.
+## 📖 Giới thiệu
 
-## ⚡ Các Tính Năng Chính
+**TdyTime** là ứng dụng Web PWA giúp chuyển lịch giảng dạy phức tạp thành các buổi dạy hằng ngày rõ ràng, dễ theo dõi.
 
-- 📱 **Trải nghiệm như App thật**: Hỗ trợ cài đặt trực tiếp lên màn hình điện thoại/máy tính (PWA) với màn hình khởi động chuyên nghiệp.
-- 🔄 **Hệ thống cập nhật thông minh**: Tính năng kiểm tra cập nhật chủ động (v1.0.0) giúp bạn luôn sử dụng bản mới nhất.
-- 📶 **Hoạt động ngoại tuyến**: Hoạt động hoàn hảo ngay cả khi không có internet nhờ công nghệ bộ nhớ đệm tiên tiến.
-- 📊 **Phân tích chỉ số**: Tự động tính toán số tiết dạy, phân bổ ca dạy, và thống kê khối lượng công việc.
-- 🌐 **Đa ngôn ngữ**: Chuyển đổi linh hoạt giữa Tiếng Việt và Tiếng Anh.
-- 🎨 **Giao diện Cao cấp**: Thiết kế hiện đại với hỗ trợ chế độ Sáng/Tối (Dark Mode) thông minh.
+Tiêu chí: **Nhanh – Gọn – Ổn định – Offline tốt**
 
 ---
 
-## 🚀 Truy cập nhanh
+## ✨ Tính năng
 
-Ứng dụng hiện đang được triển khai chính thức tại:
+### 📱 Cài đặt như App thật
+- Thêm vào màn hình chính
+- Splash screen đầy đủ
+- Trải nghiệm gần như native
 
-### [👉 tdytime.vercel.app](https://tdytime.vercel.app)
+### 📊 Phân tích tự động
+- Tính số tiết dạy
+- Phân bổ ca dạy
+- Thống kê khối lượng công việc
+
+### 🔄 Cập nhật thông minh
+- Tự kiểm tra phiên bản mới
+- Nâng cấp mượt mà
+
+### 📶 Hoạt động ngoại tuyến
+- Cache tối ưu
+- Dùng được khi mất mạng
+
+### 🌐 Đa ngôn ngữ
+- Tiếng Việt / English
+
+### 🎨 Giao diện hiện đại
+- Dark Mode
+- Thiết kế tối giản, dễ nhìn
 
 ---
 
-## 🛠️ Công Nghệ
+## 🚀 Truy cập
 
-- **Vibe Coding**: Với sự hỗ trợ đắc lực từ **Google Antigravity**
-- **Cốt lõi**: React 19, TypeScript, Zustand
-- **Giao diện**: Tailwind CSS 4, Lucide Icons
-- **PWA**: Vite PWA Plugin
+👉 **https://tdytime.vercel.app**
 
 ---
 
-<div align="center">
-  <p>Made with ❤️ by TdyPhan</p>
-</div>
+## 🛠️ Tech Stack
+
+### Core
+- React 19
+- TypeScript
+- Zustand
+
+### UI
+- Tailwind CSS 4
+- Lucide Icons
+
+### PWA
+- Vite PWA Plugin
+
+---
+
+## 📱 Cài đặt PWA
+
+### iOS (Safari)
+1. Mở web bằng Safari  
+2. Share → Add to Home Screen  
+
+### Android (Chrome)
+1. Menu 3 chấm  
+2. Add to Home screen  
+
+### Desktop (Chrome/Edge)
+1. Nhấn icon Install trên thanh địa chỉ  
+
+---
+
+## 📸 Screenshots
+
+_Đang cập nhật_
+
+---
+
+## 🤝 Đóng góp
+
+Rất mong nhận được phản hồi và góp ý.
+
+📄 License
+
+MIT
+
+<div align="center"> <br> <p> <img src="public/favicon.svg" alt="TdyTime Logo" width="30" height="30"> </p> <p> Made with ❤️ by <b>TdyPhan</b> </p> <p> <sub>© 2026 TdyTime.</sub> </p> </div> 
+
