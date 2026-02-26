@@ -1,57 +1,154 @@
 <div align="center">
-  <img src="public/favicon.svg" alt="TdyTime Logo" width="80" height="80">
-  
-  <h1 style="margin-bottom: 0;">TdyTime <sub style="font-size: 0.5em; opacity: 0.5;">v1.0.0</sub></h1>
-  <p style="color: #2563eb; font-size: 0.9em; margin-top: 4px;"><b>Your Today, Your Time</b></p>
 
-  <p style="max-width: 400px; color: #64748b; font-size: 0.85em; line-height: 1.6;">
-    Tiện ích trực quan hóa và quản lý lịch trình giảng dạy thông minh. <br>
-    Thiết kế đặc biệt cho GV Khoa KTYH - Trường ĐHYD, ĐH Huế.
-  </p>
+<img src="public/favicon.svg" alt="TdyTime Logo" width="110" height="110" />
 
-  <p>
-    <a href="https://tdytime.vercel.app"><b>Trải nghiệm ngay →</b></a>
-  </p>
+# TdyTime <sup><small>v1.0.0</small></sup>
 
-  <p>
-    <img src="https://img.shields.io/badge/version-v1.0.0-blue.svg" alt="Version">
-    <img src="https://img.shields.io/badge/PWA-Ready-orange.svg" alt="PWA">
-    <img src="https://img.shields.io/badge/UI-Modern-61DAFB.svg" alt="UI">
-  </p>
+### Your Today, Your Time
+
+<sub>Công cụ quản lý và phân tích lịch giảng dạy dành cho Giảng viên KTYH – Trường ĐHYD, Đại học Huế</sub>
+
+<br>
+
+[![🚀 Trải nghiệm ngay](https://img.shields.io/badge/Trải_nghiệm-TdyTime-2563eb?style=for-the-badge)](https://tdytime.vercel.app)
+
+<br>
+
+![Version](https://img.shields.io/badge/version-1.0.0-2563eb?style=flat-square)
+![PWA](https://img.shields.io/badge/PWA-Ready-10b981?style=flat-square)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square)
+
 </div>
 
 ---
 
-**TdyTime** là một ứng dụng Web (PWA) chuyên nghiệp được thiết kế để biến những lịch giảng dạy phức tạp thành các nhiệm vụ hàng ngày gọn gàng và dễ theo dõi. Với tiêu chí nhanh, gọn và hoạt động ổn định kể cả khi không có mạng.
+## 🚀 Vì sao nên dùng TdyTime?
 
-## ⚡ Các Tính Năng Chính
+Lịch giảng dạy thường:
+- Rối
+- Khó theo dõi theo từng ngày
+- Khó tính tổng số tiết và khối lượng công việc
 
-- 📱 **Trải nghiệm như App thật**: Hỗ trợ cài đặt trực tiếp lên màn hình điện thoại/máy tính (PWA) với màn hình khởi động chuyên nghiệp.
-- 🔄 **Hệ thống cập nhật thông minh**: Tính năng kiểm tra cập nhật chủ động (v1.0.0) giúp bạn luôn sử dụng bản mới nhất.
-- 📶 **Hoạt động ngoại tuyến**: Hoạt động hoàn hảo ngay cả khi không có internet nhờ công nghệ bộ nhớ đệm tiên tiến.
-- 📊 **Phân tích chỉ số**: Tự động tính toán số tiết dạy, phân bổ ca dạy, và thống kê khối lượng công việc.
-- 🌐 **Đa ngôn ngữ**: Chuyển đổi linh hoạt giữa Tiếng Việt và Tiếng Anh.
-- 🎨 **Giao diện Cao cấp**: Thiết kế hiện đại với hỗ trợ chế độ Sáng/Tối (Dark Mode) thông minh.
+**TdyTime biến lịch phức tạp thành danh sách công việc rõ ràng theo ngày.**
 
----
-
-## 🚀 Truy cập nhanh
-
-Ứng dụng hiện đang được triển khai chính thức tại:
-
-### [👉 tdytime.vercel.app](https://tdytime.vercel.app)
+Nhanh. Gọn. Ổn định. Hoạt động tốt kể cả khi offline.
 
 ---
 
-## 🛠️ Công Nghệ
+## ✨ Trải nghiệm chính
 
-- **Vibe Coding**: Với sự hỗ trợ đắc lực từ **Google Antigravity**
-- **Cốt lõi**: React 19, TypeScript, Zustand
-- **Giao diện**: Tailwind CSS 4, Lucide Icons
-- **PWA**: Vite PWA Plugin
+### 📱 Cài đặt như ứng dụng thật
+- Thêm vào màn hình chính (iOS / Android / Desktop)
+- Mở ở chế độ standalone
+- Có splash screen đầy đủ
+
+### 📊 Phân tích lịch giảng tự động
+- Tính tổng số tiết dạy
+- Phân bổ ca (sáng / chiều / tối)
+- Thống kê khối lượng công việc
+
+### 📶 Hoạt động ngoại tuyến
+- Cache thông minh
+- Dùng được khi không có Internet
+
+### 🔄 Cập nhật thông minh
+- Tự kiểm tra phiên bản mới
+- Cập nhật mượt, không gián đoạn
+
+### 🌐 Song ngữ
+- Tiếng Việt / English
+- Chuyển đổi nhanh trong ứng dụng
+
+### 🎨 Giao diện cao cấp
+- Thiết kế tối giản, dễ đọc
+- Tối ưu mobile-first
+- Hỗ trợ Dark Mode
+
+---
+
+## 🌐 Truy cập ứng dụng
+
+<div align="center">
+
+## 👉 https://tdytime.vercel.app
+
+</div>
+
+---
+
+## 🛠️ Công nghệ sử dụng
+
+### Cốt lõi
+- React 19  
+- TypeScript  
+- Zustand  
+
+### Giao diện
+- Tailwind CSS 4  
+- Lucide Icons  
+
+### PWA
+- Vite PWA Plugin  
+
+---
+
+## 📱 Hướng dẫn cài đặt PWA
+
+### Trên iPhone / iPad (Safari)
+1. Mở website bằng Safari  
+2. Nhấn **Share**  
+3. Chọn **Add to Home Screen**  
+
+### Trên Android (Chrome)
+1. Nhấn menu **⋮**  
+2. Chọn **Add to Home screen**  
+
+### Trên Desktop (Chrome / Edge)
+1. Nhấn biểu tượng **Install** trên thanh địa chỉ  
+
+---
+
+## 📸 Hình ảnh giao diện
+
+<div align="center">
+  <sub>Đang cập nhật hình ảnh thực tế của ứng dụng...</sub>
+</div>
+
+---
+
+## 🤝 Đóng góp
+
+Rất mong nhận được phản hồi và góp ý để cải thiện ứng dụng.
+
+Nếu muốn đóng góp trực tiếp:
+
+```bash
+git checkout -b feature/YourFeature
+git commit -m "Add YourFeature"
+git push origin feature/YourFeature
+```
+
+Sau đó tạo Pull Request.
+
+---
+
+## 📄 Giấy phép
+
+MIT License
 
 ---
 
 <div align="center">
-  <p>Made with ❤️ by TdyPhan</p>
+
+<br>
+
+<img src="public/favicon.svg" alt="TdyTime Logo" width="32" height="32" />
+
+<br>
+
+Made with ❤️ by <b>TdyPhan</b>  
+
+<sub>© 2026 TdyTime. All rights reserved.</sub>
+
 </div>
