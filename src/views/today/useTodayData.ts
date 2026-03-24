@@ -128,13 +128,13 @@ export const useTodayData = () => {
         if (!currentWeek) return [];
         const dayData = currentWeek.days[dayName];
         if (!dayData) return [];
-        return [...dayData.morning, ...dayData.afternoon, ...dayData.evening].filter((s) => isMainTeacher(s.teacher));
-    }, [currentWeek, dayName]); // isMainTeacher is a stable local function within render, but to be strict we could memoize it. It's fine here.
+        return [...dayData.morning, ...dayData.afternoon, ...dayData.evening].filter((s) => checkIsMain(s.teacher));
+    }, [currentWeek, dayName, checkIsMain]);
 
     const isWeekEmpty = useMemo(() => {
         if (!currentWeek) return true;
         return !Object.values(currentWeek.days).some(dayData => {
-            return [...dayData.morning, ...dayData.afternoon, ...dayData.evening].some(s => isMainTeacher(s.teacher));
+            return [...dayData.morning, ...dayData.afternoon, ...dayData.evening].some(s => checkIsMain(s.teacher));
         });
     }, [currentWeek]);
 

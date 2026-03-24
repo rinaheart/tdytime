@@ -36,7 +36,7 @@ export const calculateMetrics = (data: ScheduleData): Metrics => {
     DAYS_OF_WEEK.forEach((d) => (hoursByDay[d] = 0));
 
     // Internal helper for localized check if needed, or just use shared one
-    const checkIsMain = (t: string) => isMainTeacher(t, data.metadata.teacher);
+    const checkIsMain = (t: string) => isMainTeacher(t, mainTeacherName);
 
     // Check if two time slots overlap
     const isTimeOverlap = (slot1: string, slot2: string) => {
