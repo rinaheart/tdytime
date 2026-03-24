@@ -142,7 +142,7 @@ const WeeklyView: React.FC = () => {
                                 <table className="w-full border-collapse border-hidden">
                                     <thead>
                                         <tr className="bg-slate-50/50 dark:bg-slate-800/50">
-                                            <th className="w-14 p-4 border border-slate-100 dark:border-slate-800 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100/50 dark:bg-slate-800/80 sticky left-0 z-20 backdrop-blur-md" />
+                                            <th className="w-14 p-4 border-b border-r border-slate-100 dark:border-slate-800 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 dark:bg-slate-800 sticky left-0 z-20" />
                                             {DAYS_OF_WEEK.map((day, idx) => {
                                                 const isToday = isDayToday(idx);
                                                 return (
@@ -164,7 +164,7 @@ const WeeklyView: React.FC = () => {
                                             { key: 'evening', label: 'T', fullLabel: t('weekly.evening') },
                                         ] as const).map((shift) => (
                                             <tr key={shift.key} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/10 transition-colors">
-                                                <td className="p-4 border border-slate-100 dark:border-slate-800 text-center bg-slate-50/50 dark:bg-slate-800/80 align-middle sticky left-0 z-20 backdrop-blur-md shadow-[2px_0_5px_rgba(0,0,0,0.02)]">
+                                                <td className="p-4 border-b border-r border-slate-100 dark:border-slate-800 text-center bg-slate-50 dark:bg-slate-800 align-middle sticky left-0 z-20 shadow-[2px_0_8px_rgba(0,0,0,0.03)]">
                                                     <span className="w-8 h-8 rounded-full bg-accent-600 text-white flex items-center justify-center text-xs font-black shadow-lg shadow-accent-500/20">{shift.label}</span>
                                                 </td>
                                                 {DAYS_OF_WEEK.map((day, dayIdx) => {

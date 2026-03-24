@@ -335,10 +335,14 @@
             "jsonExported": "Backup JSON saved successfully."
         },
         "themes": {
-            "title": "Color Palette",
-            "blueTheme": "Modern (Blue)",
-            "pinkTheme": "Playful (Pink)",
-            "greenTheme": "Emerald (Green)"
+            "title": "Accent Color",
+            "themeBlue": "Ocean blue",
+            "themeGreen": "Emerald green",
+            "themeViolet": "Lavender violet",
+            "themePink": "Sakura pink",
+            "themeRed": "Crimson red",
+            "themeOrange": "Ember orange",
+            "themeYellow": "Honey yellow"
         }
     },
     "about": {
@@ -360,7 +364,6 @@
                 "date": "2026-03-23",
                 "changes": [
                     "Accent Themes: Personalized workspace with multiple color palettes (Blue/Pink/Emerald). Switch instantly via the Palette icon in the Header.",
-                    "Time Bending Engine: Integrated time simulation engine allowing fast-forward or simulating any teaching moment.",
                     "Unified Empty State: A unified 'Coffee Break' interface for empty weeks, naturally suggesting the next teaching day.",
                     "Lifecycle Reliability: Optimized auto-sync mechanism for immediate time recalibration when resuming from sleep mode.",
                     "UI Typography: Synchronized weight and typography across all statistics cards and session cards."

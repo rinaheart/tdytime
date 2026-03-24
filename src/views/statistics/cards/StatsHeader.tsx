@@ -76,7 +76,7 @@ const StatsHeader: React.FC = () => {
                             <span className={`text-xl md:text-2xl font-black leading-none font-num
                                 ${'isAlert' in kpi
                                     ? 'text-red-600 dark:text-red-400'
-                                    : 'text-slate-800 dark:text-slate-100'
+                                    : 'text-accent-700 dark:text-accent-400'
                                 }`}
                             >
                                 {kpi.value}

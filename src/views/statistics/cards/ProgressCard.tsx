@@ -21,9 +21,9 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ progress, currentDate }) =>
     const { t } = useTranslation();
     const stats = [
         { label: t('stats.today.progressDay'), val: progress.today, color: 'bg-accent-400' },
-        { label: t('stats.today.progressWeek'), val: progress.week, color: 'bg-indigo-400' },
-        { label: t('stats.today.progressMonth'), val: progress.month, color: 'bg-violet-400' },
-        { label: t('stats.today.progressSemester'), val: progress.semester, color: 'bg-fuchsia-400' },
+        { label: t('stats.today.progressWeek'), val: progress.week, color: 'bg-accent-500' },
+        { label: t('stats.today.progressMonth'), val: progress.month, color: 'bg-accent-600' },
+        { label: t('stats.today.progressSemester'), val: progress.semester, color: 'bg-accent-700' },
     ];
 
     return (

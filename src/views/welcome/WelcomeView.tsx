@@ -243,7 +243,7 @@ const WelcomeView: React.FC = () => {
     return (
         <main className="min-h-dvh bg-white dark:bg-slate-950 flex transition-colors duration-200">
             {/* Pixel-perfect Header Bar matching AppLayout */}
-            <header className="fixed top-0 left-0 right-0 z-40 h-12 md:h-14 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+            <header className="fixed top-0 left-0 right-0 z-40 h-12 md:h-14 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 transition-colors shadow-sm">
                 <div className="flex items-center justify-between h-full px-3 md:px-6">
                     {/* Left: Back button or App Name */}
                     <div className="flex items-center gap-2">

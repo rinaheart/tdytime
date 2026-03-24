@@ -336,9 +336,13 @@
         },
         "themes": {
             "title": "Bảng màu",
-            "blueTheme": "Hiện đại (Blue)",
-            "pinkTheme": "Rực rỡ (Pink)",
-            "greenTheme": "Thanh khiết (Emerald)"
+            "themeBlue": "Đại dương",
+            "themeGreen": "Xanh lục",
+            "themeViolet": "Oải hương",
+            "themePink": "Anh đào",
+            "themeRed": "Đỏ mận",
+            "themeOrange": "Cam cháy",
+            "themeYellow": "Mật ong"
         }
     },
     "about": {
@@ -360,7 +364,6 @@
                 "date": "23/03/2026",
                 "changes": [
                     "Accent Themes: Hệ thống bảng màu phong phú (Xanh/Hồng/Lục Bảo) giúp cá nhân hóa không gian làm việc. Thay đổi ngay tại icon Palette ở Header.",
-                    "Time Bending Engine: Tích hợp bộ máy mô phỏng thời gian giúp tua nhanh hoặc giả lập thời điểm giảng dạy bất kỳ.",
                     "Unified Empty State: Giao diện 'Nghỉ ngơi' hợp nhất cho các tuần trống lịch, tự động gợi ý ngày dạy tiếp theo.",
                     "Lifecycle Reliability: Tối ưu cơ chế tự động đồng bộ thời gian ngay khi mở lại ứng dụng từ trạng thái ngủ (Sleep/Resume).",
                     "UI Typography: Đồng bộ hóa phông chữ nét mảnh trên toàn bộ hệ thống thẻ thống kê và thẻ bài giảng."

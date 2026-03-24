@@ -139,7 +139,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({ week, weekIdx, isExpanded
                             <table className="w-full border-collapse border-hidden">
                                 <thead>
                                     <tr className={`transition-colors ${isCurrent ? 'bg-accent-50/30 dark:bg-accent-950/20' : 'bg-slate-50/50 dark:bg-slate-800/50'}`}>
-                                        <th className={`w-14 p-4 border border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest sticky left-0 z-20 backdrop-blur-md ${isCurrent ? 'text-accent-600 bg-accent-100/40 dark:bg-accent-900/40' : 'text-slate-400 bg-slate-100/50 dark:bg-slate-800/80'}`} />
+                                        <th className={`w-14 p-4 border-b border-r border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest sticky left-0 z-20 ${isCurrent ? 'text-accent-600 bg-accent-100 dark:bg-accent-900' : 'text-slate-400 bg-slate-100 dark:bg-slate-800'}`} />
                                         {DAYS_OF_WEEK.map((dayName, dIdx) => (
                                             <th key={dayName} className={`min-w-[140px] p-4 border border-slate-100 dark:border-slate-800 text-center ${isCurrent ? 'bg-accent-50/20 dark:bg-accent-900/10' : ''}`}>
                                                 <p className={`text-[11px] font-black uppercase tracking-widest ${isCurrent ? 'text-accent-500' : 'text-slate-500 dark:text-slate-400'}`}>{t(`days.${dIdx}`)}</p>
@@ -153,7 +153,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({ week, weekIdx, isExpanded
                                         const label = shift === 'morning' ? 'S' : shift === 'afternoon' ? 'C' : 'T';
                                         return (
                                             <tr key={shift} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/10 transition-colors">
-                                                <td className={`p-4 border border-slate-100 dark:border-slate-800 text-center align-middle sticky left-0 z-20 backdrop-blur-md shadow-[2px_0_5px_rgba(0,0,0,0.02)] ${isCurrent ? 'bg-accent-100/40 dark:bg-accent-900/40' : 'bg-slate-50/50 dark:bg-slate-800/80'}`}>
+                                                <td className={`p-4 border-b border-r border-slate-100 dark:border-slate-800 text-center align-middle sticky left-0 z-20 shadow-[2px_0_8px_rgba(0,0,0,0.03)] ${isCurrent ? 'bg-accent-100 dark:bg-accent-950/40' : 'bg-slate-50 dark:bg-slate-800'}`}>
                                                     <span className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-black mx-auto shadow-lg ${isCurrent ? 'bg-accent-700 shadow-accent-500/30' : 'bg-accent-600 shadow-accent-500/20'}`}>{label}</span>
                                                 </td>
                                                 {DAYS_OF_WEEK.map((dayName) => {

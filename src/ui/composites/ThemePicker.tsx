@@ -1,19 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Palette, Check } from 'lucide-react';
-import { useUIStore, AccentTheme } from '../../core/stores/ui.store';
+import { useUIStore } from '../../core/stores/ui.store';
+import { THEMES } from '../../core/themes/theme.registry';
 
 const ThemePicker: React.FC = () => {
     const { t } = useTranslation();
     const { accentTheme, setAccentTheme } = useUIStore();
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
-
-    const themes: { id: AccentTheme; colors: string[] }[] = [
-        { id: 'blueTheme', colors: ['bg-blue-50', 'bg-blue-300', 'bg-blue-600'] },
-        { id: 'pinkTheme', colors: ['bg-pink-50', 'bg-pink-300', 'bg-pink-600'] },
-        { id: 'greenTheme', colors: ['bg-emerald-50', 'bg-emerald-300', 'bg-emerald-600'] },
-    ];
 
     // Close when clicking outside
     useEffect(() => {
@@ -51,7 +46,7 @@ const ThemePicker: React.FC = () => {
                         </span>
                     </div>
                     <div className="p-1.5">
-                        {themes.map((theme) => (
+                        {THEMES.map((theme) => (
                             <button
                                 key={theme.id}
                                 onClick={() => {
@@ -67,7 +62,7 @@ const ThemePicker: React.FC = () => {
                                 <div className="flex items-center gap-3">
                                     {/* Swatch */}
                                     <div className="flex -space-x-1.5">
-                                        {theme.colors.map((c, i) => (
+                                        {theme.preview.map((c, i) => (
                                             <div 
                                                 key={i} 
                                                 className={`w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 ${c}`} 
@@ -75,7 +70,7 @@ const ThemePicker: React.FC = () => {
                                         ))}
                                     </div>
                                     <span className="text-xs font-bold whitespace-nowrap">
-                                        {t(`settings.themes.${theme.id}`)}
+                                        {t(theme.nameKey)}
                                     </span>
                                 </div>
                                 {accentTheme === theme.id && <Check size={14} className="text-accent-600" />}

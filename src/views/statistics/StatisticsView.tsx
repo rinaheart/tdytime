@@ -175,17 +175,17 @@ const StatisticsView: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm relative overflow-hidden group transition-all hover:shadow-md flex flex-col h-full">
                     <h3 className="relative z-10 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                        <Users size={14} className="text-indigo-500" /> {t('stats.topClasses')}
+                        <Users size={14} className="text-accent-500" /> {t('stats.topClasses')}
                     </h3>
                     <div className="relative z-10 grid grid-cols-2 gap-4">
                         {metrics.classDistribution.slice(0, 6).map((c, i) => (
                             <div key={i} className="px-3 py-2 bg-slate-50 dark:bg-slate-800/40 rounded-sm border border-slate-100/60 dark:border-slate-800/60 flex flex-col justify-center">
                                 <div className="flex justify-between items-center mb-1.5">
                                     <span className="text-[10px] font-bold text-slate-700 dark:text-slate-200 truncate pr-2">{c.className}</span>
-                                    <span className="text-[9px] font-black text-indigo-600 dark:text-indigo-400">{c.periods}</span>
+                                    <span className="text-[9px] font-black text-accent-600 dark:text-accent-400">{c.periods}</span>
                                 </div>
                                 <div className="h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-sm overflow-hidden">
-                                    <div className="h-full bg-indigo-500 rounded-sm" style={{ width: `${Math.min(100, (c.periods / metrics.totalHours) * 350)}%` }} />
+                                    <div className="h-full bg-accent-500 rounded-sm" style={{ width: `${Math.min(100, (c.periods / metrics.totalHours) * 350)}%` }} />
                                 </div>
                             </div>
                         ))}
@@ -193,17 +193,17 @@ const StatisticsView: React.FC = () => {
                 </div>
                 <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm relative overflow-hidden group transition-all hover:shadow-md flex flex-col h-full">
                     <h3 className="relative z-10 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                        <MapPin size={14} className="text-sky-500" /> {t('stats.topClassrooms')}
+                        <MapPin size={14} className="text-accent-400" /> {t('stats.topClassrooms')}
                     </h3>
                     <div className="relative z-10 grid grid-cols-2 gap-4">
                         {metrics.topRooms.slice(0, 6).map((r, i) => (
                             <div key={i} className="px-3 py-2 bg-slate-50 dark:bg-slate-800/40 rounded-sm border border-slate-100/60 dark:border-slate-800/60 flex flex-col justify-center">
                                 <div className="flex justify-between items-center mb-1.5">
                                     <span className="text-[10px] font-bold text-slate-700 dark:text-slate-200 truncate pr-2">{r.room}</span>
-                                    <span className="text-[9px] font-black text-sky-600 dark:text-sky-400">{r.periods}</span>
+                                    <span className="text-[9px] font-black text-accent-500 dark:text-accent-400">{r.periods}</span>
                                 </div>
                                 <div className="h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-sm overflow-hidden">
-                                    <div className="h-full bg-sky-500 rounded-sm" style={{ width: `${Math.min(100, (r.periods / metrics.totalHours) * 350)}%` }} />
+                                    <div className="h-full bg-accent-400 rounded-sm" style={{ width: `${Math.min(100, (r.periods / metrics.totalHours) * 350)}%` }} />
                                 </div>
                             </div>
                         ))}

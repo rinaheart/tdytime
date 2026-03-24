@@ -9,7 +9,7 @@ import { PieChart as PieChartIcon } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
 import { CourseType } from '@/core/schedule/schedule.types';
 
-const PIE_COLORS = ['#2563eb', '#0ea5e9', '#6366f1'];
+const PIE_COLORS = ['var(--color-accent-600)', 'var(--color-accent-400)', 'var(--color-accent-800)'];
 
 const TeachingStructureCard: React.FC = () => {
     const { t } = useTranslation();
@@ -27,7 +27,7 @@ const TeachingStructureCard: React.FC = () => {
     return (
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6">
             <h3 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
-                <PieChartIcon size={16} className="text-indigo-600" /> {t('stats.structure.title')}
+                <PieChartIcon size={16} className="text-accent-600" /> {t('stats.structure.title')}
             </h3>
             <div className="mb-6">
                 <div className="flex justify-between text-[10px] font-bold uppercase text-slate-400 mb-2">
@@ -36,7 +36,7 @@ const TeachingStructureCard: React.FC = () => {
                 </div>
                 <div className="h-2 w-full flex rounded-full overflow-hidden">
                     <div className="bg-accent-600" style={{ width: `${ltPercent}%` }} />
-                    <div className="bg-sky-400" style={{ width: `${thPercent}%` }} />
+                    <div className="bg-accent-300" style={{ width: `${thPercent}%` }} />
                 </div>
             </div>
             <div>
@@ -53,8 +53,8 @@ const TeachingStructureCard: React.FC = () => {
                 </div>
                 <div className="flex justify-center gap-3 text-[10px] font-medium text-slate-500">
                     <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent-600" /> {t('common.morning')}</div>
-                    <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-sky-500" /> {t('common.afternoon')}</div>
-                    <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-indigo-500" /> {t('common.evening')}</div>
+                    <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent-400" /> {t('common.afternoon')}</div>
+                    <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent-800" /> {t('common.evening')}</div>
                 </div>
             </div>
         </div>
