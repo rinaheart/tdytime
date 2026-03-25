@@ -44,7 +44,7 @@ export const THEME_MIGRATION: Record<string, AccentTheme> = {
     blueTheme: 'themeBlue',
     pinkTheme: 'themePink',
     greenTheme: 'themeGreen',
-    themeAmber: 'themeOrange',
+    themeAmber: 'themeYellow',
     themePurple: 'themeGrey',
     themeViolet: 'themeGrey',
 };

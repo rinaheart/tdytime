@@ -3,7 +3,7 @@
  * Compact, single-row design consistent with app's premium minimal language.
  */
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Hash, Calendar, FastForward, AlertTriangle } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
