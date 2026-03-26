@@ -4,7 +4,6 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { PieChart as PieChartIcon } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
 import { CourseType } from '@/core/schedule/schedule.types';
@@ -41,15 +40,37 @@ const TeachingStructureCard: React.FC = () => {
             </div>
             <div>
                 <p className="text-[10px] font-bold uppercase text-slate-400 mb-2">{t('stats.structure.shiftLabel')}</p>
-                <div className="h-32 mb-2">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie data={shiftData} cx="50%" cy="50%" innerRadius={25} outerRadius={40} paddingAngle={5} dataKey="value">
-                                {shiftData.map((_, index) => <Cell key={`cell-${index}`} fill={PIE_COLORS[index]} />)}
-                            </Pie>
-                            <Tooltip />
-                        </PieChart>
-                    </ResponsiveContainer>
+                <div className="h-32 mb-2 flex items-center justify-center">
+                    <svg viewBox="0 0 100 100" className="w-24 h-24 transform -rotate-90">
+                        {(() => {
+                            const total = shiftData.reduce((acc, d) => acc + d.value, 0) || 1;
+                            let currentOffset = 0;
+                            return shiftData.map((d, i) => {
+                                const percentage = (d.value / total) * 100;
+                                const strokeDasharray = `${percentage} ${100 - percentage}`;
+                                const strokeDashoffset = -currentOffset;
+                                currentOffset += percentage;
+                                return (
+                                    <circle
+                                        key={i}
+                                        cx="50"
+                                        cy="50"
+                                        r="40"
+                                        fill="transparent"
+                                        stroke={PIE_COLORS[i]}
+                                        strokeWidth="20"
+                                        strokeDasharray={strokeDasharray}
+                                        strokeDashoffset={strokeDashoffset}
+                                        className="transition-all duration-500 hover:opacity-80 cursor-default"
+                                    >
+                                        <title>{`${d.name}: ${d.value}`}</title>
+                                    </circle>
+                                );
+                            });
+                        })()}
+                        {/* Center Hole for Donut effect (optional, or just use strokeWidth/innerRadius logic) */}
+                        <circle cx="50" cy="50" r="25" className="fill-white dark:fill-slate-900" />
+                    </svg>
                 </div>
                 <div className="flex justify-center gap-3 text-[10px] font-medium text-slate-500">
                     <div className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-accent-600" /> {t('common.morning')}</div>
