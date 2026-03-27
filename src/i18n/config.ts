@@ -7,9 +7,6 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { APP_VERSION } from '@/core/constants';
 
-import vi from './vi.json';
-import en from './en.json';
-
 // Detect saved language preference
 let defaultLanguage = 'vi';
 try {
@@ -18,11 +15,11 @@ try {
     console.warn('LocalStorage not accessible, falling back to "vi"');
 }
 
+// Pre-load the initial language statically for first render if possible, 
+// but since we want to split chunks, we'll initialize without resources 
+// and add them immediately.
 i18n.use(initReactI18next).init({
-    resources: {
-        vi: { translation: vi },
-        en: { translation: en },
-    },
+    resources: {},
     lng: defaultLanguage,
     fallbackLng: 'vi',
     interpolation: {
@@ -30,9 +27,35 @@ i18n.use(initReactI18next).init({
         defaultVariables: { version: APP_VERSION },
     },
     react: {
-        useSuspense: false,
+        useSuspense: true, // Enable suspense for lazy loading
     },
 });
+
+/**
+ * Lazy load a resource bundle
+ */
+export const loadLanguage = async (lng: string) => {
+    if (!i18n.hasResourceBundle(lng, 'translation')) {
+        try {
+            const resources = await import(`./locales/${lng}.json`);
+            i18n.addResourceBundle(lng, 'translation', resources.default, true, true);
+        } catch (error) {
+            console.error(`Failed to load language: ${lng}`, error);
+        }
+    }
+};
+
+// Initial load
+loadLanguage(defaultLanguage);
+
+/**
+ * Custom change language function that ensures resource is loaded
+ */
+export const changeLanguage = async (lng: string) => {
+    await loadLanguage(lng);
+    await i18n.changeLanguage(lng);
+    localStorage.setItem('language', lng);
+};
 
 // Sync document lang attribute
 i18n.on('languageChanged', (lng) => {

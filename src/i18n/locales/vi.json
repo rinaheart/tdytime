@@ -1,0 +1,585 @@
+{
+    "app": {
+        "title": "TdyTime {{version}}",
+        "tagline": "Your Today, Your Time",
+        "uploadTitle": "Tải tệp lịch",
+        "uploadDesc": "Hỗ trợ .html hoặc .json",
+        "pasteTitle": "Dán mã HTML",
+        "pasteDesc": "Dán trực tiếp từ trang web",
+        "pastePlaceholder": "Dán nội dung HTML tại đây...",
+        "recentHistory": "Dữ liệu gần đây",
+        "dropToUpload": "Thả để tải lên"
+    },
+    "common": {
+        "appName": "TdyTime",
+        "copyright": "© 2026 TdyTime | Google AI Studio",
+        "version": "v{{version}}",
+        "loading": "Đang tải...",
+        "processing": "Đang xử lý dữ liệu...",
+        "error": "Lỗi",
+        "success": "Thành công",
+        "cancel": "Hủy",
+        "save": "Lưu",
+        "reset": "Đặt lại",
+        "close": "Đóng",
+        "back": "Quay lại",
+        "next": "Tiếp theo",
+        "previous": "Trước",
+        "current": "Hiện tại",
+        "horizontal": "Ngang",
+        "vertical": "Dọc",
+        "horizontalList": "Lịch ngang",
+        "verticalList": "Lịch dọc",
+        "none": "Trống",
+        "periods": "tiết",
+        "periodShort": "T",
+        "sessions": "buổi",
+        "weeks": "tuần",
+        "week": "Tuần",
+        "month": "Tháng",
+        "morning": "Sáng",
+        "afternoon": "Chiều",
+        "evening": "Tối",
+        "switchLanguage": "Chuyển ngữ",
+        "conflicts": "Xung đột",
+        "warnings": "Cảnh báo & Xung đột",
+        "viewDetails": "Xem chi tiết",
+        "periodLabel": "Tiết",
+        "days": "ngày",
+        "filter": "Lọc",
+        "collapseAll": "Thu gọn",
+        "expandAll": "Mở rộng",
+        "oneSession": "1 BUỔI DẠY",
+        "completedItem": "Đã hoàn thành"
+    },
+    "shifts": {
+        "morning": "Sáng",
+        "afternoon": "Chiều",
+        "evening": "Tối"
+    },
+    "days": {
+        "0": "Thứ 2",
+        "1": "Thứ 3",
+        "2": "Thứ 4",
+        "3": "Thứ 5",
+        "4": "Thứ 6",
+        "5": "Thứ 7",
+        "6": "CN"
+    },
+    "daysShort": {
+        "0": "T2",
+        "1": "T3",
+        "2": "T4",
+        "3": "T5",
+        "4": "T6",
+        "5": "T7",
+        "6": "CN"
+    },
+    "nav": {
+        "today": "Hôm nay",
+        "weekly": "Lịch tuần",
+        "completed": "Hoàn thành",
+        "semester": "Học kỳ",
+        "statistics": "Thống kê",
+        "settings": "Cài đặt",
+        "loadData": "Nạp dữ liệu",
+        "language": "Ngôn ngữ",
+        "appearance": "Giao diện"
+    },
+    "upload": {
+        "title": "Phân Tích Lịch Giảng Dạy",
+        "description": "Hệ thống hỗ trợ phân tích từ file HTML (UMS) hoặc JSON backup. Bạn có thể tải file hoặc dán trực tiếp mã nguồn.",
+        "historyTitle": "Tiếp tục làm việc (Gần đây)",
+        "deleteHistory": "Xóa lịch này",
+        "method1": "Cách 1: Tải file lên",
+        "method2": "Cách 2: Dán mã nguồn",
+        "dragDrop": "Kéo thả hoặc chọn file",
+        "chooseFile": "Chọn file",
+        "pastePlaceholder": "Paste nội dung HTML hoặc JSON vào đây...",
+        "analyzeContent": "Phân tích nội dung",
+        "supportedFormats": "Hỗ trợ: .HTML, .JSON",
+        "demoSection": "Hoặc dùng dữ liệu mẫu",
+        "enterCode": "Mã bí mật...",
+        "useDemo": "Demo",
+        "features": {
+            "viz": "Trực quan",
+            "warn": "Cảnh báo",
+            "export": "Xuất file"
+        },
+        "errors": {
+            "noData": "⚠️ File không có dữ liệu hợp lệ.",
+            "invalidStructure": "⚠️ Cấu trúc file không đúng định dạng UMS.",
+            "invalidFormat": "⚠️ Định dạng không hỗ trợ. Chỉ nhận file .HTML hoặc .JSON.",
+            "parseWeekNotFound": "⚠️ Không tìm thấy thông tin tuần trong file HTML.",
+            "parseTableNotFound": "⚠️ Không tìm thấy bảng lịch học trong file HTML."
+        }
+    },
+    "filter": {
+        "searchPlaceholder": "Tìm tên môn hoặc mã nhóm...",
+        "allClasses": "Tất cả Lớp",
+        "allRooms": "Tất cả Giảng đường",
+        "allTeachers": "Tất cả GV",
+        "clear": "Xóa bộ lọc"
+    },
+    "weekly": {
+        "week": "Tuần {{number}}",
+        "dateRange": "Từ ngày: {{start}} đến ngày {{end}}",
+        "currentWeek": "Tuần hiện tại",
+        "morning": "Sáng",
+        "afternoon": "Chiều",
+        "evening": "Tối",
+        "period": "Tiết {{number}}",
+        "room": "Phòng",
+        "class": "Lớp",
+        "group": "Nhóm",
+        "teacher": "GV",
+        "conflict": "⚠️ Trùng lịch",
+        "noClasses": "Trống",
+        "today": "Hôm nay",
+        "noData": "Chưa có dữ liệu tuần",
+        "exportICS": {
+            "title": "Xuất Lịch Google",
+            "description": "Chọn GV để xuất lịch cho <strong>Tuần {{week}}</strong>.",
+            "selectAll": "Chọn tất cả",
+            "deselectAll": "Bỏ chọn tất cả",
+            "teacherList": "Danh sách GV ({{count}})",
+            "noTeachers": "Không tìm thấy dữ liệu GV cho tuần này.",
+            "copy": "Copy nội dung",
+            "copied": "Đã copy!",
+            "download": "Tải file .ics"
+        }
+    },
+    "semester": {
+        "summaryBySubject": "Bảng Tổng Hợp Theo Môn",
+        "detailByGroup": "Bảng Chi Tiết Theo Nhóm",
+        "weeklySummary": "Tổng Hợp Theo Tuần",
+        "toast": {
+            "ended": "Học kỳ đã kết thúc!",
+            "noSchedule": "Tuần hiện tại ({{range}}) không có lịch giảng!"
+        },
+        "table": {
+            "code": "Mã",
+            "course": "Tên Môn",
+            "groups": "Nhóm",
+            "classes": "Lớp",
+            "sessions": "Buổi",
+            "periods": "Tiết"
+        }
+    },
+    "stats": {
+        "overview": "Tổng quan hoạt động",
+        "totalPeriods": "Tổng tiết giảng",
+        "totalSessions": "Buổi lên lớp",
+        "totalWeeks": "Tuần thực dạy",
+        "courses": "Môn học",
+        "classes": "Lớp SV",
+        "groups": "Nhóm HP",
+        "rooms": "Phòng",
+        "today": {
+            "greeting": {
+                "morning": "Chào buổi sáng, {{name}}!",
+                "afternoon": "Chào buổi chiều, {{name}}!",
+                "evening": "Chào buổi tối, {{name}}!"
+            },
+            "summary": "Hôm nay có {{sessions}} buổi giảng ({{periods}} tiết).",
+            "summaryCompleted": "Đã hoàn thành {{sessions}} buổi, {{periods}} tiết",
+            "summaryTotal": "Hôm nay có {{sessions}} buổi, {{periods}} tiết",
+            "upcomingCount": "{{count}} sắp tới",
+            "sessionsCount": "{{count}} buổi giảng",
+            "otherSessions": "+{{count}} buổi khác",
+            "noDataTitle": "Chưa có dữ liệu",
+            "sessionStatus": {
+                "pending": "Chưa đến giờ giảng",
+                "live": "Đang giảng dạy",
+                "completed": "Hoàn thành"
+            },
+            "next": "Lịch giảng tiếp theo",
+            "firstOfSemester": "Lịch giảng đầu kỳ",
+            "nextHeader": "{{day}}, {{date}} — {{count}} buổi giảng",
+            "emptyStates": {
+                "noData": "Chưa có dữ liệu lịch giảng.",
+                "noDataHint": "Vui lòng tải file lịch giảng để xem chi tiết.",
+                "beforeSemester": "Học kỳ mới chưa bắt đầu!",
+                "beforeSemesterSoon": "Học kỳ mới sắp bắt đầu!",
+                "beforeSemesterHint": "Học kỳ sẽ bắt đầu vào ngày {{date}}.",
+                "beforeSemesterPreDesc": "Bạn có lịch dạy sau",
+                "afterSemester": "Học kỳ đã kết thúc!",
+                "afterSemesterHint": "Bạn đã hoàn thành toàn bộ lịch giảng của học kỳ này.",
+                "noSchedule": "Tuần hiện tại ({{range}}) không có lịch giảng!",
+                "dayOff": "Hôm nay là ngày nghỉ của bạn!",
+                "noSessions": ""
+            },
+            "progressDay": "Ngày",
+            "progressWeek": "Tuần",
+            "progressMonth": "Tháng",
+            "progressSemester": "Học kỳ",
+            "progress": "Tiến độ"
+        },
+        "warningsList": {
+            "overload": "{{overload}}/{{total}} tuần > 25 tiết (ngưỡng cảnh báo)",
+            "evening": "{{count}} buổi dạy tối",
+            "weekend": "{{count}} buổi dạy cuối tuần (T7, CN)",
+            "singlePeriod": "{{count}} buổi chỉ có 1 tiết (hiệu suất thấp)",
+            "conflicts": "{{count}} xung đột lịch dạy/phòng học cần kiểm tra"
+        },
+        "conclusionsList": {
+            "earlyFocused": "Khối lượng tập trung đầu học kỳ",
+            "lateFocused": "Khối lượng tập trung cuối học kỳ",
+            "balanced": "Khối lượng phân bổ đều giữa học kỳ",
+            "practiceDominant": "Thực hành chiếm ưu thế ({{percent}}%)",
+            "theoryDominant": "Lý thuyết chiếm ưu thế ({{percent}}%)",
+            "peakTime": "{{shift}} và {{day}} là thời gian cao điểm",
+            "optimizeNeeded": "Có ca lẻ và dạy cuối tuần cần tối ưu"
+        },
+        "weeklyTrend": "Biến động theo Tuần",
+        "dailyDensity": "Mật độ Giảng dạy theo Thứ",
+        "peakWeek": "Phân tích Tuần Trọng điểm",
+        "shiftDistribution": "Phân bổ theo Buổi",
+        "courseType": "Cơ cấu Loại hình Học phần",
+        "theory": "Lý thuyết",
+        "practice": "Thực hành",
+        "topRooms": "Top 10 Giảng đường",
+        "classSummary": "Chi tiết theo Lớp",
+        "courseSummary": "Chi tiết theo môn",
+        "warnings": "Chỉ số cần Lưu ý & Tối ưu",
+        "noWarnings": "Không có cảnh báo nào. Lịch dạy hợp lý.",
+        "heatmapTitle": "Bản đồ phân bổ giảng dạy",
+        "heatmap": {
+            "less": "Ít",
+            "more": "Nhiều"
+        },
+        "trend": {
+            "weekly": "Xu hướng theo Tuần",
+            "daily": "Tần suất theo Thứ"
+        },
+        "structure": {
+            "title": "Cơ cấu giảng dạy",
+            "typeLabel": "Lý thuyết / Thực hành",
+            "shiftLabel": "Phân bổ buổi dạy"
+        },
+        "topSubjects": "Top Môn Giảng Dạy",
+        "topClasses": "Top Lớp Sinh Viên",
+        "topClassrooms": "Giảng Đường Chính",
+        "coTeachers": {
+            "title": "GV phối hợp chuyên môn",
+            "teacher": "GV",
+            "classDetail": "Lớp học phần",
+            "total": "Tiết"
+        },
+        "conclusions": "Nhận định & Đề xuất Tối ưu",
+        "intensity": "Cường độ",
+        "eveningTeaching": "Buổi tối",
+        "weekendTeaching": "Cuối tuần",
+        "overloadWeeks": "Quá tải",
+        "levels": {
+            "high": "Cao",
+            "medium": "Trung bình",
+            "low": "Thấp"
+        }
+    },
+    "settings": {
+        "abbreviations": {
+            "title": "Viết tắt tên môn",
+            "description": "Viết tắt tên các môn học ở lịch giảng.",
+            "suggest": "Đề xuất",
+            "reset": "Mặc định",
+            "save": "Lưu",
+            "originalName": "Tên gốc",
+            "shortName": "Viết tắt",
+            "placeholder": "Viết tắt...",
+            "noData": "Trống."
+        },
+        "courseType": {
+            "title": "Tùy chỉnh hình thức giảng dạy",
+            "description": "Gán LT (45p) hoặc TH (60p) cho từng nhóm lớp.",
+            "setAllLT": "Tất cả LT",
+            "setAllTH": "Tất cả TH",
+            "code": "Mã Nhóm Lớp",
+            "course": "Môn",
+            "class": "Lớp",
+            "group": "Nhóm",
+            "reset": "Mặc định"
+        },
+        "advanced": {
+            "title": "Cài đặt nâng cao",
+            "description": "Hình thức giảng dạy, Cảnh báo & Vùng nguy hiểm"
+        },
+        "thresholds": {
+            "title": "Cài đặt Cảnh báo",
+            "description": "Giới hạn số tiết tối đa để phát hiện tuần quá tải.",
+            "daily": "Giới hạn Ngày",
+            "weekly": "Giới hạn Tuần",
+            "warning": "Cảnh báo",
+            "danger": "Nguy hiểm",
+            "save": "Lưu"
+        },
+        "export": {
+            "title": "Quản lý & Xuất file",
+            "description": "Sao lưu dữ liệu làm việc hoặc xuất báo cáo.",
+            "csvButton": "Xuất CSV",
+            "jsonButton": "Sao lưu JSON",
+            "csv": {
+                "code": "Mã môn",
+                "name": "Tên môn",
+                "class": "Lớp",
+                "group": "Nhóm",
+                "type": "Loại hình",
+                "totalPeriods": "Tổng tiết",
+                "totalSessions": "Tổng buổi"
+            }
+        },
+        "dangerZone": {
+            "title": "Vùng nguy hiểm",
+            "description": "Xóa toàn bộ dữ liệu và đưa ứng dụng về mặc định.",
+            "confirmReset": "Bạn có chắc chắn muốn xóa tất cả và reset không?",
+            "confirmButton": "Xác nhận xóa?",
+            "resetButton": "Reset Ứng dụng"
+        },
+        "toast": {
+            "abbreviationsSaved": "Đã lưu tên viết tắt.",
+            "abbreviationsSuggested": "Đã tạo gợi ý tên viết tắt.",
+            "abbreviationsReset": "Đã xóa tất cả tên viết tắt! (Bấm Lưu để áp dụng)",
+            "courseTypeSaved": "Đã lưu tùy chỉnh loại tiết giảng.",
+            "thresholdsSaved": "Đã cập nhật cài đặt cảnh báo.",
+            "thresholdsReset": "Đã khôi phục mặc định (Hãy bấm Lưu để áp dụng)",
+            "csvExported": "Xuất file CSV thành công.",
+            "jsonExported": "Sao lưu file JSON thành công."
+        },
+        "themes": {
+            "title": "Giao diện",
+            "themeBlue": "Xanh biển",
+            "themeGreen": "Xanh ngọc",
+            "themePink": "Hồng đào",
+            "themeViolet": "Tím hoa",
+            "themeRed": "Đỏ son",
+            "themeYellow": "Vàng mật",
+            "themeGrey": "Xám sương"
+        }
+    },
+    "about": {
+        "title": "TdyTime",
+        "description": "Tiện ích trực quan hóa và quản lý lịch trình giảng dạy thông minh. Thiết kế đặc biệt cho GV Khoa KTYH - Trường ĐHYD, ĐH Huế.",
+        "copyright": "© 2026 TdyTime | Google AI Studio",
+        "periodStandards": "Quy chuẩn thời gian tiết giảng",
+        "morning": "Buổi Sáng",
+        "afternoon": "Buổi Chiều",
+        "evening": "Buổi Tối",
+        "note": "* Lưu ý: Thời gian tiết thực hành (TH) là 60 phút/tiết, lý thuyết (LT) là 45 phút/tiết. Bảng trên là thời gian chuẩn cho LT.",
+        "checking": "Đang kiểm tra...",
+        "upToDate": "Phiên bản mới nhất",
+        "updateAvailable": "Cập nhật ngay v1.0.1",
+        "changelog": "Changelog",
+        "history": [
+            {
+                "version": "v1.3.0",
+                "date": "2026-03-26",
+                "changes": [
+                    "Performance Boost (Zero-Dep SVG): Loại bỏ hoàn toàn thư viện Recharts giúp giảm 374KB bundle size, cải thiện LCP từ 7.0s xuống 1.8s (tăng tốc ~74%).",
+                    "Stats UI Refinement: Làm mới biểu đồ Heatmap phong cách GitHub (ô vuông, nhãn thứ T2-CN), cập nhật biểu đồ tròn Sáng/Chiều/Tối với dải màu nhạt-đến-đậm.",
+                    "Data Precision: Chuẩn hóa hiển thị 0.0% và tích hợp thuật toán đảm bảo tổng các thành phần biểu đồ luôn đạt 100.0%.",
+                    "UI Optimization: Căn chỉnh lại bố cục các thẻ thống kê, nhãn NGÀY/TUẦN/THÁNG được đồng bộ hóa toàn diện."
+                ]
+            },
+            {
+                "version": "v1.2.0",
+                "date": "2026-03-25",
+                "changes": [
+                    "Theme Picker UI: Thay thế cơ chế xoay vòng bằng Menu chọn màu chuyên nghiệp, giúp cá nhân hóa không gian làm việc tức thì.",
+                    "Accent Palettes+: Bổ sung 7 bảng màu cao cấp (Xanh/Lục/Hồng/Tím/Đỏ/Vàng/Xám) được chuẩn hóa đồng bộ.",
+                    "StatsHeader Evolution: Tinh chỉnh thanh tiêu đề thống kê, tích hợp khả năng thu gọn/mở rộng và căn lề lưới hoàn hảo."
+                ]
+            },
+            {
+                "version": "v1.1.0",
+                "date": "2026-03-23",
+                "changes": [
+                    "Accent Themes: Hệ thống bảng màu phong phú (Xanh/Hồng/Lục Bảo) giúp cá nhân hóa không gian làm việc. Thay đổi ngay tại icon Palette ở Header.",
+                    "Unified Empty State: Giao diện 'Nghỉ ngơi' hợp nhất cho các tuần trống lịch, tự động gợi ý ngày dạy tiếp theo.",
+                    "Lifecycle Reliability: Tối ưu cơ chế tự động đồng bộ thời gian ngay khi mở lại ứng dụng từ trạng thái ngủ (Sleep/Resume).",
+                    "UI Typography: Đồng bộ hóa phông chữ nét mảnh trên toàn bộ hệ thống thẻ thống kê và thẻ bài giảng."
+                ]
+            },
+            {
+                "version": "v1.0.0",
+                "date": "2026-02-26",
+                "changes": [
+                    "Official Release v1.0.0: Hoàn diện hệ thống PWA với tính năng kiểm tra cập nhật chủ động.",
+                    "Improved PWA Experience: Thêm nút kiểm tra cập nhật trong Cài đặt và thông báo cài đặt ứng dụng.",
+                    "Brand Identity: Đồng bộ hóa logo SVG trên toàn bộ các màn hình Chào mừng và Cài đặt.",
+                    "UI Optimization: Tinh chỉnh khoảng cách và kích thước logo giúp giao diện thoáng đãng và hiện đại hơn."
+                ]
+            },
+            {
+                "version": "v0.9.0",
+                "date": "2026-02-05",
+                "changes": [
+                    "Lightning Fast Performance: Tối ưu hóa toàn diện giúp ứng dụng tải tức thì (Load Time ~176ms) và đạt điểm hiệu năng tuyệt đối.",
+                    "Smart Bundle Split: Tách thông minh các thư viện nặng (Biểu đồ) khỏi luồng chính, giúp trải nghiệm mượt mà ngay từ lần chạm đầu tiên.",
+                    "Dynamic Layout Loading: Cơ chế tải giao diện theo nhu cầu (Lazy Loading) giúp tiết kiệm dữ liệu và tăng tốc độ hiển thị."
+                ]
+            },
+            {
+                "version": "v0.8.2",
+                "date": "2026-02-04",
+                "changes": [
+                    "Header UI Evolution: Đưa nút chuyển Dark Mode lên Header với phong cách tối giản (Minimalist icon), giúp thao tác nhanh và là chỉ báo trực quan cho việc cập nhật bản mới.",
+                    "Hard Refresh Signal: Thay đổi cấu trúc Header để ép trình duyệt di động nhận diện sự thay đổi giao diện, giúp thoát khỏi tình trạng kẹt Cache cũ."
+                ]
+            },
+            {
+                "version": "v0.8.1",
+                "date": "2026-02-04",
+                "changes": [
+                    "PWA Self-Healing: Cơ chế ép buộc làm mới Cache để xử lý triệt để lỗi lời chào bị kẹt trên thiết bị di động.",
+                    "Timezone Reactive: Tối ưu hóa việc nhận diện múi giờ hệ thống giúp lời chào nhảy đúng Sáng/Chiều/Tối tức thì."
+                ]
+            },
+            {
+                "version": "v0.8.0",
+                "date": "2026-02-04",
+                "changes": [
+                    "Smart Countdown: Hệ thống đếm ngược học kỳ mới trực quan với số đếm 2 chữ số và tiêu đề đổi màu theo tiến độ thời gian.",
+                    "Today View Optimized: Đồng nhất thiết kế thẻ bài giảng LIVE/Pending và thu gọn danh sách đã hoàn thành một cách tinh tế.",
+                    "Multi-Teacher Footer: Tự động hiển thị tên GV trên dải màu Footer Strip khi tắt bộ lọc, hỗ trợ theo dõi lịch dạy đa giảng viên.",
+                    "Minimalist UI Refinement: Rút gọn định dạng ngày tuần với ký tự mũi tên (→) và tối ưu hóa không gian hiển thị (pb-7/pb-10).",
+                    "Scroll & Layout Fix: Loại bỏ các thanh chỉ báo cuộn không hoạt động và xử lý triệt để lỗi cuộn dư thừa trên tab Hôm nay."
+                ]
+            },
+            {
+                "version": "v0.7.0",
+                "date": "2026-02-03",
+                "changes": [
+                    "PageSpeed 90+: Tối ưu hóa hiệu năng đạt chuẩn Core Web Vitals (LCP < 2.5s).",
+                    "Accessibility Verified: Đạt chuẩn tương phản màu sắc (WCAG AA) và hỗ trợ điều hướng ARIA toàn diện.",
+                    "Smart Cache: Cơ chế lưu trữ đệm thông minh giúp ứng dụng tải tức thì.",
+                    "PWA Pro: Nâng cấp biểu tượng maskable và hiệu chuẩn manifest cho trải nghiệm App native."
+                ]
+            },
+            {
+                "version": "v0.6.0",
+                "date": "2026-02-02",
+                "changes": [
+                    "Premium Refinement: Tinh chỉnh toàn bộ tab Cài đặt và Thống kê để đạt độ nén thông tin và thẩm mỹ cao nhất.",
+                    "Auto-Logic: Tích hợp khả năng tự động bóc tách loại hình giảng dạy và rút gọn tên môn học thông minh trên toàn ứng dụng.",
+                    "Stability Pro: Xử lý triệt để các lỗi điều hướng và nâng cao độ ổn định nền tảng (v0.6.0)."
+                ]
+            },
+            {
+                "version": "v0.5.0",
+                "date": "2026-02-02",
+                "changes": [
+                    "Data-Centric Today: Thiết kế lại hoàn toàn thẻ Hôm nay với triết lý dữ liệu là trung tâm, phù hợp giảng viên và người dùng lớn tuổi.",
+                    "Session Status System: Hệ thống trạng thái buổi giảng 3 cấp (Chưa đến giờ / Đang giảng dạy / Hoàn thành) với phân biệt thị giác rõ ràng.",
+                    "Semester Intelligence: Logic nhận diện ranh giới học kỳ thông minh với 4 trạng thái empty states chuyên biệt.",
+                    "Mobile-First Cards: Layout 3 cột tối ưu cho mobile (Thời gian | Thông tin | Phòng) với độ ưu tiên hiển thị chuẩn hóa."
+                ]
+            },
+            {
+                "version": "v0.5.0",
+                "date": "2026-02-01",
+                "changes": [
+                    "System Refactor: Kiểm kê (Audit) và tái cấu trúc toàn diện mã nguồn, nâng cao sự ổn định và an toàn logic 100%.",
+                    "Performance Core: Tối ưu hóa hiệu suất render với công nghệ Memoization, loại bỏ hoàn toàn các điểm nghẽn tính toán.",
+                    "Clean Utilities: Chuẩn hóa bộ công cụ xử lý ngày tháng (ScheduleUtils), giảm thiểu 30% mã lặp và tăng độ tin cậy."
+                ]
+            },
+            {
+                "version": "v0.4.0",
+                "date": "2026-01-31",
+                "changes": [
+                    "Smart Filtering: Hệ thống bộ lọc thông minh tự động ẩn để tối ưu không gian, đi kèm chỉ báo hoạt động trực quan.",
+                    "Privacy Mode: Tính năng bảo mật linh hoạt tại trang Thống kê giúp che giấu thông tin chi tiết khi cần thiết.",
+                    "Mobile Horizontal Scrolling: Chuẩn hóa trải nghiệm cuộn ngang cho bảng lịch trình tuần trên di động.",
+                    "Visual Unification: Đồng bộ hóa toàn diện hệ thống bo góc (2xl) và tối ưu hóa hệ thuật ngữ GV trên toàn ứng dụng."
+                ]
+            },
+            {
+                "version": "v0.3.0",
+                "date": "2026-01-31",
+                "changes": [
+                    "Premium Minimal Language: Triết lý thiết kế tinh giản, sang trọng với hiệu ứng Glassmorphism và layout tập trung tối đa vào dữ liệu.",
+                    "Semester Timeline: Trải nghiệm dòng thời gian học kỳ hoàn toàn mới, tự động điều hướng thông minh và tối ưu không gian hiển thị.",
+                    "Insights Card: Hệ thống thẻ phân tích thế hệ mới, biến dữ liệu thô thành những nhận định trực quan, sống động.",
+                    "Visual Performance: Tối ưu hóa các hiệu ứng chuyển cảnh mượt động, tạo cảm giác như ứng dụng Native cao cấp."
+                ]
+            },
+            {
+                "version": "v0.2.0",
+                "date": "2026-01-29",
+                "changes": [
+                    "Welcome Center: Không gian khởi đầu được thiết kế lại theo tiêu chuẩn App chuyên nghiệp với bộ nhận diện TdyTime duy mỹ.",
+                    "Conflict Intelligence: Trí tuệ phân tích tự động phát hiện xung đột thời gian và không gian, đảm bảo lịch trình chuẩn xác 100%.",
+                    "Smart History: Khả năng ghi nhớ và truy cập tức thì các lịch trình gần đây, loại bỏ hoàn toàn thao tác nạp lại dữ liệu.",
+                    "Interface Polish: Tinh chỉnh các thành phần giao diện nhỏ (Tabs, Toasts, Badges) đạt độ hoàn thiện đồng nhất."
+                ]
+            },
+            {
+                "version": "v0.1.0",
+                "date": "2026-01-27",
+                "changes": [
+                    "Mobile Prowess: Tái định nghĩa trải nghiệm di động với hệ thống Tab Bar và cử chỉ Swipe (vuốt) tự nhiên để điều hướng tuần.",
+                    "Identity Refresh: Cập nhật hệ thống Icon và Splash screen theo tiêu chuẩn PWA hiện đại.",
+                    "Dashboard Insights: Nâng cấp biểu đồ phân bổ và thẻ tóm tắt giúp GV nắm bắt lịch dạy trong 3 giây."
+                ]
+            },
+            {
+                "version": "v0.015",
+                "date": "2026-01-26",
+                "changes": [
+                    "Executive Dashboard: Thiết kế lại toàn bộ màn hình Thống kê theo phong cách quản trị tinh gọn.",
+                    "Color-Coded Alerts: Hệ thống cảnh báo trực quan bằng màu sắc giúp nhận diện các điểm nóng và tuần quá tải tức thì."
+                ]
+            },
+            {
+                "version": "v0.012",
+                "date": "2026-01-22",
+                "changes": [
+                    "The Blue Revolution: Chuẩn hóa bảng màu Blue/Teal chuyên nghiệp, loại bỏ hoàn toàn các lỗi thiết kế cũ.",
+                    "Skeleton Shimmer: Ứng dụng hiệu ứng tải dữ liệu hiện đại, đảm bảo trải nghiệm không bao giờ bị ngắt quãng."
+                ]
+            },
+            {
+                "version": "v0.011",
+                "date": "2026-01-15",
+                "changes": [
+                    "Analytics Launch: Ra mắt hệ thống phân tích mật độ giảng dạy đầu tiên với biểu đồ Heatmap trực quan.",
+                    "Parser Engine: Nâng cấp bộ máy xử lý dữ liệu từ hệ thống UMS đạt độ chính xác cao."
+                ]
+            },
+            {
+                "version": "v0.001 - v0.010",
+                "date": "2026-01-10",
+                "changes": [
+                    "Genesis: Khởi tạo kiến trúc nền tảng, tập trung vào khả năng bóc tách lịch giảng thô sang định dạng kỹ thuật số."
+                ]
+            }
+        ]
+    },
+    "success": {
+        "loadedPast": "Đã tải dữ liệu lịch cũ. (Kết thúc: {{date}})",
+        "loadedFuture": "Đã tải lịch mới! Học kỳ bắt đầu: {{date}}",
+        "loadedCurrent": "Tải dữ liệu thành công! Đang chuyển đến tuần hiện tại.",
+        "loaded": "Tải dữ liệu thành công!",
+        "loadedHistory": "Đã tải dữ liệu từ lịch sử thành công."
+    },
+    "error": {
+        "noData": "⚠️ File không có dữ liệu hợp lệ.",
+        "invalidStructure": "⚠️ Cấu trúc file không đúng định dạng UMS.",
+        "demoNotFound": "⚠️ Không tìm thấy dữ liệu mẫu (Mã: {{code}}).",
+        "loadDemoError": "⚠️ Gặp lỗi khi tải dữ liệu mẫu.",
+        "processing": "Đang xử lý dữ liệu..."
+    },
+    "pwa": {
+        "offlineReady": "Sẵn sàng hoạt động ngoại tuyến",
+        "offlineReadyDesc": "Ứng dụng đã được lưu cache để dùng khi không có mạng.",
+        "updateReady": "Đã có phiên bản mới",
+        "updateReadyDesc": "Vui lòng tải lại trang để cập nhật ngay.",
+        "reloadButton": "Cập nhật ngay v{{version}}",
+        "update_check": "Kiểm tra cập nhật",
+        "checking": "Đang kiểm tra...",
+        "up_to_date": "Đã là bản mới nhất",
+        "install_title": "Cài đặt TdyTime",
+        "install_desc": "Thêm ứng dụng vào màn hình chính và theo dõi lịch giảng offline (không cần internet).",
+        "install_button": "Cài đặt"
+    }
+}

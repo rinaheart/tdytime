@@ -12,7 +12,7 @@ interface HeatmapChartProps {
 const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
     const { t } = useTranslation();
     const weekCount = data.length;
-    const dayLabels = Array.from({ length: 7 }, (_, i) => t(`days.${i}`));
+    const dayLabels = Array.from({ length: 7 }, (_, i) => t(`daysShort.${i}`));
 
     const getColorClass = (count: number) => {
         if (count === 0) return 'bg-slate-100 dark:bg-slate-800/50';
@@ -23,28 +23,36 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
     };
 
     return (
-        <div className="overflow-x-auto pb-4 custom-scrollbar">
-            <div className="min-w-max">
+        <div className="overflow-x-auto pb-4 custom-scrollbar w-full flex justify-center">
+            <div className="min-w-max mx-auto px-2">
                 <div className="flex">
-                    <div className="flex flex-col gap-1 mr-2 pt-6">
+                    {/* Day Labels Column */}
+                    <div className="flex flex-col gap-[2px] mr-3 pt-6">
                         {dayLabels.map((label, i) => (
-                            <div key={i} className="h-4 text-[10px] font-bold text-slate-600 dark:text-slate-400 flex items-center justify-end leading-none">{label}</div>
+                            <div key={i} className="h-3 text-[9px] font-bold text-slate-500 dark:text-slate-400 flex items-center justify-end leading-none">
+                                {label}
+                            </div>
                         ))}
                     </div>
-                    <div className="flex flex-col gap-1">
-                        <div className="flex gap-1 h-5 mb-1">
+
+                    {/* Weeks Grid */}
+                    <div className="flex flex-col gap-[2px]">
+                        {/* Week Labels Row */}
+                        <div className="flex gap-[2px] h-5 mb-1">
                             {Array.from({ length: weekCount }).map((_, i) => (
-                                <div key={i} className="w-4 text-[9px] text-slate-600 dark:text-slate-400 text-center flex-shrink-0">
+                                <div key={i} className="w-3 text-[8px] text-slate-400 dark:text-slate-500 text-center flex-shrink-0">
                                     {(i + 1) % 5 === 0 || i === 0 ? i + 1 : ''}
                                 </div>
                             ))}
                         </div>
+
+                        {/* Squares Grid */}
                         {Array.from({ length: 7 }).map((_, dayIndex) => (
-                            <div key={dayIndex} className="flex gap-1">
+                            <div key={dayIndex} className="flex gap-[2px]">
                                 {data.map((weekData, weekIndex) => (
                                     <div
                                         key={`${weekIndex}-${dayIndex}`}
-                                        className={`w-4 h-4 rounded-sm transition-colors cursor-default ${getColorClass(weekData[dayIndex])} ${dayIndex >= 5 && weekData[dayIndex] > 0 ? 'ring-1 ring-inset ring-black/10 dark:ring-white/10' : ''}`}
+                                        className={`w-3 h-3 rounded-[1px] transition-colors cursor-default ${getColorClass(weekData[dayIndex])} ${dayIndex >= 5 && weekData[dayIndex] > 0 ? 'ring-1 ring-inset ring-black/10 dark:ring-white/10' : ''}`}
                                         title={`${t('common.week')} ${weekIndex + 1}, ${dayLabels[dayIndex]}: ${weekData[dayIndex]} ${t('common.periods').toLowerCase()}`}
                                     />
                                 ))}
@@ -52,11 +60,13 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
                         ))}
                     </div>
                 </div>
-                <div className="mt-4 flex items-center gap-2 text-[10px] text-slate-600 dark:text-slate-400 justify-center">
+
+                {/* Legend */}
+                <div className="mt-6 flex items-center gap-2 text-[9px] text-slate-500 dark:text-slate-400 justify-center">
                     <span>{t('stats.heatmap.less')}</span>
-                    <div className="flex gap-1">
+                    <div className="flex gap-[2px]">
                         {['bg-slate-100 dark:bg-slate-800/50', 'bg-accent-200 dark:bg-accent-900/60', 'bg-accent-400 dark:bg-accent-700', 'bg-accent-600 dark:bg-accent-500', 'bg-accent-800 dark:bg-accent-400'].map((c, i) => (
-                            <div key={i} className={`w-3 h-3 ${c} rounded-sm`} />
+                            <div key={i} className={`w-2.5 h-2.5 ${c} rounded-[1px]`} />
                         ))}
                     </div>
                     <span>{t('stats.heatmap.more')}</span>

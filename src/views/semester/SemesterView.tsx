@@ -12,8 +12,8 @@ import { useScheduleStore } from '@/core/stores';
 import { FilterBar } from '@/ui';
 // DAYS_OF_WEEK used in WeekAccordion
 import type { DaySchedule, WeekSchedule } from '@/core/schedule/schedule.types';
-import { isCurrentWeek as checkIsCurrentWeek, createSessionFilter, parseDateFromRange, getCurrentWeekRange } from '@/core/schedule/schedule.utils';
-import type { FilterState } from '@/core/schedule/schedule.utils';
+import { isCurrentWeek as checkIsCurrentWeek, getCurrentWeekRange } from '@/core/schedule/schedule.utils';
+import { useScheduleFilter } from '@/core/hooks/useScheduleFilter';
 import WeekAccordion from './WeekAccordion';
 
 const SemesterView: React.FC = () => {
@@ -24,8 +24,13 @@ const SemesterView: React.FC = () => {
     const teacherName = data?.metadata?.teacher || '';
     const location = useLocation();
 
-    const [filters, setFilters] = useState<FilterState>({ search: '', className: '', room: '', teacher: teacherName, sessionTime: '' });
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const {
+        filters, setFilters,
+        isFilterOpen, toggleFilter,
+        filterFn, hasActiveFilters,
+        uniqueData, isAfterSemester, isBeforeSemester, now
+    } = useScheduleFilter(weeks, teacherName);
+
     const [viewMode, setViewMode] = useState<'horizontal' | 'vertical'>('horizontal');
     const [expandedWeeks, setExpandedWeeks] = useState<Record<number, boolean>>({});
     const [toast, setToast] = useState<string | null>(null);
@@ -44,30 +49,7 @@ const SemesterView: React.FC = () => {
 
     useEffect(() => { if (window.innerWidth < 768) setViewMode('vertical'); }, []);
 
-    const now = useMemo(() => new Date(), []);
-    const filterFn = useMemo(() => createSessionFilter(filters), [filters]);
 
-    const hasActiveFilters = useMemo(
-        () => filters.search !== '' || filters.className !== '' || filters.room !== '' || (filters.teacher !== '' && filters.teacher !== teacherName),
-        [filters, teacherName]
-    );
-
-    const uniqueData = useMemo(() => {
-        const rooms = new Set<string>();
-        const teachers = new Set<string>();
-        const classes = new Set<string>();
-        weeks.forEach((w) => {
-            Object.values(w.days).forEach((d) => {
-                const day = d as DaySchedule;
-                [...day.morning, ...day.afternoon, ...day.evening].forEach((s) => {
-                    rooms.add(s.room);
-                    teachers.add(s.teacher);
-                    if (s.className) classes.add(s.className);
-                });
-            });
-        });
-        return { rooms: Array.from(rooms).sort(), teachers: Array.from(teachers).sort(), classes: Array.from(classes).sort() };
-    }, [weeks]);
 
     const weekHasSessions = useCallback((week: WeekSchedule) => {
         return Object.values(week.days).some((d) => {
@@ -76,21 +58,7 @@ const SemesterView: React.FC = () => {
         });
     }, [filterFn]);
 
-    const isBeforeSemester = useMemo(() => {
-        if (weeks.length === 0) return false;
-        const start = parseDateFromRange(weeks[0].dateRange, 'start');
-        if (!start) return false;
-        const check = new Date(now); check.setHours(0, 0, 0, 0);
-        return check < start;
-    }, [weeks, now]);
 
-    const isAfterSemester = useMemo(() => {
-        if (weeks.length === 0) return false;
-        const end = parseDateFromRange(weeks[weeks.length - 1].dateRange, 'end');
-        if (!end) return false;
-        const check = new Date(now); check.setHours(0, 0, 0, 0);
-        return check > end;
-    }, [weeks, now]);
 
     const scrollToCurrentWeek = () => {
         if (isBeforeSemester) {
@@ -159,7 +127,7 @@ const SemesterView: React.FC = () => {
                         {viewMode === 'vertical' ? <Columns size={16} className="text-accent-500" /> : <LayoutTemplate size={16} className="text-accent-500" />}
                         <span className="hidden sm:inline">{viewMode === 'vertical' ? t('common.verticalList') : t('common.horizontalList')}</span>
                     </button>
-                    <button onClick={() => setIsFilterOpen((v) => !v)} className={`flex items-center gap-2 h-11 px-4 border rounded-xl text-xs font-bold transition-all shadow-sm relative ${isFilterOpen ? 'bg-accent-600 border-accent-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'}`}>
+                    <button onClick={toggleFilter} className={`flex items-center gap-2 h-11 px-4 border rounded-xl text-xs font-bold transition-all shadow-sm relative ${isFilterOpen ? 'bg-accent-600 border-accent-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'}`}>
                         <Search size={16} className={isFilterOpen ? 'text-white' : 'text-accent-500'} />
                         <span className="hidden sm:inline">{t('common.filter')}</span>
                         {hasActiveFilters && !isFilterOpen && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-accent-500 border-2 border-white dark:border-slate-900 rounded-full" />}

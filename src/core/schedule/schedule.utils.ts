@@ -109,6 +109,14 @@ export const isCurrentWeek = (dateRange: string, now: Date): boolean => {
     return check >= start && check <= end;
 };
 
+/** Check if a specific day in a week date range is today */
+export const isDayToday = (dateRange: string, dayIdx: number, now: Date): boolean => {
+    const dayDate = getDayDateString(dateRange, dayIdx);
+    if (!dayDate) return false;
+    const todayStr = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+    return dayDate === todayStr;
+};
+
 /** Check if a week has already passed */
 export const isPastWeek = (dateRange: string, now: Date): boolean => {
     const matches = dateRange.match(DATE_REGEX_GLOBAL);

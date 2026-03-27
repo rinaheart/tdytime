@@ -10,8 +10,8 @@ import { useScheduleStore } from '@/core/stores';
 import { SessionCard, FilterBar, EmptyState } from '@/ui';
 import { DAYS_OF_WEEK } from '@/core/constants';
 import type { CourseSession, DaySchedule, WeekSchedule } from '@/core/schedule/schedule.types';
-import { getDayDateString, isCurrentWeek, createSessionFilter, parseDateFromRange, getCurrentWeekRange } from '@/core/schedule/schedule.utils';
-import type { FilterState } from '@/core/schedule/schedule.utils';
+import { getDayDateString, getCurrentWeekRange, isDayToday as isDayTodayUtil } from '@/core/schedule/schedule.utils';
+import { useScheduleFilter } from '@/core/hooks/useScheduleFilter';
 import WeekNavigation from './WeekNavigation';
 
 const WeeklyView: React.FC = () => {
@@ -24,49 +24,16 @@ const WeeklyView: React.FC = () => {
     const weeks = data?.weeks || [];
     const week: WeekSchedule | undefined = weeks[currentWeekIndex];
 
-    const [filters, setFilters] = useState<FilterState>({
-        search: '', className: '', room: '', teacher: data?.metadata?.teacher || '', sessionTime: '',
-    });
+    const {
+        filters, setFilters,
+        isFilterOpen, toggleFilter,
+        filterFn, hasActiveFilters,
+        uniqueData, isAfterSemester, now
+    } = useScheduleFilter(weeks, data?.metadata?.teacher || '');
+
     const [viewMode, setViewMode] = useState<'horizontal' | 'vertical'>('horizontal');
-    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     useEffect(() => { if (window.innerWidth < 768) setViewMode('vertical'); }, []);
-
-    const now = useMemo(() => new Date(), []);
-    const isCurrentWeekDisplayed = week ? isCurrentWeek(week.dateRange, now) : false;
-
-    const filterFn = useMemo(() => createSessionFilter(filters), [filters]);
-
-    const hasActiveFilters = useMemo(
-        () => filters.search !== '' || filters.className !== '' || filters.room !== '' || (filters.teacher !== '' && filters.teacher !== data?.metadata?.teacher),
-        [filters, data?.metadata?.teacher]
-    );
-
-    const uniqueData = useMemo(() => {
-        const rooms = new Set<string>();
-        const teachers = new Set<string>();
-        const classes = new Set<string>();
-        weeks.forEach((w) => {
-            Object.values(w.days).forEach((d) => {
-                const day = d as DaySchedule;
-                [...day.morning, ...day.afternoon, ...day.evening].forEach((s) => {
-                    rooms.add(s.room);
-                    teachers.add(s.teacher);
-                    if (s.className) classes.add(s.className);
-                });
-            });
-        });
-        return { rooms: Array.from(rooms).sort(), teachers: Array.from(teachers).sort(), classes: Array.from(classes).sort() };
-    }, [weeks]);
-
-    // Check if the semester is completely over
-    const isAfterSemester = useMemo(() => {
-        if (weeks.length === 0) return false;
-        const endDate = parseDateFromRange(weeks[weeks.length - 1].dateRange, 'end');
-        if (!endDate) return false;
-        const today = new Date(now); today.setHours(0, 0, 0, 0);
-        return today > endDate;
-    }, [weeks, now]);
 
     const isWeekEmpty = useMemo(() => {
         if (!week || currentWeekIndex === -1) return true;
@@ -84,11 +51,8 @@ const WeeklyView: React.FC = () => {
     }, [week, data?.metadata?.teacher]);
 
     const isDayToday = (dayIdx: number) => {
-        if (!week || !isCurrentWeekDisplayed || currentWeekIndex === -1) return false;
-        const dayDate = getDayDateString(week.dateRange, dayIdx);
-        const today = new Date();
-        const todayStr = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
-        return dayDate === todayStr;
+        if (!week || currentWeekIndex === -1) return false;
+        return isDayTodayUtil(week.dateRange, dayIdx, now);
     };
 
     const weekRange = useMemo(() => {
@@ -116,7 +80,7 @@ const WeeklyView: React.FC = () => {
                 viewMode={viewMode}
                 onToggleViewMode={() => setViewMode((v) => (v === 'vertical' ? 'horizontal' : 'vertical'))}
                 isFilterOpen={isFilterOpen}
-                onToggleFilter={() => setIsFilterOpen((v) => !v)}
+                onToggleFilter={toggleFilter}
                 hasActiveFilters={hasActiveFilters}
             />
 
@@ -136,17 +100,17 @@ const WeeklyView: React.FC = () => {
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 pointer-events-none md:hidden animate-pulse">
                         <div className="bg-accent-600/20 text-accent-600 p-2 rounded-full backdrop-blur-sm"><ChevronRight size={20} /></div>
                     </div>
-                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
+                    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-accent-500 dark:border-accent-500 ring-2 ring-accent-500/20 shadow-sm overflow-hidden">
                         <div className="overflow-x-auto w-full custom-scrollbar touch-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
                             <div className="min-w-[1024px]">
                                 <table className="w-full border-collapse border-hidden">
                                     <thead>
                                         <tr className="bg-slate-50/50 dark:bg-slate-800/50">
-                                            <th className="w-14 p-4 border-b border-r border-slate-100 dark:border-slate-800 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 dark:bg-slate-800 sticky left-0 z-20" />
+                                            <th className="w-14 p-4 border-b border-r border-slate-100 dark:border-slate-800 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white dark:bg-slate-900 sticky left-0 z-20" />
                                             {DAYS_OF_WEEK.map((day, idx) => {
                                                 const isToday = isDayToday(idx);
                                                 return (
-                                                    <th key={day} className={`min-w-[140px] p-3 border border-slate-100 dark:border-slate-800 text-center transition-all ${isToday ? 'bg-accent-600 dark:bg-accent-600 z-10 relative ring-2 ring-accent-400 dark:ring-accent-500 shadow-[0_0_15px_rgba(37,99,235,0.3)]' : ''}`}>
+                                                    <th key={`${week.dateRange}-${day}`} className={`min-w-[140px] p-3 border border-slate-100 dark:border-slate-800 text-center transition-all ${isToday ? 'bg-accent-600 dark:bg-accent-600 z-10 relative ring-2 ring-accent-400 dark:ring-accent-500 shadow-[0_0_15px_rgba(37,99,235,0.3)]' : ''}`}>
                                                         <div className="flex flex-col items-center gap-0.5">
                                                             {isToday && <span className="text-[8px] font-black text-white/80 uppercase tracking-widest mb-0.5">{t('weekly.today')}</span>}
                                                             <p className={`text-[11px] font-black uppercase tracking-widest ${isToday ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`}>{t(`days.${idx}`)}</p>
@@ -159,18 +123,20 @@ const WeeklyView: React.FC = () => {
                                     </thead>
                                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                                         {([
-                                            { key: 'morning', label: 'S', fullLabel: t('weekly.morning') },
-                                            { key: 'afternoon', label: 'C', fullLabel: t('weekly.afternoon') },
-                                            { key: 'evening', label: 'T', fullLabel: t('weekly.evening') },
+                                            { key: 'morning', label: 'S', fullLabel: t('weekly.morning'), colorClass: 'bg-accent-400 shadow-accent-400/20' },
+                                            { key: 'afternoon', label: 'C', fullLabel: t('weekly.afternoon'), colorClass: 'bg-accent-600 shadow-accent-600/20' },
+                                            { key: 'evening', label: 'T', fullLabel: t('weekly.evening'), colorClass: 'bg-accent-800 dark:bg-accent-700 shadow-accent-800/20' },
                                         ] as const).map((shift) => (
                                             <tr key={shift.key} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/10 transition-colors">
-                                                <td className="p-4 border-b border-r border-slate-100 dark:border-slate-800 text-center bg-slate-50 dark:bg-slate-800 align-middle sticky left-0 z-20 shadow-[2px_0_8px_rgba(0,0,0,0.03)]">
-                                                    <span className="w-8 h-8 rounded-full bg-accent-600 text-white flex items-center justify-center text-xs font-black shadow-lg shadow-accent-500/20">{shift.label}</span>
+                                                <td className="p-4 border-b border-r border-slate-100 dark:border-slate-800 text-center bg-white dark:bg-slate-900 align-middle sticky left-0 z-20 shadow-[2px_0_8px_rgba(0,0,0,0.03)]">
+                                                    <span className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-black shadow-lg ${shift.colorClass}`}>
+                                                        {shift.label}
+                                                    </span>
                                                 </td>
                                                 {DAYS_OF_WEEK.map((day, dayIdx) => {
                                                     const isToday = isDayToday(dayIdx);
                                                     return (
-                                                        <td key={`${day}-${shift.key}`} className={`p-2 border border-slate-100 dark:border-slate-800 align-top min-h-[160px] transition-colors ${isToday ? 'bg-accent-50/40 dark:bg-accent-900/10 border-x-accent-200/50 dark:border-x-accent-800/50' : ''}`}>
+                                                        <td key={`${week.dateRange}-${day}-${shift.key}`} className={`p-2 border border-slate-100 dark:border-slate-800 align-top min-h-[160px] transition-colors ${isToday ? 'bg-accent-50/40 dark:bg-accent-900/10 border-x-accent-200/50 dark:border-x-accent-800/50' : ''}`}>
                                                             <div className="h-full">{week.days[day] && renderSessionCell(week.days[day][shift.key as keyof DaySchedule], dayIdx)}</div>
                                                         </td>
                                                     );
@@ -196,7 +162,7 @@ const WeeklyView: React.FC = () => {
                         if (!hasAny && (filters.search || filters.className || filters.room || filters.teacher)) return null;
 
                         return (
-                            <div key={day} className={`bg-white dark:bg-slate-900 rounded-2xl border ${isToday ? 'border-accent-400 dark:border-accent-500 ring-4 ring-accent-100/50 dark:ring-accent-900/20' : 'border-slate-200/60 dark:border-slate-800/60'} shadow-sm overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md relative group`}>
+                            <div key={`${week.dateRange}-${day}`} className={`bg-white dark:bg-slate-900 rounded-2xl border ${isToday ? 'border-accent-400 dark:border-accent-500 ring-4 ring-accent-100/50 dark:ring-accent-900/20' : 'border-slate-200/60 dark:border-slate-800/60'} shadow-sm overflow-hidden flex flex-col md:flex-row transition-all hover:shadow-md relative group`}>
                                 <div className={`md:w-32 ${isToday ? 'bg-accent-600 text-white' : 'bg-slate-50 dark:bg-slate-800/30'} p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800 transition-colors`}>
                                     {isToday && <span className="text-[8px] font-black uppercase tracking-widest mb-1 opacity-80">{t('weekly.today')}</span>}
                                     <p className={`text-xs font-black uppercase tracking-widest ${isToday ? 'text-white' : 'text-accent-600 dark:text-accent-400'}`}>{t(`days.${idx}`)}</p>

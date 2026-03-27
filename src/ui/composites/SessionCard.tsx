@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { Clock, MapPin, FileText, Beaker, FlaskConical } from 'lucide-react';
+import { Clock, MapPin, FileText, FlaskConical } from 'lucide-react';
 import { Badge } from '@/ui/primitives';
 import type { CourseSession } from '@/core/schedule/schedule.types';
 import { CourseType } from '@/core/schedule/schedule.types';
@@ -133,18 +133,19 @@ const TodayCard: React.FC<{ session: CourseSession; displayName: string; current
             </h3>
 
             {/* Meta Row */}
-            <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
-                <div className="flex items-center gap-1.5">
-                    <MapPin size={14} />
-                    <span className="font-medium">{session.room}</span>
+            <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5">
+                        <MapPin size={14} />
+                        <span className="font-medium">{session.room}</span>
+                    </div>
+                    <span className="text-slate-300 dark:text-slate-700">•</span>
+                    <span className="truncate max-w-[150px] sm:max-w-[200px]">{session.className}</span>
                 </div>
-                <span className="text-slate-300 dark:text-slate-700">•</span>
-                <span>{session.className}</span>
-                <span className="text-slate-300 dark:text-slate-700">•</span>
-                <span className={`font-semibold flex items-center gap-1.5 ${currentType === CourseType.LT ? 'text-accent-500' : 'text-orange-500'}`}>
-                    {currentType === CourseType.LT ? <FileText size={14} /> : <Beaker size={14} />}
+                <Badge variant={currentType === CourseType.LT ? 'theory' : 'practice'} className="shrink-0 px-2.5 py-1 text-xs shadow-sm">
+                    {currentType === CourseType.LT ? <FileText size={12} className="mr-1" /> : <FlaskConical size={12} className="mr-1" />}
                     {currentType}
-                </span>
+                </Badge>
             </div>
 
             {/* Optional Teacher Footer Strip */}

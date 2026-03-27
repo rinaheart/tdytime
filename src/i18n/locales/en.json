@@ -1,0 +1,577 @@
+{
+    "app": {
+        "title": "TdyTime {{version}}",
+        "tagline": "Your Today, Your Time",
+        "uploadTitle": "Upload Schedule",
+        "uploadDesc": "Supports .html or .json",
+        "pasteTitle": "Paste HTML",
+        "pasteDesc": "Paste directly from portal",
+        "pastePlaceholder": "Paste HTML content here...",
+        "recentHistory": "Recent Data",
+        "dropToUpload": "Drop to upload"
+    },
+    "common": {
+        "appName": "TdyTime",
+        "copyright": "© 2026 TdyTime | Google AI Studio",
+        "version": "v{{version}}",
+        "loading": "Loading...",
+        "processing": "Processing data...",
+        "error": "Error",
+        "success": "Success",
+        "cancel": "Cancel",
+        "save": "Save",
+        "reset": "Reset",
+        "close": "Close",
+        "back": "Back",
+        "next": "Next",
+        "previous": "Previous",
+        "current": "Current",
+        "horizontal": "Horizontal",
+        "vertical": "Vertical",
+        "horizontalList": "Horizontal List",
+        "verticalList": "Vertical List",
+        "none": "None",
+        "periods": "periods",
+        "periodShort": "P",
+        "sessions": "sess",
+        "weeks": "weeks",
+        "week": "Week",
+        "month": "Month",
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "switchLanguage": "Switch language",
+        "conflicts": "Conflicts",
+        "warnings": "Warnings & Conflicts",
+        "viewDetails": "View Details",
+        "periodLabel": "Period",
+        "days": "days",
+        "filter": "Filter",
+        "collapseAll": "Collapse All",
+        "expandAll": "Expand All",
+        "oneSession": "1 SESSION",
+        "completedItem": "Completed"
+    },
+    "shifts": {
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening"
+    },
+    "days": {
+        "0": "Mon",
+        "1": "Tue",
+        "2": "Wed",
+        "3": "Thu",
+        "4": "Fri",
+        "5": "Sat",
+        "6": "Sun"
+    },
+    "daysShort": {
+        "0": "Mon",
+        "1": "Tue",
+        "2": "Wed",
+        "3": "Thu",
+        "4": "Fri",
+        "5": "Sat",
+        "6": "Sun"
+    },
+    "nav": {
+        "today": "Today",
+        "weekly": "Weekly",
+        "semester": "Semester",
+        "statistics": "Stats",
+        "settings": "Settings",
+        "loadData": "Load Data",
+        "language": "Language",
+        "appearance": "Appearance"
+    },
+    "upload": {
+        "title": "Teaching Schedule Analysis",
+        "description": "System supports analysis from HTML (UMS) or JSON backup files. You can upload or paste source code directly.",
+        "historyTitle": "Continue Working (Recent)",
+        "deleteHistory": "Delete this record",
+        "method1": "Method 1: Upload File",
+        "method2": "Method 2: Paste Source",
+        "dragDrop": "Drag & drop or select file",
+        "chooseFile": "Choose File",
+        "pastePlaceholder": "Paste HTML or JSON content here...",
+        "analyzeContent": "Analyze Content",
+        "supportedFormats": "Supported: .HTML, .JSON",
+        "demoSection": "Or use demo data",
+        "enterCode": "Secret code...",
+        "useDemo": "Demo",
+        "features": {
+            "viz": "Visualized",
+            "warn": "Warnings",
+            "export": "Export"
+        },
+        "errors": {
+            "noData": "⚠️ File contains no valid data.",
+            "invalidStructure": "⚠️ Invalid file structure (UMS format required).",
+            "invalidFormat": "⚠️ Unsupported format. Only .HTML or .JSON files allowed.",
+            "parseWeekNotFound": "⚠️ Could not find week information in the HTML file.",
+            "parseTableNotFound": "⚠️ Could not find the schedule table in the HTML file."
+        }
+    },
+    "filter": {
+        "searchPlaceholder": "Search subject or group code...",
+        "allClasses": "All Classes",
+        "allRooms": "All Rooms",
+        "allTeachers": "All Teachers",
+        "clear": "Clear filters"
+    },
+    "weekly": {
+        "week": "Week {{number}}",
+        "dateRange": "From: {{start}} to {{end}}",
+        "currentWeek": "Current Week",
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "period": "Period {{number}}",
+        "room": "Room",
+        "class": "Class",
+        "group": "Group",
+        "teacher": "Teacher",
+        "conflict": "⚠️ Conflict",
+        "noClasses": "Empty",
+        "today": "Today",
+        "noData": "No data for this week",
+        "exportICS": {
+            "title": "Export to Google Calendar",
+            "description": "Select teachers to export schedule for <strong>Week {{week}}</strong>.",
+            "selectAll": "Select All",
+            "deselectAll": "Deselect All",
+            "teacherList": "Teacher List ({{count}})",
+            "noTeachers": "No teacher data found for this week.",
+            "copy": "Copy Content",
+            "copied": "Copied!",
+            "download": "Download .ics file"
+        }
+    },
+    "semester": {
+        "summaryBySubject": "Summary by Subject",
+        "detailByGroup": "Detailed by Group",
+        "weeklySummary": "Weekly Summary",
+        "toast": {
+            "ended": "Semester has ended!",
+            "noSchedule": "Current week ({{range}}) has no schedule!"
+        },
+        "table": {
+            "code": "Code",
+            "course": "Course",
+            "groups": "Groups",
+            "classes": "Classes",
+            "sessions": "Sessions",
+            "periods": "Periods"
+        }
+    },
+    "stats": {
+        "overview": "Activity Overview",
+        "totalPeriods": "Total Periods",
+        "totalSessions": "Teaching Sessions",
+        "totalWeeks": "Active Weeks",
+        "courses": "Courses",
+        "classes": "Classes",
+        "groups": "Groups",
+        "rooms": "Rooms",
+        "today": {
+            "greeting": {
+                "morning": "Good morning, {{name}}!",
+                "afternoon": "Good afternoon, {{name}}!",
+                "evening": "Good evening, {{name}}!"
+            },
+            "summary": "Today: {{sessions}} sessions ({{periods}} periods).",
+            "summaryCompleted": "Completed {{sessions}} sessions, {{periods}} periods",
+            "summaryTotal": "Today: {{sessions}} sessions, {{periods}} periods",
+            "upcomingCount": "{{count}} upcoming",
+            "sessionsCount": "{{count}} sessions",
+            "otherSessions": "+{{count}} more",
+            "noDataTitle": "No Data",
+            "sessionStatus": {
+                "pending": "Upcoming",
+                "live": "In Progress",
+                "completed": "Completed"
+            },
+            "next": "Next Teaching Day",
+            "firstOfSemester": "First Teaching Day",
+            "nextHeader": "{{day}}, {{date}} — {{count}} sessions",
+            "emptyStates": {
+                "noData": "No schedule data available.",
+                "noDataHint": "Please upload a schedule file to view details.",
+                "beforeSemester": "Semester hasn't started yet!",
+                "beforeSemesterSoon": "New semester is starting soon!",
+                "beforeSemesterHint": "The semester starts on {{date}}.",
+                "beforeSemesterPreDesc": "You have sessions in",
+                "afterSemester": "Semester has ended!",
+                "afterSemesterHint": "You have completed all teaching sessions for this semester.",
+                "noSchedule": "Current week ({{range}}) has no schedule!",
+                "dayOff": "Today is your day off!",
+                "noSessions": ""
+            },
+            "progressDay": "Today",
+            "progressWeek": "Week",
+            "progressMonth": "Month",
+            "progressSemester": "Semester",
+            "progress": "Progress"
+        },
+        "warningsList": {
+            "overload": "{{overload}}/{{total}} weeks > 25 periods (warning threshold)",
+            "evening": "{{count}} evening sessions",
+            "weekend": "{{count}} weekend sessions (Sat, Sun)",
+            "singlePeriod": "{{count}} single-period sessions (low efficiency)",
+            "conflicts": "{{count}} schedule/room conflicts need checking"
+        },
+        "conclusionsList": {
+            "earlyFocused": "Teaching load focused in the first half",
+            "lateFocused": "Teaching load focused in the second half",
+            "balanced": "Load is evenly distributed across semester",
+            "practiceDominant": "Practice sessions dominate ({{percent}}%)",
+            "theoryDominant": "Theory sessions dominate ({{percent}}%)",
+            "peakTime": "{{shift}} and {{day}} are peak times",
+            "optimizeNeeded": "Single periods and weekend sessions need optimization"
+        },
+        "weeklyTrend": "Weekly Trend",
+        "dailyDensity": "Daily Teaching Density",
+        "peakWeek": "Peak Week Analysis",
+        "shiftDistribution": "Shift Distribution",
+        "courseType": "Course Type Distribution",
+        "theory": "Theory",
+        "practice": "Practice",
+        "topRooms": "Top 10 Classrooms",
+        "classSummary": "Class Summary",
+        "courseSummary": "Course Summary",
+        "warnings": "Warnings & Optimization Notes",
+        "noWarnings": "No warnings. Schedule is balanced.",
+        "heatmapTitle": "Teaching Distribution Heatmap",
+        "heatmap": {
+            "less": "Less",
+            "more": "More"
+        },
+        "trend": {
+            "weekly": "Weekly Trend",
+            "daily": "Daily Frequency"
+        },
+        "structure": {
+            "title": "Teaching Structure",
+            "typeLabel": "Theory / Practice",
+            "shiftLabel": "Shift Distribution"
+        },
+        "topSubjects": "Top Teaching Subjects",
+        "topClasses": "Top Student Classes",
+        "topClassrooms": "Primary Classrooms",
+        "coTeachers": {
+            "title": "Co-teaching Faculty",
+            "teacher": "Teacher",
+            "classDetail": "Course Section",
+            "total": "Periods"
+        },
+        "conclusions": "Insights & Optimization Suggestions",
+        "intensity": "Intensity",
+        "eveningTeaching": "Evening",
+        "weekendTeaching": "Weekend",
+        "overloadWeeks": "Overload",
+        "levels": {
+            "high": "High",
+            "medium": "Med",
+            "low": "Low"
+        }
+    },
+    "settings": {
+        "abbreviations": {
+            "title": "Abbreviate Subject Names",
+            "description": "Abbreviate subject names in the teaching schedule.",
+            "suggest": "Suggest",
+            "reset": "Reset",
+            "save": "Save",
+            "originalName": "Original",
+            "shortName": "Short",
+            "placeholder": "Short name...",
+            "noData": "Empty."
+        },
+        "courseType": {
+            "title": "Customize Course Type",
+            "description": "Assign Theory (45min) or Practice (60min) for each class group.",
+            "setAllLT": "All Theory",
+            "setAllTH": "All Practice",
+            "code": "Group Code",
+            "course": "Course",
+            "class": "Class",
+            "group": "Group",
+            "reset": "Default"
+        },
+        "advanced": {
+            "title": "Advanced Settings",
+            "description": "Teaching formats, Thresholds & Danger zone"
+        },
+        "thresholds": {
+            "title": "Warning Thresholds",
+            "description": "Configure teaching load limits for system warnings.",
+            "daily": "Daily",
+            "weekly": "Weekly",
+            "warning": "Warning",
+            "danger": "Danger",
+            "save": "Save"
+        },
+        "export": {
+            "title": "Export Data",
+            "description": "Download current data for storage or processing.",
+            "csvButton": "Export CSV",
+            "jsonButton": "Backup JSON",
+            "csv": {
+                "code": "Course Code",
+                "name": "Course Name",
+                "class": "Class",
+                "group": "Group",
+                "type": "Type",
+                "totalPeriods": "Total Periods",
+                "totalSessions": "Total Sessions"
+            }
+        },
+        "dangerZone": {
+            "title": "Danger Zone",
+            "description": "Destructive actions and system resets.",
+            "confirmReset": "Are you sure you want to delete all data and reload?",
+            "confirmButton": "Confirm Reset?",
+            "resetButton": "Clear Data & Reload"
+        },
+        "toast": {
+            "abbreviationsSaved": "Abbreviations saved.",
+            "abbreviationsSuggested": "Abbreviations suggested.",
+            "abbreviationsReset": "Abbreviations cleared. (Click Save to apply)",
+            "courseTypeSaved": "Course type customization saved.",
+            "thresholdsSaved": "Warning thresholds updated.",
+            "thresholdsReset": "Reset to defaults. (Click Save to apply)",
+            "csvExported": "CSV exported successfully.",
+            "jsonExported": "Backup JSON saved successfully."
+        },
+        "themes": {
+            "title": "Theme",
+            "themeBlue": "Ocean Blue",
+            "themeGreen": "Emerald Green",
+            "themePink": "Sakura Pink",
+            "themeViolet": "Lavender Purple",
+            "themeRed": "Crimson Red",
+            "themeYellow": "Honey Yellow",
+            "themeGrey": "Mist Gray"
+        }
+    },
+    "about": {
+        "title": "TdyTime",
+        "description": "Smart teaching schedule manager for lecturers at the University of Medicine and Pharmacy, Hue University.",
+        "copyright": "© 2026 TdyTime | Google AI Studio",
+        "periodStandards": "Standard Period Times",
+        "morning": "Morning",
+        "afternoon": "Afternoon",
+        "evening": "Evening",
+        "note": "Note: Theory (LT) periods are 45 minutes each. Practice/Integrated (TH) periods are 60 minutes each.",
+        "checking": "Checking...",
+        "upToDate": "Up to date",
+        "updateAvailable": "Update to v1.0.1 Now",
+        "changelog": "Changelog",
+        "history": [
+            {
+                "version": "v1.3.0",
+                "date": "2026-03-26",
+                "changes": [
+                    "Performance Boost (Zero-Dep SVG): Replaced Recharts with custom SVG components, reducing bundle size by 374KB and improving LCP from 7.0s to 1.8s (74% faster).",
+                    "Stats UI Refinement: New GitHub-style Heatmap grid with abbreviated day labels (Mon-Sun), and updated shift charts with smooth light-to-dark color scales.",
+                    "Data Precision: Standardized 0.0% formatting and implemented a remainder-balancing algorithm to ensure chart segments always total exactly 100.0%.",
+                    "UI Optimization: Refined statistics card layouts and synchronized all time-based labels (DAY/WEEK/MONTH)."
+                ]
+            },
+            {
+                "version": "v1.2.0",
+                "date": "2026-03-25",
+                "changes": [
+                    "Theme Picker UI: Replaced the sequence-based theme toggle with a professional color picker menu for instant workspace personalization.",
+                    "Accent Palettes+: Added 7 premium color themes (Blue, Green, Pink, Violet, Red, Yellow, Grey) with synchronized UI accents.",
+                    "StatsHeader Evolution: Redesigned the statistics header with collapsible sections and perfect grid alignment."
+                ]
+            },
+            {
+                "version": "v1.0.0",
+                "date": "2026-02-26",
+                "changes": [
+                    "Official Release v1.0.0: Finalized PWA system with proactive update checking.",
+                    "Improved PWA Experience: Added manual update check in Settings and smart install prompts.",
+                    "Brand Identity: Synchronized SVG logos across Welcome and Settings views.",
+                    "UI Optimization: Refined logo sizing and spacing for a cleaner, modern interface."
+                ]
+            },
+            {
+                "version": "v0.9.0",
+                "date": "2026-02-05",
+                "changes": [
+                    "Lightning Fast Performance: Comprehensive optimization achieving instant load times (~176ms) and absolute performance scores.",
+                    "Smart Bundle Split: Intelligent separation of heavy libraries (Charts) from the main thread, ensuring a smooth experience from the first touch.",
+                    "Dynamic Layout Loading: On-demand interface loading mechanism (Lazy Loading) saves data and accelerates display speed."
+                ]
+            },
+            {
+                "version": "v0.8.2",
+                "date": "2026-02-04",
+                "changes": [
+                    "Header UI Evolution: Integrated a minimalist Dark Mode toggle directly into the Header for faster access and as a clear visual update indicator.",
+                    "Hard Refresh Signal: Structural Header changes to force mobile browsers to recognize the update and bypass persistent PWA caching."
+                ]
+            },
+            {
+                "version": "v0.8.1",
+                "date": "2026-02-04",
+                "changes": [
+                    "PWA Self-Healing: Forced cache refresh mechanism to resolve the persistent greeting issue on mobile devices.",
+                    "Timezone Reactive: Optimized system timezone detection for instant Morning/Afternoon/Evening updates."
+                ]
+            },
+            {
+                "version": "v0.8.0",
+                "date": "2026-02-04",
+                "changes": [
+                    "Smart Countdown: Visual countdown system for upcoming semesters with 2-digit formatting and color-coded dynamic titles.",
+                    "Today View Optimized: Unified LIVE/Pending card designs and consolidated completed session lists for a cleaner layout.",
+                    "Multi-Teacher Footer: New 'Footer Strip' design for teacher names, automatically visible when filters are cleared for multi-faculty view.",
+                    "Minimalist UI Refinement: Shortened week date ranges with arrow symbols (→) and optimized mobile padding for better focus.",
+                    "Scroll & Layout Fix: Removed non-functional scroll indicators and resolved redundant vertical scrolling issues on the Today tab."
+                ]
+            },
+            {
+                "version": "v0.7.0",
+                "date": "2026-02-03",
+                "changes": [
+                    "PageSpeed 90+: Optimized performance to meet Core Web Vitals standards (LCP < 2.5s).",
+                    "Accessibility Verified: Achieved WCAG AA color contrast compliance and verified ARIA navigation support.",
+                    "Smart Cache: Intelligent caching mechanism for instant app loading.",
+                    "PWA Pro: Upgraded with maskable icons and manifest calibration for a native app experience."
+                ]
+            },
+            {
+                "version": "v0.6.0",
+                "date": "2026-02-02",
+                "changes": [
+                    "Premium Refinement: Optimized the Settings and Statistics views for better visual balance and information density.",
+                    "Auto-Logic: Implemented intelligent course type assignment and automatic name shortening across all views.",
+                    "Stability Pro: Fixed navigation edge cases and improved code robustness for a smoother experience."
+                ]
+            },
+            {
+                "version": "v0.5.0",
+                "date": "2026-02-02",
+                "changes": [
+                    "Data-Centric Today: Complete redesign of the Today tab with data-first philosophy, optimized for instructors and senior users.",
+                    "Session Status System: Three-tier session status (Upcoming / In Progress / Completed) with clear visual distinction.",
+                    "Semester Intelligence: Smart semester boundary detection with 4 specialized empty states.",
+                    "Mobile-First Cards: Optimized 3-column mobile layout (Time | Info | Room) with standardized display priority."
+                ]
+            },
+            {
+                "version": "v0.5.0",
+                "date": "2026-02-01",
+                "changes": [
+                    "System Refactor: Comprehensive code audit and refactoring, achieving 100% logic safety and stability.",
+                    "Performance Core: Optimized rendering performance with Memoization technology, eliminating calculation bottlenecks.",
+                    "Clean Utilities: Standardized date processing (ScheduleUtils), reducing 30% code duplication and enhancing reliability."
+                ]
+            },
+            {
+                "version": "v0.4.0",
+                "date": "2026-01-31",
+                "changes": [
+                    "Smart Filtering: Intuitive filtering system that auto-hides for cleaner focus, featuring active indicators.",
+                    "Privacy Mode: Flexible security feature on the Stats page to conceal detailed metrics when needed.",
+                    "Mobile Horizontal Scrolling: Standardized horizontal scroll experience for weekly schedules on mobile devices.",
+                    "Visual Unification: Comprehensive synchronization of 2xl border radius and UI terminology across the app."
+                ]
+            },
+            {
+                "version": "v0.3.0",
+                "date": "2026-01-31",
+                "changes": [
+                    "Premium Minimal Language: Elegant and refined design philosophy featuring Glassmorphism and data-centric layouts.",
+                    "Semester Timeline: All-new semester timeline experience with smart navigation and space optimization.",
+                    "Insights Card: Next-gen analytical cards transforming raw data into vibrant, actionable insights.",
+                    "Visual Performance: Optimized fluid transaction effects for a premium native app feel."
+                ]
+            },
+            {
+                "version": "v0.2.0",
+                "date": "2026-01-29",
+                "changes": [
+                    "Welcome Center: Reimagined landing space built on professional app standards with aesthetic TdyTime branding.",
+                    "Conflict Intelligence: Automated analytical engine detecting time and space overlaps for 100% schedule accuracy.",
+                    "Smart History: Instant memory and access for recent schedules, eliminating the need for data re-uploads.",
+                    "Interface Polish: Refined UI components (Tabs, Toasts, Badges) for unified completion."
+                ]
+            },
+            {
+                "version": "v0.1.0",
+                "date": "2026-01-27",
+                "changes": [
+                    "Mobile Prowess: Redefined mobile experience with intuitive bottom Tab Bar and natural swipe navigation.",
+                    "Identity Refresh: Updated icons and splash screens following modern PWA standards.",
+                    "Dashboard Insights: Upgraded distribution charts and summary cards for 3-second schedule grasp."
+                ]
+            },
+            {
+                "version": "v0.015",
+                "date": "2026-01-26",
+                "changes": [
+                    "Executive Dashboard: Full redesign of the Statistics view towards clean management aesthetics.",
+                    "Color-Coded Alerts: Visual alert system using color language to identify hotspots and overload weeks instantly."
+                ]
+            },
+            {
+                "version": "v0.012",
+                "date": "2026-01-22",
+                "changes": [
+                    "The Blue Revolution: Standardized professional Blue/Teal color palette, eliminating legacy design inconsistencies.",
+                    "Skeleton Shimmer: Integrated modern loading effects for an uninterrupted user experience."
+                ]
+            },
+            {
+                "version": "v0.011",
+                "date": "2026-01-15",
+                "changes": [
+                    "Analytics Launch: First-ever teaching density analysis system with intuitive Heatmap visualizations.",
+                    "Parser Engine: Upgraded data processing engine for high-accuracy UMS system integration."
+                ]
+            },
+            {
+                "version": "v0.001 - v0.010",
+                "date": "2026-01-10",
+                "changes": [
+                    "Genesis: Foundation architecture established, focusing on raw schedule parsing into digital formats."
+                ]
+            }
+        ]
+    },
+    "success": {
+        "loadedPast": "Past schedule data loaded. (Ended: {{date}})",
+        "loadedFuture": "New schedule loaded! Semester starts: {{date}}",
+        "loadedCurrent": "Data loaded successfully! Navigating to current week.",
+        "loaded": "Data loaded successfully!",
+        "loadedHistory": "Successfully loaded data from history."
+    },
+    "error": {
+        "noData": "⚠️ File contains no valid data.",
+        "invalidStructure": "⚠️ Invalid file structure (UMS format required).",
+        "demoNotFound": "⚠️ Demo data not found (Code: {{code}}).",
+        "loadDemoError": "⚠️ Error loading demo data.",
+        "processing": "Processing data...",
+        "parseWeekNotFound": "⚠️ Week data not found (.hitec-td-tkbTuan). Please check HTML file.",
+        "parseTableNotFound": "⚠️ Timetable table not found (table.table-bordered).",
+        "parseNoWeeks": "⚠️ No weekly data could be extracted."
+    },
+    "pwa": {
+        "offlineReady": "Ready for Offline Use",
+        "offlineReadyDesc": "App cached for offline access.",
+        "updateReady": "New Version Available",
+        "updateReadyDesc": "Please reload to update immediately.",
+        "reloadButton": "Update Now (v{{version}})",
+        "update_check": "Check for Updates",
+        "checking": "Checking...",
+        "up_to_date": "App is up to date",
+        "install_title": "Install TdyTime",
+        "install_desc": "Add the app to your home screen to access your teaching schedule offline.",
+        "install_button": "Install"
+    }
+}

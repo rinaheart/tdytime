@@ -10,7 +10,7 @@ import { useScheduleStore } from '@/core/stores';
 import { SessionCard } from '@/ui';
 import { DAYS_OF_WEEK } from '@/core/constants';
 import type { WeekSchedule, DaySchedule, CourseSession } from '@/core/schedule/schedule.types';
-import { getDayDateString, isCurrentWeek as checkIsCurrentWeek, isPastWeek as checkIsPastWeek } from '@/core/schedule/schedule.utils';
+import { getDayDateString, isCurrentWeek as checkIsCurrentWeek, isPastWeek as checkIsPastWeek, isDayToday } from '@/core/schedule/schedule.utils';
 
 interface WeekAccordionProps {
     week: WeekSchedule;
@@ -41,7 +41,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({ week, weekIdx, isExpanded
         return (
             <div
                 id={`week-card-${weekIdx}`}
-                className={`relative z-10 bg-white dark:bg-slate-950/40 rounded-2xl border ${isCurrent ? 'border-accent-400 dark:border-accent-500 ring-4 ring-accent-100/50 dark:ring-accent-900/20 shadow-lg shadow-accent-500/10' : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'} overflow-hidden transition-all duration-300`}
+                className={`relative z-10 bg-white dark:bg-slate-900 rounded-2xl border ${isCurrent ? 'border-accent-500 dark:border-accent-500 ring-2 ring-accent-500/20 shadow-sm' : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'} overflow-hidden transition-all duration-300`}
                 style={{ contentVisibility: 'auto', containIntrinsicSize: '100px 500px' }}
             >
                 {/* Timeline dot */}
@@ -76,11 +76,15 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({ week, weekIdx, isExpanded
                                 const day = week.days[dayName];
                                 const hasAnySessions = [...day.morning, ...day.afternoon, ...day.evening].some(filterFn);
                                 if (!hasAnySessions) return null;
+                                const isToday = isCurrent && isDayToday(week.dateRange, dIdx, now);
                                 return (
-                                    <div key={dayName} className="min-h-[100px] flex flex-col group border-l-2 border-slate-100 dark:border-slate-800 md:border-transparent md:hover:border-slate-100 md:dark:hover:border-slate-800 pl-3 md:pl-2 transition-all">
+                                    <div key={dayName} className={`min-h-[100px] flex flex-col group border-l-2 md:border-l-0 border-slate-100 dark:border-slate-800 md:border-transparent md:hover:border-slate-100 md:dark:hover:border-slate-800 pl-3 md:pl-2 transition-all p-2 rounded-xl ${isToday ? 'bg-accent-50/40 dark:bg-accent-900/10 border-l border-l-accent-400 dark:border-l-accent-500' : ''}`}>
                                         <div className="mb-3 pb-1.5 border-b border-slate-50 dark:border-slate-800 flex justify-between items-center sm:flex-col sm:items-center">
-                                            <span className="text-[10px] font-black text-accent-600 dark:text-accent-400 uppercase tracking-widest">{t(`days.${dIdx}`)}</span>
-                                            <span className="text-[10px] md:text-[11px] font-black text-slate-500 dark:text-slate-400 tracking-tighter">{getDayDateString(week.dateRange, dIdx)}</span>
+                                            <div className="flex flex-col items-start sm:items-center gap-0.5">
+                                                {isToday && <span className="text-[8px] font-black text-accent-600 dark:text-accent-400 uppercase tracking-widest">{t('weekly.today')}</span>}
+                                                <span className={`text-[10px] font-black uppercase tracking-widest ${isToday ? 'text-accent-600 dark:text-accent-400' : 'text-slate-400 dark:text-slate-500'}`}>{t(`days.${dIdx}`)}</span>
+                                            </div>
+                                            <span className={`text-[10px] md:text-[11px] font-black tracking-tighter ${isToday ? 'text-accent-700 dark:text-accent-300' : 'text-slate-500 dark:text-slate-400'}`}>{getDayDateString(week.dateRange, dIdx)}</span>
                                         </div>
                                         <div className="space-y-3 flex-1">
                                             {(['morning', 'afternoon', 'evening'] as const).map((shift) => {
@@ -133,45 +137,53 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({ week, weekIdx, isExpanded
             </button>
 
             {isExpanded && (
-                <div className={`relative z-10 bg-white dark:bg-slate-950/40 rounded-2xl border transition-all duration-300 overflow-hidden animate-in fade-in zoom-in-95 ${isCurrent ? 'border-accent-400 dark:border-accent-500 ring-4 ring-accent-100/50 dark:ring-accent-900/20 shadow-lg shadow-accent-500/10' : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'}`}>
+                <div className={`relative z-10 bg-white dark:bg-slate-900 rounded-2xl border transition-all duration-300 overflow-hidden animate-in fade-in zoom-in-95 ${isCurrent ? 'border-accent-500 dark:border-accent-500 ring-2 ring-accent-500/20 shadow-sm' : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'}`}>
                     <div className="overflow-x-auto w-full custom-scrollbar touch-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
                         <div className="min-w-[1024px]">
                             <table className="w-full border-collapse border-hidden">
                                 <thead>
-                                    <tr className={`transition-colors ${isCurrent ? 'bg-accent-50/30 dark:bg-accent-950/20' : 'bg-slate-50/50 dark:bg-slate-800/50'}`}>
-                                        <th className={`w-14 p-4 border-b border-r border-slate-100 dark:border-slate-800 text-[10px] font-black uppercase tracking-widest sticky left-0 z-20 ${isCurrent ? 'text-accent-600 bg-accent-100 dark:bg-accent-900' : 'text-slate-400 bg-slate-100 dark:bg-slate-800'}`} />
-                                        {DAYS_OF_WEEK.map((dayName, dIdx) => (
-                                            <th key={dayName} className={`min-w-[140px] p-4 border border-slate-100 dark:border-slate-800 text-center ${isCurrent ? 'bg-accent-50/20 dark:bg-accent-900/10' : ''}`}>
-                                                <p className={`text-[11px] font-black uppercase tracking-widest ${isCurrent ? 'text-accent-500' : 'text-slate-500 dark:text-slate-400'}`}>{t(`days.${dIdx}`)}</p>
-                                                <p className={`text-xs font-num font-bold ${isCurrent ? 'text-accent-700 dark:text-accent-300' : 'text-slate-500 dark:text-slate-400'}`}>{getDayDateString(week.dateRange, dIdx)}</p>
-                                            </th>
-                                        ))}
+                                    <tr className="bg-slate-50/50 dark:bg-slate-800/50">
+                                        <th className="w-14 p-4 border-b border-r border-slate-100 dark:border-slate-800 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white dark:bg-slate-900 sticky left-0 z-20" />
+                                        {DAYS_OF_WEEK.map((dayName, dIdx) => {
+                                            const isToday = isCurrent && isDayToday(week.dateRange, dIdx, now);
+                                            return (
+                                                <th key={dayName} className={`min-w-[140px] p-3 border border-slate-100 dark:border-slate-800 text-center transition-all ${isToday ? 'bg-accent-600 dark:bg-accent-600 z-10 relative ring-2 ring-accent-400 dark:ring-accent-500 shadow-[0_0_15px_rgba(37,99,235,0.3)]' : ''}`}>
+                                                    <div className="flex flex-col items-center gap-0.5">
+                                                        {isToday && <span className="text-[8px] font-black text-white/80 uppercase tracking-widest mb-0.5">{t('weekly.today')}</span>}
+                                                        <p className={`text-[11px] font-black uppercase tracking-widest ${isToday ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`}>{t(`days.${dIdx}`)}</p>
+                                                        <p className={`text-xs font-num font-bold ${isToday ? 'text-white' : 'text-slate-600 dark:text-slate-400'}`}>{getDayDateString(week.dateRange, dIdx)}</p>
+                                                    </div>
+                                                </th>
+                                            );
+                                        })}
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                                    {(['morning', 'afternoon', 'evening'] as const).map((shift) => {
-                                        const label = shift === 'morning' ? 'S' : shift === 'afternoon' ? 'C' : 'T';
-                                        return (
-                                            <tr key={shift} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/10 transition-colors">
-                                                <td className={`p-4 border-b border-r border-slate-100 dark:border-slate-800 text-center align-middle sticky left-0 z-20 shadow-[2px_0_8px_rgba(0,0,0,0.03)] ${isCurrent ? 'bg-accent-100 dark:bg-accent-950/40' : 'bg-slate-50 dark:bg-slate-800'}`}>
-                                                    <span className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-black mx-auto shadow-lg ${isCurrent ? 'bg-accent-700 shadow-accent-500/30' : 'bg-accent-600 shadow-accent-500/20'}`}>{label}</span>
-                                                </td>
-                                                {DAYS_OF_WEEK.map((dayName) => {
-                                                    const dayData = week.days[dayName];
-                                                    const sessions = dayData[shift as keyof DaySchedule].filter(filterFn);
-                                                    return (
-                                                        <td key={`${dayName}-${shift}`} className={`p-3 border border-slate-100 dark:border-slate-800 align-top min-h-[160px] ${isCurrent ? 'bg-accent-50/10 dark:bg-accent-900/5' : ''}`}>
-                                                            <div className="flex flex-col gap-1.5 h-full">
-                                                                {sessions.map((s, sidx) => (
-                                                                    <SessionCard key={`${s.courseCode}-${s.timeSlot}-${sidx}`} session={s} variant="weekly" overrides={overrides} abbreviations={abbreviations} showTeacher={showTeacher} />
-                                                                ))}
-                                                            </div>
-                                                        </td>
-                                                    );
-                                                })}
-                                            </tr>
-                                        );
-                                    })}
+                                    {([
+                                        { key: 'morning', label: 'S', colorClass: 'bg-accent-400 shadow-accent-400/20' },
+                                        { key: 'afternoon', label: 'C', colorClass: 'bg-accent-600 shadow-accent-600/20' },
+                                        { key: 'evening', label: 'T', colorClass: 'bg-accent-800 dark:bg-accent-700 shadow-accent-800/20' },
+                                    ] as const).map((shift) => (
+                                        <tr key={shift.key} className="hover:bg-slate-50/30 dark:hover:bg-slate-800/10 transition-colors">
+                                            <td className="p-4 border-b border-r border-slate-100 dark:border-slate-800 text-center flex items-center justify-center bg-white dark:bg-slate-900 align-middle sticky left-0 z-20 shadow-[2px_0_8px_rgba(0,0,0,0.03)] h-[160px]">
+                                                <span className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-xs font-black mx-auto shadow-lg ${shift.colorClass}`}>{shift.label}</span>
+                                            </td>
+                                            {DAYS_OF_WEEK.map((dayName, dIdx) => {
+                                                const dayData = week.days[dayName];
+                                                const sessions = dayData[shift.key as keyof DaySchedule].filter(filterFn);
+                                                const isToday = isCurrent && isDayToday(week.dateRange, dIdx, now);
+                                                return (
+                                                    <td key={`${week.dateRange}-${dayName}-${shift.key}`} className={`p-2 border border-slate-100 dark:border-slate-800 align-top min-h-[160px] transition-colors ${isToday ? 'bg-accent-50/40 dark:bg-accent-900/10 border-x-accent-200/50 dark:border-x-accent-800/50' : ''}`}>
+                                                        <div className="flex flex-col gap-1.5 h-full">
+                                                            {sessions.map((s, sidx) => (
+                                                                <SessionCard key={`${s.courseCode}-${s.timeSlot}-${sidx}`} session={s} variant="weekly" overrides={overrides} abbreviations={abbreviations} showTeacher={showTeacher} />
+                                                            ))}
+                                                        </div>
+                                                    </td>
+                                                );
+                                            })}
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>

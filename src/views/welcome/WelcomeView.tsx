@@ -6,11 +6,12 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Upload, FileText, History, Trash2, ArrowRight, ArrowLeft, Moon, Sun, Check, X } from 'lucide-react';
-import { useScheduleStore, useUIStore } from '@/core/stores';
+import { Upload, FileText, History, Trash2, ArrowRight, ArrowLeft, Globe, Check, X } from 'lucide-react';
+import { useScheduleStore } from '@/core/stores';
 import type { HistoryItem } from '@/core/schedule';
 import { APP_VERSION } from '@/core/constants';
 import ThemePicker from '@/ui/composites/ThemePicker';
+import { changeLanguage } from '@/i18n/config';
 
 // ============================================
 // Sub-components
@@ -172,8 +173,6 @@ const WelcomeView: React.FC = () => {
     const loadHistoryItem = useScheduleStore((s) => s.loadHistoryItem);
     const deleteHistoryItem = useScheduleStore((s) => s.deleteHistoryItem);
 
-    const { darkMode, toggleDarkMode } = useUIStore();
-
     const [isDragging, setIsDragging] = useState(false);
     const [showPaste, setShowPaste] = useState(false);
     const [clicks, setClicks] = useState(0);
@@ -230,8 +229,7 @@ const WelcomeView: React.FC = () => {
 
     const toggleLanguage = useCallback(() => {
         const newLang = i18n.language === 'vi' ? 'en' : 'vi';
-        i18n.changeLanguage(newLang);
-        localStorage.setItem('language', newLang);
+        changeLanguage(newLang);
     }, [i18n]);
 
     // Sort history by saved date descending
@@ -265,17 +263,11 @@ const WelcomeView: React.FC = () => {
                     <div className="flex items-center gap-1">
                         <button
                             onClick={toggleLanguage}
-                            className="w-10 h-8 md:h-9 flex items-center justify-center rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
+                            className="p-2 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors"
                             aria-label={t('common.switchLanguage')}
+                            title={i18n.language === 'vi' ? 'English' : 'Tiếng Việt'}
                         >
-                            <span className="text-[11px] font-black uppercase">{i18n.language}</span>
-                        </button>
-                        <button
-                            onClick={toggleDarkMode}
-                            className="p-2 md:p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-pointer"
-                            aria-label={t('nav.appearance')}
-                        >
-                            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                            <Globe size={18} />
                         </button>
                         <ThemePicker />
                     </div>
