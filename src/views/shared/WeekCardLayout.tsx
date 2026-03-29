@@ -35,7 +35,13 @@ const WeekCardLayout: React.FC<WeekTableLayoutProps> = ({ week, now, overrides, 
                                 return (
                                 <div key={shift} className={`p-3 ${isToday ? 'bg-accent-50/10 dark:bg-accent-900/5' : ''}`}>
                                     <div className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase mb-2 flex items-center justify-between">
-                                        {t(`weekly.${shift}`)}
+                                        <div className="flex items-center gap-1.5">
+                                            <span 
+                                                className="w-1.5 h-1.5 rounded-full" 
+                                                style={{ background: `linear-gradient(to right, var(--semantic-${shift}-from), var(--semantic-${shift}-to))` }}
+                                            />
+                                            {t(`weekly.${shift}`)}
+                                        </div>
                                         <span className="font-num opacity-60">{shift === 'morning' ? '07:00' : shift === 'afternoon' ? '13:30' : '17:10'}</span>
                                     </div>
                                     {shiftSessions.length === 0 ? (

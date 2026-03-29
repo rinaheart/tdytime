@@ -65,7 +65,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
                 <p className="text-xs font-bold text-slate-500 dark:text-slate-400 font-num">{formatDateRange(weekDateRange)}</p>
             </div>
 
-            <div className="flex items-center gap-2 flex-wrap justify-end w-full md:w-auto self-end md:self-auto">
+            <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full md:w-auto md:self-auto">
                 <button
                     onClick={() => data && jumpToCurrentWeek(data)}
                     className={`flex items-center gap-2 h-11 px-4 rounded-xl text-xs font-bold transition-all shadow-sm ${isCurrent
@@ -79,7 +79,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
 
                 <button
                     onClick={onToggleViewMode}
-                    className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 active:scale-95 transition-all shadow-sm"
+                    className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm"
                 >
                     {viewMode === 'vertical' ? <Columns size={16} className="text-accent-500" /> : <LayoutTemplate size={16} className="text-accent-500" />}
                     <span className="hidden sm:inline">{viewMode === 'vertical' ? t('common.verticalList') : t('common.horizontalList')}</span>
@@ -97,10 +97,20 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
                 </button>
 
                 <div className="flex bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden h-11">
-                    <button onClick={() => setCurrentWeekIndex((i) => (i === -1 ? 0 : Math.max(0, i - 1)))} disabled={isFirst && currentWeekIndex !== -1} aria-label="Previous Week" className="px-4 h-full hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-30 border-r border-slate-200 dark:border-slate-800 transition-colors">
+                    <button 
+                        onClick={() => setCurrentWeekIndex((i) => (i === -1 ? 0 : Math.max(0, i - 1)))} 
+                        disabled={isFirst && currentWeekIndex !== -1} 
+                        aria-label="Previous Week" 
+                        className="px-4 h-full hover:bg-accent-50 dark:hover:bg-accent-950/40 text-accent-600 dark:text-accent-400 disabled:opacity-30 disabled:text-slate-400 border-r border-slate-200 dark:border-slate-800 transition-colors"
+                    >
                         <ChevronLeft size={20} />
                     </button>
-                    <button onClick={() => setCurrentWeekIndex((i) => (i === -1 ? weeks.length - 1 : Math.min(weeks.length - 1, i + 1)))} disabled={isLast} aria-label="Next Week" className="px-4 h-full hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-30 transition-colors">
+                    <button 
+                        onClick={() => setCurrentWeekIndex((i) => (i === -1 ? weeks.length - 1 : Math.min(weeks.length - 1, i + 1)))} 
+                        disabled={isLast} 
+                        aria-label="Next Week" 
+                        className="px-4 h-full hover:bg-accent-50 dark:hover:bg-accent-950/40 text-accent-600 dark:text-accent-400 disabled:opacity-30 disabled:text-slate-400 transition-colors"
+                    >
                         <ChevronRight size={20} />
                     </button>
                 </div>

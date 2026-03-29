@@ -5,7 +5,7 @@
  */
 
 import { CourseSession, WeekSchedule, DaySchedule } from './schedule.types';
-import { DAYS_OF_WEEK } from '../constants';
+import { DAYS_OF_WEEK, CHUA_RO } from '../constants';
 
 /** Regex pattern for DD/MM/YYYY format */
 export const DATE_REGEX_SINGLE = /(\d{2})\/(\d{2})\/(\d{4})/;
@@ -21,13 +21,12 @@ export const normalizeTeacherName = (name: string) => {
         .toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
-        .replace(/ths\.|ts\.|pgs\.|gs\.|gv\./g, '')
         .trim();
 };
 
 /** Check if a session belongs to the main teacher */
 export const isMainTeacher = (tName: string, mainTeacherName: string) => {
-    if (!tName || tName === 'Chưa rõ' || tName === 'Unknown') return true;
+    if (!tName || tName === CHUA_RO || tName === 'Unknown') return true;
     const main = normalizeTeacherName(mainTeacherName);
     const target = normalizeTeacherName(tName);
     return target.includes(main) || main.includes(target);

@@ -93,7 +93,7 @@ const AppLayout: React.FC = () => {
                     <div className="flex items-center gap-1">
                         <button
                             onClick={toggleLanguage}
-                            className="p-2 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors"
+                            className="p-2 rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400 transition-colors"
                             aria-label={t('common.switchLanguage')}
                             title={i18n.language === 'vi' ? 'English' : 'Tiếng Việt'}
                         >
@@ -102,7 +102,7 @@ const AppLayout: React.FC = () => {
                         <ThemePicker />
                         <button
                             onClick={handleReset}
-                            className="p-2 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400"
+                            className="p-2 rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400"
                             aria-label={t('nav.loadData')}
                             title={t('nav.loadData')}
                         >
@@ -156,8 +156,10 @@ const AppLayout: React.FC = () => {
                     className={`flex-1 min-w-0 transition-all duration-300 ${sidebarCollapsed ? 'lg:pl-20' : 'lg:pl-48'
                         }`}
                 >
-                    <div className="h-full overflow-y-auto custom-scrollbar p-3 md:p-8">
-                        <Outlet />
+                    <div className="h-full overflow-y-auto custom-scrollbar">
+                        <div className="max-w-7xl mx-auto p-3 md:p-8">
+                            <Outlet />
+                        </div>
                     </div>
                 </main>
             </div>

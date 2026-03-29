@@ -67,7 +67,7 @@ const WeeklyCard: React.FC<{ session: CourseSession; displayName: string; curren
                     <span className="shrink-0 opacity-70">({session.group})</span>
                 </div>
                 <Badge variant={currentType === CourseType.LT ? 'theory' : 'practice'} className="shrink-0 px-1.5 py-0.5 text-[9px] shadow-sm">
-                    {currentType === CourseType.LT ? <FileText size={9} className="mr-0.5" /> : <FlaskConical size={9} className="mr-0.5" />}
+                    {currentType === CourseType.LT ? <FileText size={9} strokeWidth={1.5} className="mr-0.5" /> : <FlaskConical size={9} strokeWidth={1.5} className="mr-0.5" />}
                     {currentType}
                 </Badge>
             </div>
@@ -89,7 +89,7 @@ const CompletedCard: React.FC<{ session: CourseSession; displayName: string }> =
         <div className="bg-slate-100 dark:bg-slate-800/80 rounded-lg p-3 border border-slate-200 dark:border-slate-700 opacity-70 transition-all">
             <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
-                    <Clock size={12} />
+                    <Clock size={12} strokeWidth={1.5} />
                     <span>{startTime}</span>
                     <span className="text-slate-300 dark:text-slate-600 font-light mx-px">-</span>
                     <span>{endTime}</span>
@@ -121,7 +121,7 @@ const TodayCard: React.FC<{ session: CourseSession; displayName: string; current
 
             {/* Time — Primary Focus */}
             <div className="flex items-center gap-2 mb-3 font-num">
-                <Clock size={16} className="text-slate-400" />
+                <Clock size={16} strokeWidth={1.5} className="text-slate-400" />
                 <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">{startTime}</span>
                 <span className="text-slate-300 dark:text-slate-600">—</span>
                 <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">{endTime}</span>
@@ -136,14 +136,14 @@ const TodayCard: React.FC<{ session: CourseSession; displayName: string; current
             <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1.5">
-                        <MapPin size={14} />
+                        <MapPin size={14} strokeWidth={1.5} />
                         <span className="font-medium">{session.room}</span>
                     </div>
                     <span className="text-slate-300 dark:text-slate-700">•</span>
                     <span className="truncate max-w-[150px] sm:max-w-[200px]">{session.className}</span>
                 </div>
                 <Badge variant={currentType === CourseType.LT ? 'theory' : 'practice'} className="shrink-0 px-2.5 py-1 text-xs shadow-sm">
-                    {currentType === CourseType.LT ? <FileText size={12} className="mr-1" /> : <FlaskConical size={12} className="mr-1" />}
+                    {currentType === CourseType.LT ? <FileText size={12} strokeWidth={1.5} className="mr-1" /> : <FlaskConical size={12} strokeWidth={1.5} className="mr-1" />}
                     {currentType}
                 </Badge>
             </div>

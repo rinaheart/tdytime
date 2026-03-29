@@ -5,7 +5,7 @@
  */
 
 import { ScheduleData, Metrics, CourseType, DaySchedule, CourseSession, TranslationItem } from './schedule.types';
-import { DAYS_OF_WEEK } from '../constants';
+import { DAYS_OF_WEEK, CHUA_RO } from '../constants';
 import { normalizeTeacherName, isMainTeacher } from './schedule.utils';
 
 /**
@@ -64,7 +64,7 @@ export const calculateMetrics = (data: ScheduleData): Metrics => {
                         s1 !== s2 &&
                         s1.teacher === s2.teacher &&
                         s1.teacher !== 'Unknown' &&
-                        s1.teacher !== 'Chưa rõ' &&
+                        s1.teacher !== CHUA_RO &&
                         isTimeOverlap(s1.timeSlot, s2.timeSlot) &&
                         (s1.room !== s2.room || s1.courseCode !== s2.courseCode || s1.group !== s2.group),
                 );
@@ -74,7 +74,7 @@ export const calculateMetrics = (data: ScheduleData): Metrics => {
                     (s2) =>
                         s1 !== s2 &&
                         s1.room === s2.room &&
-                        s1.room !== 'Chưa rõ' &&
+                        s1.room !== CHUA_RO &&
                         s1.room !== 'Unknown' &&
                         isTimeOverlap(s1.timeSlot, s2.timeSlot) &&
                         (s1.courseCode !== s2.courseCode || s1.group !== s2.group || s1.teacher !== s2.teacher),
@@ -159,7 +159,6 @@ export const calculateMetrics = (data: ScheduleData): Metrics => {
 
         heatmapData.push(weekMatrixRow);
         hoursByWeek[w.weekNumber] = weekTotal;
-        if (weekTotal > 25) warnings.push(`OVERLOAD_WEEK_${w.weekNumber}`);
 
         // Track peak week
         if (weekTotal > busiestWeek.hours) {
@@ -198,13 +197,7 @@ export const calculateMetrics = (data: ScheduleData): Metrics => {
 
     // --- Distinct Warnings ---
     const distinctWarnings: TranslationItem[] = [];
-    const overloadWeeksCount = warnings.filter((w) => w.startsWith('OVERLOAD')).length;
-    if (overloadWeeksCount > 0) {
-        distinctWarnings.push({
-            key: 'stats.warningsList.overload',
-            params: { overload: overloadWeeksCount, total: data.weeks.length }
-        });
-    }
+    
     const eveningCount = warnings.filter((w) => w === 'EVENING_CLASS').length;
     if (eveningCount > 0) {
         distinctWarnings.push({

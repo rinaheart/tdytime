@@ -16,7 +16,7 @@ const TodayView: React.FC = () => {
     const isFinished = todaySessions.length > 0 && todaySessions.every((s) => s.status === 'COMPLETED');
 
     return (
-        <div className="pb-24 animate-in fade-in duration-300">
+        <div className="max-w-3xl mx-auto pb-24 animate-in fade-in duration-300">
             <TodayHeader dayOfWeekIdx={dayOfWeekIdx} dateInfo={dateInfo} greeting={greeting} />
 
             <main className="mt-0">

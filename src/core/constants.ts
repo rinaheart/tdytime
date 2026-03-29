@@ -4,6 +4,8 @@ export const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSIO
 
 export const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 export const VI_DAYS_OF_WEEK = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+export const UNKNOWN_TEACHER = 'Unknown Teacher';
+export const CHUA_RO = 'Chưa rõ';
 
 /** Session card style by time of day */
 export const SESSION_COLORS = {

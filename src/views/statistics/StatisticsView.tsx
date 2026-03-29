@@ -5,7 +5,7 @@
 
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Calendar, Clock, Activity, AlertOctagon, Users, MapPin } from 'lucide-react';
+import { Calendar, Clock, Activity, Zap, Users, MapPin } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
 import { DAYS_OF_WEEK, getPeriodTimes } from '@/core/constants';
 import type { CourseSession } from '@/core/schedule/schedule.types';
@@ -129,9 +129,8 @@ const StatisticsView: React.FC = () => {
         return { today: getP(todayD, todayT), week: getP(weekD, weekT), month: getP(monthD, monthT), semester: getP(semD, semT) };
     }, [data, now]);
 
-    const overloadWeeksItem = metrics.warnings.find((w) => w.key === 'stats.warningsList.overload');
-    const overloadWeeks = overloadWeeksItem ? (overloadWeeksItem.params?.overload || 0) : 0;
-    const intensityStatus = overloadWeeks > 0 ? t('stats.levels.high') : (metrics.totalHours / metrics.totalWeeks > 12 ? t('stats.levels.medium') : t('stats.levels.low'));
+    const avgLoad = metrics.totalWeeks > 0 ? (metrics.totalHours / metrics.totalWeeks) : 0;
+    const intensityStatus = avgLoad > 20 ? t('stats.levels.high') : (avgLoad > 12 ? t('stats.levels.medium') : t('stats.levels.low'));
 
     const eveningSessions = metrics.shiftStats.evening.sessions;
     const eveningDisplay = eveningSessions > 0 ? `${eveningSessions} ${t('common.sessions')}` : '—';
@@ -140,7 +139,12 @@ const StatisticsView: React.FC = () => {
     const weekendSessionsCount = weekendWarningItem ? (weekendWarningItem.params?.count || 0) : 0;
     const weekendDisplay = weekendSessionsCount > 0 ? `${weekendSessionsCount} ${t('common.sessions')}` : '—';
 
-    const overloadDisplay = overloadWeeks > 0 ? `${overloadWeeks} ${t('common.weeks')}` : '—';
+    const avgLoadDisplay = avgLoad > 0 ? (
+        <span>
+            {avgLoad.toFixed(1)}
+            <span className="text-[8px] md:text-[9px] opacity-60 ml-0.5 lowercase font-medium">{t('common.periods')}</span>
+        </span>
+    ) : '—';
 
     const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -151,14 +155,14 @@ const StatisticsView: React.FC = () => {
 
             {/* 2. Progress + Insights */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch transition-all duration-500">
-                <div className={`transition-all duration-500 ${isCollapsed ? 'lg:col-span-3' : 'lg:col-span-2'}`}>
+                <div className={`transition-all duration-500 ${isCollapsed ? 'lg:col-span-3' : 'lg:col-span-2'} mb-2 lg:mb-0`}>
                     <ProgressCard progress={progress} currentDate={now.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })} />
                 </div>
                 {!isCollapsed && (
                     <div className="lg:col-span-1 animate-in fade-in zoom-in-95 duration-500">
                         <div className="grid grid-cols-4 lg:grid-cols-2 gap-2 md:gap-4 h-full">
-                            <InsightCard icon={Activity} title={t('stats.intensity')} value={intensityStatus} isAlert={overloadWeeks > 0} />
-                            <InsightCard icon={AlertOctagon} title={t('stats.overloadWeeks', { threshold: 25 })} value={overloadDisplay} isAlert={overloadWeeks > 0} />
+                            <InsightCard icon={Activity} title={t('stats.intensity')} value={intensityStatus} isAlert={avgLoad > 20} />
+                            <InsightCard icon={Zap} title={t('stats.avgLoad')} value={avgLoadDisplay} isAlert={avgLoad > 20} />
                             <InsightCard icon={Clock} title={t('stats.eveningTeaching')} value={eveningDisplay} isAlert={eveningSessions > 0} />
                             <InsightCard icon={Calendar} title={t('stats.weekendTeaching')} value={weekendDisplay} isAlert={weekendSessionsCount > 0} />
                         </div>

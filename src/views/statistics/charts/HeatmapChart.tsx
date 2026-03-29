@@ -27,20 +27,20 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
             <div className="min-w-max mx-auto px-2">
                 <div className="flex">
                     {/* Day Labels Column */}
-                    <div className="flex flex-col gap-[2px] mr-3 pt-6">
+                    <div className="flex flex-col gap-[2px] lg:gap-[3px] mr-3 pt-6 lg:pt-7">
                         {dayLabels.map((label, i) => (
-                            <div key={i} className="h-3 text-[9px] font-bold text-slate-500 dark:text-slate-400 flex items-center justify-end leading-none">
+                            <div key={i} className="h-3 lg:h-4 text-[10px] lg:text-[11px] font-black text-slate-500 dark:text-slate-400 flex items-center justify-end leading-none">
                                 {label}
                             </div>
                         ))}
                     </div>
 
                     {/* Weeks Grid */}
-                    <div className="flex flex-col gap-[2px]">
+                    <div className="flex flex-col gap-[2px] lg:gap-[3px]">
                         {/* Week Labels Row */}
-                        <div className="flex gap-[2px] h-5 mb-1">
+                        <div className="flex gap-[2px] lg:gap-[3px] h-5 mb-1">
                             {Array.from({ length: weekCount }).map((_, i) => (
-                                <div key={i} className="w-3 text-[8px] text-slate-400 dark:text-slate-500 text-center flex-shrink-0">
+                                <div key={i} className="w-3 lg:w-4 text-[8px] lg:text-[9px] text-slate-400 dark:text-slate-500 text-center flex-shrink-0">
                                     {(i + 1) % 5 === 0 || i === 0 ? i + 1 : ''}
                                 </div>
                             ))}
@@ -48,11 +48,11 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
 
                         {/* Squares Grid */}
                         {Array.from({ length: 7 }).map((_, dayIndex) => (
-                            <div key={dayIndex} className="flex gap-[2px]">
+                            <div key={dayIndex} className="flex gap-[2px] lg:gap-[3px]">
                                 {data.map((weekData, weekIndex) => (
                                     <div
                                         key={`${weekIndex}-${dayIndex}`}
-                                        className={`w-3 h-3 rounded-[1px] transition-colors cursor-default ${getColorClass(weekData[dayIndex])} ${dayIndex >= 5 && weekData[dayIndex] > 0 ? 'ring-1 ring-inset ring-black/10 dark:ring-white/10' : ''}`}
+                                        className={`w-3 h-3 lg:w-4 lg:h-4 rounded-[1px] transition-colors cursor-default ${getColorClass(weekData[dayIndex])} ${dayIndex >= 5 && weekData[dayIndex] > 0 ? 'ring-1 ring-inset ring-black/10 dark:ring-white/10' : ''}`}
                                         title={`${t('common.week')} ${weekIndex + 1}, ${dayLabels[dayIndex]}: ${weekData[dayIndex]} ${t('common.periods').toLowerCase()}`}
                                     />
                                 ))}

@@ -14,6 +14,7 @@ import {
     AggregatedCourse,
 } from './schedule.types';
 import { COURSE_TYPE_TH_REGEX } from './schedule.utils';
+import { UNKNOWN_TEACHER, CHUA_RO } from '../constants';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -37,10 +38,10 @@ export const parseScheduleHTML = (html: string): ScheduleData | null => {
     }
 
     // Extract metadata
-    const teacher = doc.querySelector('.hitec-information h5')?.textContent?.trim() || 'Unknown Teacher';
+    const teacher = doc.querySelector('.hitec-information h5')?.textContent?.trim() || UNKNOWN_TEACHER;
     const yearSemesterText = doc.querySelector('.hitec-year')?.textContent?.trim() || '';
-    const semesterMatch = yearSemesterText.match(/Học kỳ:\s*(\d+)/);
-    const yearMatch = yearSemesterText.match(/năm học:\s*([\d-]+)/);
+    const semesterMatch = yearSemesterText.match(/Học kỳ:\s*(\d+)/i);
+    const yearMatch = yearSemesterText.match(/năm học:\s*([\d-]+)/i);
 
     const metadata: Metadata = {
         teacher,
@@ -153,7 +154,7 @@ const processSlotRow = (
                 timeSlot,
                 periodCount: periods,
                 room: roomMatch ? roomMatch[1].trim() : 'Unknown',
-                teacher: teacherMatch ? teacherMatch[1].trim() : 'Chưa rõ',
+                teacher: teacherMatch ? teacherMatch[1].trim() : CHUA_RO,
                 type,
                 dayOfWeek: dayName,
                 sessionTime: session,

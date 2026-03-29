@@ -6,7 +6,7 @@
   <p>Phân tích và Quản lý Lịch giảng thông minh.</p>
 
   <div>
-    <img src="https://img.shields.io/badge/version-v1.4.0-blue.svg?style=flat-square" alt="Version">
+    <img src="https://img.shields.io/badge/version-v1.5.0-blue.svg?style=flat-square" alt="Version">
     <img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat-square" alt="License">
   </div>
   <div style="margin-top: 5px;">
@@ -100,7 +100,7 @@ Cài trực tiếp lên thiết bị, mở nhanh và dùng offline.
 
 <h2 id="-liên-hệ--hỗ-trợ">💌 Liên hệ & Hỗ trợ</h2>
 
-Nếu bạn gặp vấn đề hoặc có đề xuất gì, hãy mở một Issue hoặc nhắn tin cho mình qua:
+Nếu bạn gặp vấn đề hoặc có đề xuất gì, hãy mở một Issue hoặc nhắn tin với tôi qua:
 - **Github**: [@TdyPhan](https://github.com/TdyPhan)
 - **Email**: tdyphan@gmail.com
 

@@ -27,15 +27,19 @@
   --accent-900: 30 58 138;    /* blue-900 */
   --accent-950: 23 37 84;     /* blue-950 */
 
-  /* Session Time Colors (semantic — fixed across themes) */
-  --color-morning: #3b82f6;
-  --color-afternoon: #f97316;
-  --color-evening: #9333ea;
-
-  /* Status Colors (semantic — fixed across themes) */
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
+  /* ── Adaptive Semantic System (Default Fallbacks) ── */
+  --semantic-morning-from: #22d3ee;   /* cyan-400 */
+  --semantic-morning-to: #0891b2;     /* cyan-600 */
+  --semantic-afternoon-from: #fb923c; /* orange-400 */
+  --semantic-afternoon-to: #ea580c;   /* orange-600 */
+  --semantic-evening-from: #818cf8;   /* indigo-400 */
+  --semantic-evening-to: #4f46e5;     /* indigo-600 */
+  --semantic-success-from: #34d399;   /* emerald-400 */
+  --semantic-success-to: #059669;     /* emerald-600 */
+  --semantic-warning-from: #fbbf24;   /* amber-400 */
+  --semantic-warning-to: #d97706;     /* amber-600 */
+  --semantic-danger-from: #f87171;    /* red-400 */
+  --semantic-danger-to: #dc2626;      /* red-600 */
 
   /* Radii */
   --radius-sm: 0.5rem;
@@ -64,6 +68,10 @@
   --accent-800: 30 64 175;
   --accent-900: 30 58 138;
   --accent-950: 23 37 84;
+
+  /* Smart Semantic: Shift Morning to Cyan/Teal to avoid Blue clash */
+  --semantic-morning-from: #22d3ee;   /* cyan-400 */
+  --semantic-morning-to: #0d9488;     /* teal-600 */
 }
 
 /* 🌲 Forest Green */
@@ -79,6 +87,10 @@
   --accent-800: 6 95 70;
   --accent-900: 6 78 59;
   --accent-950: 2 44 34;
+
+  /* Smart Semantic: Shift Success to Lime/Emerald to avoid Green clash */
+  --semantic-success-from: #a3e635;   /* lime-400 */
+  --semantic-success-to: #059669;     /* emerald-600 */
 }
 
 /* 🪨 Slate Grey */
@@ -109,6 +121,8 @@
   --accent-800: 157 23 77;
   --accent-900: 131 24 67;
   --accent-950: 80 7 36;
+
+  /* Smart Semantic: Keep defaults, pink palette is safe */
 }
 
 /* 🍎 Crimson Red */
@@ -124,6 +138,10 @@
   --accent-800: 153 27 27;
   --accent-900: 127 29 29;
   --accent-950: 69 10 10;
+
+  /* Smart Semantic: Shift Danger to Rose/Maroon to avoid Red clash */
+  --semantic-danger-from: #fb7185;   /* rose-400 */
+  --semantic-danger-to: #9f1239;     /* rose-800 */
 }
 
 /* 💜 Lavender Violet */
@@ -139,6 +157,10 @@
   --accent-800: 91 33 182;
   --accent-900: 76 29 149;
   --accent-950: 46 16 101;
+
+  /* Smart Semantic: Shift Evening to Indigo/Cyan to avoid Violet clash */
+  --semantic-evening-from: #818cf8;   /* indigo-400 */
+  --semantic-evening-to: #0891b2;     /* cyan-600 */
 }
 
 /* 🍯 Honey Yellow */
@@ -154,4 +176,8 @@
   --accent-800: 133 77 9;
   --accent-900: 113 63 18;
   --accent-950: 66 32 6;
+
+  /* Smart Semantic: Shift Warning to Orange/Amber for depth */
+  --semantic-warning-from: #fb923c;   /* orange-400 */
+  --semantic-warning-to: #d97706;     /* amber-600 */
 }

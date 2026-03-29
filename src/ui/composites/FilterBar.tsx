@@ -27,7 +27,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ filters, onChange, uniqueRooms, u
         <div className="bg-white dark:bg-slate-900 p-3 md:p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg flex flex-col md:flex-row gap-3 items-stretch md:items-center">
             {/* Search Input */}
             <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-accent-500 opacity-70" size={16} />
                 <input
                     type="text"
                     placeholder={t('filter.searchPlaceholder')}

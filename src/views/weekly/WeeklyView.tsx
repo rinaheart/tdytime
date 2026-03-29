@@ -2,13 +2,21 @@
  * WeeklyView — Full week schedule with horizontal table + vertical card modes.
  * Reads from Zustand store. Decomposed from old 418-line mono-view.
  */
+/**
+ * WeeklyView — Full week schedule with horizontal table + vertical card modes.
+ * Reads from Zustand store. Decomposed from old 418-line mono-view.
+ */
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useScheduleStore } from '@/core/stores';
 import { FilterBar, EmptyState } from '@/ui';
 import type { DaySchedule, WeekSchedule } from '@/core/schedule/schedule.types';
-import { getCurrentWeekRange, getFilteredWeek } from '@/core/schedule/schedule.utils';
+import { 
+    getFilteredWeek, 
+    isCurrentWeek,
+    getCurrentWeekRange
+} from '@/core/schedule/schedule.utils';
 import { useScheduleFilter } from '@/core/hooks/useScheduleFilter';
 import WeekNavigation from './WeekNavigation';
 import WeekTableLayout from '../shared/WeekTableLayout';
@@ -61,6 +69,11 @@ const WeeklyView: React.FC = () => {
         return getFilteredWeek(week, filterFn);
     }, [week, filterFn]);
 
+    const isCurrent = useMemo(() => {
+        if (!week) return false;
+        return isCurrentWeek(week.dateRange, now);
+    }, [week, now]);
+
     // isWeekEmpty logic is about 'teacher metadata mismatch' early exit, but we also can consider hasSessions
     // actually, let's keep original isWeekEmpty logic for showing "no sessions this week" versus "no sessions match filter".
     // Wait, the new logic for `filteredWeek.hasSessions` means if it's false, and there are active filters = "No results found for filter".
@@ -91,12 +104,38 @@ const WeeklyView: React.FC = () => {
             ) : !hasSessions && hasActiveFilters ? (
                 /* Active filters returned zero sessions for this week */
                 <EmptyState type="NO_SESSIONS" isWeekEmpty={true} currentWeekRange={weekRange} variant="weekly" />
-            ) : viewMode === 'horizontal' ? (
-                /* ─── HORIZONTAL TABLE MODE ─────────────────────── */
-                <WeekTableLayout week={filteredWeek!} now={now} overrides={overrides!} abbreviations={abbreviations!} showTeacher={!filters.teacher} />
             ) : (
-                /* ─── VERTICAL CARD MODE ───────────────────────── */
-                <WeekCardLayout week={filteredWeek!} now={now} overrides={overrides!} abbreviations={abbreviations!} showTeacher={!filters.teacher} />
+                <div className={`transition-all duration-300 ${viewMode === 'vertical' ? 'max-w-4xl mx-auto' : 'max-w-full'}`}>
+                    <div className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isCurrent 
+                        ? 'border-accent-500 dark:border-accent-400 ring-2 ring-accent-500/20 shadow-lg shadow-accent-500/5' 
+                        : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'}`}>
+                        
+                        {viewMode === 'horizontal' ? (
+                            /* ─── HORIZONTAL TABLE MODE ─────────────────────── */
+                            <WeekTableLayout 
+                                week={filteredWeek!} 
+                                now={now} 
+                                overrides={overrides!} 
+                                abbreviations={abbreviations!} 
+                                showTeacher={!filters.teacher} 
+                                isCurrent={isCurrent}
+                                fullBleed={true} // Add this prop to remove inner border
+                            />
+                        ) : (
+                            /* ─── VERTICAL CARD MODE ───────────────────────── */
+                            <div className="p-6 bg-slate-50/50 dark:bg-slate-900/50">
+                                <WeekCardLayout 
+                                    week={filteredWeek!} 
+                                    now={now} 
+                                    overrides={overrides!} 
+                                    abbreviations={abbreviations!} 
+                                    showTeacher={!filters.teacher} 
+                                    isCurrent={isCurrent}
+                                />
+                            </div>
+                        )}
+                    </div>
+                </div>
             )}
         </div>
     );

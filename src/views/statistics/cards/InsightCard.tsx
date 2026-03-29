@@ -9,7 +9,7 @@ import { LucideIcon } from 'lucide-react';
 interface InsightCardProps {
     icon: LucideIcon;
     title: string;
-    value: string;
+    value: string | React.ReactNode;
     isAlert?: boolean;
 }
 

@@ -269,6 +269,7 @@
         "intensity": "Intensity",
         "eveningTeaching": "Evening",
         "weekendTeaching": "Weekend",
+        "avgLoad": "Avg. Load",
         "overloadWeeks": "Overload",
         "levels": {
             "high": "High",
@@ -352,7 +353,10 @@
             "themeViolet": "Lavender Purple",
             "themeRed": "Crimson Red",
             "themeYellow": "Honey Yellow",
-            "themeGrey": "Mist Gray"
+            "themeGrey": "Mist Gray",
+            "themeAcademic": "Academic Navy",
+            "themeZen": "Zen Sage",
+            "themeMocha": "Mocha Taupe"
         }
     },
     "about": {

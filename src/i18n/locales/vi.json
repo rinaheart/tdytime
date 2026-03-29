@@ -270,6 +270,7 @@
         "intensity": "Cường độ",
         "eveningTeaching": "Buổi tối",
         "weekendTeaching": "Cuối tuần",
+        "avgLoad": "Tiết TB",
         "overloadWeeks": "Quá tải",
         "levels": {
             "high": "Cao",
@@ -353,7 +354,10 @@
             "themeViolet": "Tím hoa",
             "themeRed": "Đỏ son",
             "themeYellow": "Vàng mật",
-            "themeGrey": "Xám sương"
+            "themeGrey": "Xám sương",
+            "themeAcademic": "Hàn lâm (Navy)",
+            "themeZen": "Thiền (Sage)",
+            "themeMocha": "Mocha (Taupe)"
         }
     },
     "about": {

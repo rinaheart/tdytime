@@ -66,7 +66,7 @@ const NextTeachingSection: React.FC<NextTeachingSectionProps> = ({ nextTeaching,
                     } hover:border-accent-400 dark:hover:border-accent-600 shadow-sm`}
             >
                 <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1 min-w-0 pr-2">
+                    <div className="flex-1 min-w-0 pr-12">
                         <p className="text-accent-600 dark:text-accent-400 font-black text-[10px] uppercase tracking-widest mb-1.5 opacity-80">
                             {dayName}, {dateStr}
                         </p>
