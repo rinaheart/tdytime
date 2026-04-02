@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
+import { formatSemester } from '@/core/schedule';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Upload, FileText, History, Trash2, ArrowRight, ArrowLeft, Globe, Check, X } from 'lucide-react';
@@ -68,7 +69,7 @@ const HistoryCard = React.memo(({ item, isActive, onLoad, onDelete }: {
                     </p>
                     <div className="flex items-center gap-2 mt-0.5">
                         <p className={`text-[10px] font-bold whitespace-nowrap uppercase tracking-tighter ${isActive ? 'text-accent-500/70 dark:text-accent-400/70' : 'text-slate-400 dark:text-slate-500'}`}>
-                            {item.data.metadata.academicYear} • HK{item.data.metadata.semester}
+                            {item.data.metadata.academicYear} • {formatSemester(item.data.metadata.semester)}
                         </p>
                         <span className={`text-[10px] font-num ${isActive ? 'text-accent-300 dark:text-accent-700' : 'text-slate-300 dark:text-slate-600'}`}>
                             {dateLabel}
@@ -180,7 +181,8 @@ const WelcomeView: React.FC = () => {
     const handleVersionClick = useCallback(() => {
         setClicks(c => c + 1);
         if (clicks + 1 >= 5) {
-            navigate('/demo');
+            localStorage.setItem('devtools_enabled', 'true');
+            navigate('/dev');
             setClicks(0);
         }
         setTimeout(() => setClicks(0), 2000);

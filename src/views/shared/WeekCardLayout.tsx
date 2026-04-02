@@ -6,7 +6,7 @@ import type { DaySchedule, CourseSession } from '@/core/schedule/schedule.types'
 import { getDayDateString, isDayToday as checkIsDayToday } from '@/core/schedule/schedule.utils';
 import type { WeekTableLayoutProps } from './WeekTableLayout';
 
-const WeekCardLayout: React.FC<WeekTableLayoutProps> = ({ week, now, overrides, abbreviations, showTeacher }) => {
+const WeekCardLayout: React.FC<WeekTableLayoutProps> = ({ week, now, abbreviations, showTeacher }) => {
     const { t } = useTranslation();
 
     const isDayToday = (dayIdx: number) => checkIsDayToday(week.dateRange, dayIdx, now);
@@ -49,7 +49,9 @@ const WeekCardLayout: React.FC<WeekTableLayoutProps> = ({ week, now, overrides, 
                                     ) : (
                                         <div className="flex flex-col gap-1.5 w-full h-full">
                                             {shiftSessions.map((session: CourseSession, sidx: number) => (
-                                                <SessionCard key={`${session.courseCode}-${session.timeSlot}-${sidx}`} session={session} variant="weekly" overrides={overrides} abbreviations={abbreviations} showTeacher={showTeacher} />
+                                                <div key={`${session.courseCode}-${session.timeSlot}-${sidx}`} className="flex-1 flex">
+                                                    <SessionCard session={session} variant="weekly" abbreviations={abbreviations} showTeacher={showTeacher} className="flex-1" />
+                                                </div>
                                             ))}
                                         </div>
                                     )}

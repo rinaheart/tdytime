@@ -37,6 +37,7 @@ interface ScheduleState {
 
     // Mock/Demo testing state
     mockState: { startTimeLocal: number; startTimeMock: number; multiplier: number } | null;
+    isMockEnabled: boolean;
 
     // Actions
     processLoadedData: (data: ScheduleData, t: (key: string, opts?: Record<string, unknown>) => string, lang: string) => void;
@@ -48,6 +49,7 @@ interface ScheduleState {
     setAbbreviations: (abbreviations: Record<string, string>) => void;
     setError: (error: string | null) => void;
     setMockState: (state: { startTimeLocal: number; startTimeMock: number; multiplier: number } | null) => void;
+    toggleMockEnabled: () => void;
     loadHistoryItem: (item: HistoryItem, t: (key: string, opts?: Record<string, unknown>) => string) => void;
     deleteHistoryItem: (id: string) => void;
     goToUpload: () => void;
@@ -68,6 +70,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     toastMessage: null,
     historyList: [],
     mockState: null,
+    isMockEnabled: false,
 
     initFromStorage: () => {
         const historyList = historyService.getAll();
@@ -184,7 +187,27 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     setThresholds: (thresholds) => set({ thresholds }),
 
     setMockState: (state) => {
-        set({ mockState: state });
+        set({ 
+            mockState: state,
+            isMockEnabled: state !== null ? true : get().isMockEnabled
+        });
+    },
+
+    toggleMockEnabled: () => {
+        const { mockState, isMockEnabled } = get();
+        if (!isMockEnabled && !mockState) {
+            // Start fresh if no state exists
+            set({
+                mockState: {
+                    startTimeLocal: Date.now(),
+                    startTimeMock: Date.now(),
+                    multiplier: 1
+                },
+                isMockEnabled: true
+            });
+        } else {
+            set({ isMockEnabled: !isMockEnabled });
+        }
     },
 
     setOverrides: (overrides) => {
@@ -245,6 +268,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             isProcessing: false,
             toastMessage: null,
             mockState: null,
+            isMockEnabled: false,
         });
     },
 
@@ -266,6 +290,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             toastMessage: null,
             historyList: [],
             mockState: null,
+            isMockEnabled: false,
         });
     },
 }));

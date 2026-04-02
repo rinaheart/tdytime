@@ -3,16 +3,17 @@
  * Main layout wrapper with Header, Sidebar (desktop), BottomNav (mobile).
  */
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Zap, LayoutGrid, BarChart3, Settings,
-    CalendarDays, Menu, Upload, Globe,
+    CalendarDays, Menu, Upload, Globe, Wrench, Calendar, Clock
 } from 'lucide-react';
 import { useUIStore, useScheduleStore } from '@/core/stores';
 import { Toast } from '@/ui/primitives';
 import { APP_VERSION } from '@/core/constants';
+import { formatSemester } from '@/core/schedule';
 import ThemePicker from '@/ui/composites/ThemePicker';
 import { changeLanguage } from '@/i18n/config';
 
@@ -32,7 +33,139 @@ const AppLayout: React.FC = () => {
     const navigate = useNavigate();
     const { sidebarCollapsed, toggleSidebar } = useUIStore();
     const metadata = useScheduleStore((s) => s.data?.metadata);
+    const mockState = useScheduleStore(s => s.mockState);
+    const isMockEnabled = useScheduleStore(s => s.isMockEnabled);
+    const toggleMockEnabled = useScheduleStore(s => s.toggleMockEnabled);
     const lastActiveRef = useRef<number>(Date.now());
+
+    // Mock Time Clock Logic
+    const mockDateRef = useRef<HTMLInputElement>(null);
+    const mockTimeRef = useRef<HTMLInputElement>(null);
+    const [mockDisplayDate, setMockDisplayDate] = useState<string>('');
+    const [mockDisplayTimeOnly, setMockDisplayTimeOnly] = useState<string>('');
+    const [mockOffset, setMockOffset] = useState<string | null>(null);
+
+    const VI_DAY_MAP: Record<number, string> = {
+        0: 'CN', 1: 'T2', 2: 'T3', 3: 'T4', 4: 'T5', 5: 'T6', 6: 'T7'
+    };
+
+    const formatMockTime = useCallback((date: Date) => {
+        const day = VI_DAY_MAP[date.getDay()];
+        const d = String(date.getDate()).padStart(2, '0');
+        const mo = String(date.getMonth() + 1).padStart(2, '0');
+        const y = date.getFullYear();
+        const hh = String(date.getHours()).padStart(2, '0');
+        const mm = String(date.getMinutes()).padStart(2, '0');
+        return {
+            dateStr: `${day}, ${d}/${mo}/${y}`,
+            timeStr: `${hh}:${mm}`
+        };
+    }, []);
+
+    const calculateOffset = useCallback((mockMs: number, localMs: number) => {
+        const diff = mockMs - localMs;
+        const absDiff = Math.abs(diff);
+        const mins = Math.round(absDiff / 60000);
+        if (mins < 1) return null;
+        
+        const sign = diff >= 0 ? '+' : '-';
+        if (mins < 60) return `${sign}${mins}m`;
+        
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return `${sign}${hrs}h`;
+        
+        const days = Math.floor(hrs / 24);
+        return `${sign}${days}d`;
+    }, []);
+
+    const updateMockTime = useCallback((newMockDate: Date) => {
+        if (!mockState) return;
+        useScheduleStore.getState().setMockState({
+            startTimeLocal: Date.now(),
+            startTimeMock: newMockDate.getTime(),
+            multiplier: 1 // Auto-fallback to real-time
+        });
+    }, [mockState]);
+
+    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!mockState || !e.target.value) return;
+        const [y, mm, d] = e.target.value.split('-').map(Number);
+        const now = Date.now();
+        const elapsed = now - mockState.startTimeLocal;
+        const currentM = new Date(mockState.startTimeMock + elapsed * mockState.multiplier);
+        const next = new Date(currentM);
+        next.setFullYear(y, mm - 1, d);
+        updateMockTime(next);
+    };
+
+    const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!mockState || !e.target.value) return;
+        const [hh, min] = e.target.value.split(':').map(Number);
+        const now = Date.now();
+        const elapsed = now - mockState.startTimeLocal;
+        const currentM = new Date(mockState.startTimeMock + elapsed * mockState.multiplier);
+        const next = new Date(currentM);
+        next.setHours(hh, min, 0, 0);
+        updateMockTime(next);
+    };
+
+    const handleResetMockTime = useCallback(() => {
+        const now = Date.now();
+        useScheduleStore.getState().setMockState({
+            startTimeLocal: now,
+            startTimeMock: now,
+            multiplier: 1
+        });
+    }, []);
+
+    useEffect(() => {
+        if (!mockState) {
+            setMockDisplayDate('');
+            setMockDisplayTimeOnly('');
+            setMockOffset(null);
+            return;
+        }
+
+        const tick = () => {
+            const now = Date.now();
+            const elapsed = now - mockState.startTimeLocal;
+            const currentMs = mockState.startTimeMock + elapsed * mockState.multiplier;
+            const date = new Date(currentMs);
+            const fm = formatMockTime(date);
+            
+            setMockDisplayDate(fm.dateStr);
+            setMockDisplayTimeOnly(fm.timeStr);
+            setMockOffset(calculateOffset(currentMs, now));
+        };
+
+        tick();
+        const interval = setInterval(tick, 1000);
+        return () => clearInterval(interval);
+    }, [mockState, formatMockTime, calculateOffset]);
+
+    // Global Key Shortcuts
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ctrl + Shift + M -> Toggle Mock Time
+            if (e.ctrlKey && e.shiftKey && e.code === 'KeyM') {
+                const target = e.target as HTMLElement;
+                const isWriting = ['INPUT', 'TEXTAREA'].includes(target.tagName) || target.isContentEditable;
+                if (isWriting) return;
+
+                const isDevRoute = location.pathname === '/dev';
+                const isDevMode = localStorage.getItem('tdy_dev_mode') === 'true' || !!mockState;
+
+                if (isDevRoute || isDevMode) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    toggleMockEnabled();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown, true);
+        return () => window.removeEventListener('keydown', handleKeyDown, true);
+    }, [location.pathname, toggleMockEnabled, mockState]);
 
     // Smart Session Auto-Reset Logic
     useEffect(() => {
@@ -66,8 +199,105 @@ const AppLayout: React.FC = () => {
 
     return (
         <div className="min-h-dvh transition-colors duration-200 bg-white dark:bg-slate-950 selection:bg-accent-100 dark:selection:bg-accent-900/30">
+            {/* Mock Time Developer Toolbar */}
+            {mockState && isMockEnabled && (
+                <div className="flex items-center justify-between px-3 md:px-4 fixed top-0 left-0 right-0 z-[45] bg-amber-400 dark:bg-amber-500 text-amber-950 text-sm font-semibold select-none transition-all duration-150 h-10">
+                    {/* LEFT: Branding & Config */}
+                    <div className="flex items-center gap-3 flex-shrink-0 w-1/4">
+                        <span className="flex items-center gap-1.5 animate-pulse opacity-80">
+                            <span className="w-1.5 h-1.5 rounded-none bg-amber-950"></span> 
+                            <span className="hidden xl:inline text-[9px] tracking-[0.2em] font-black uppercase">MOCK</span>
+                        </span>
+                        
+                        <button onClick={() => navigate('/dev')}
+                                title="Mở DevTools"
+                                className="px-2.5 py-1 bg-amber-950 hover:bg-black text-amber-500 text-[10px] font-black tracking-widest transition-none cursor-pointer flex items-center gap-1.5 rounded-none">
+                            <Wrench size={10} strokeWidth={3} />
+                            <span className="hidden md:inline uppercase">DEVTOOLS</span>
+                        </button>
+                    </div>
+
+                    {/* CENTER: Time State & Speed */}
+                    <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-1 min-w-0 overflow-hidden">
+                        {/* Clickable Time Group */}
+                        <div className="flex items-center gap-1.5 bg-amber-950/10 p-1 relative rounded-none flex-shrink-0">
+                            {/* Date Region */}
+                            <div className="flex items-center gap-2 cursor-pointer bg-amber-950 hover:bg-black text-amber-500 transition-none px-4 py-1.5 group h-full"
+                                 onClick={() => mockDateRef.current?.showPicker()}
+                                 title="Click để đổi ngày">
+                                <Calendar size={16} strokeWidth={3} className="opacity-80 hidden sm:block" />
+                                <span className="font-mono font-black text-base tracking-tight">
+                                    {mockDisplayDate}
+                                </span>
+                            </div>
+
+                            {/* Time Region */}
+                            <div className="flex items-center gap-2 cursor-pointer bg-amber-950 hover:bg-black text-amber-400 transition-none px-4 py-1.5 group h-full"
+                                 onClick={() => mockTimeRef.current?.showPicker()}
+                                 title="Click để đổi giờ">
+                                <Clock size={16} strokeWidth={3} className="opacity-80 hidden sm:block" />
+                                <span className="font-mono font-black text-base tracking-tight">
+                                    {mockDisplayTimeOnly}
+                                </span>
+                            </div>
+
+                            {/* Hidden native pickers */}
+                            <input ref={mockDateRef} type="date" className="absolute opacity-0 pointer-events-none w-0 h-0" onChange={handleDateChange} />
+                            <input ref={mockTimeRef} type="time" className="absolute opacity-0 pointer-events-none w-0 h-0" onChange={handleTimeChange} />
+                        </div>
+
+                        {/* Offset badge */}
+                        {mockOffset && (
+                            <span className="text-[10px] text-amber-950/50 font-mono tracking-tighter bg-amber-950/5 px-2 py-2 flex-shrink-0 hidden lg:inline border-x border-amber-950/5">
+                                {mockOffset}
+                            </span>
+                        )}
+
+                        {/* Speed Pills */}
+                        <div className="hidden md:flex items-center gap-px bg-amber-950/10 p-px rounded-none flex-shrink-0 border-l border-amber-950/20 h-full">
+                            {[
+                                { l: '1s', v: 1 },
+                                { l: '1m', v: 60 },
+                                { l: '5m', v: 300 },
+                                { l: '10m', v: 600 },
+                                { l: '30m', v: 1800 }
+                            ].map(sp => (
+                                <button 
+                                    key={sp.l}
+                                    onClick={() => useScheduleStore.getState().setMockState({ ...mockState, multiplier: sp.v })}
+                                    className={`px-2.5 py-1.5 h-full cursor-pointer text-[10px] font-black tracking-widest transition-none ${
+                                        mockState.multiplier === sp.v 
+                                        ? 'bg-amber-950 text-amber-400 z-10 scale-y-110' 
+                                        : 'bg-amber-950/5 hover:bg-amber-950/20 text-amber-950/70 border border-transparent'
+                                    }`}
+                                    title={`Tốc độ: ${sp.l} mỗi giây thực`}
+                                >
+                                    {sp.l}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* RIGHT: Lifecycle Actions */}
+                    <div className="flex items-center justify-end flex-shrink-0 w-1/4">
+                        <button onClick={handleResetMockTime}
+                                title="Về giờ hệ thống"
+                                className="px-3 py-2 bg-amber-950/5 hover:bg-amber-950/10 text-amber-950/80 text-[10px] font-bold tracking-widest transition-none cursor-pointer flex items-center gap-1.5 border-l border-amber-950/10">
+                            <span className="hidden sm:inline">RESET</span>
+                            <span className="sm:hidden">↻</span>
+                        </button>
+                        <button onClick={toggleMockEnabled} 
+                                title="Tạm tắt mô phỏng"
+                                className="px-3 py-2 bg-amber-950 hover:bg-black text-amber-400 text-[10px] font-black tracking-widest transition-none cursor-pointer border-l border-amber-400/20">
+                            <span className="sm:hidden">×</span>
+                            <span className="hidden sm:inline">HIDE</span>
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-40 h-12 md:h-14 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm">
+            <header className={`fixed ${mockState && isMockEnabled ? 'top-[40px]' : 'top-0'} left-0 right-0 z-40 h-12 md:h-14 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-sm transition-all duration-150`}>
                 <div className="flex items-center justify-between h-full px-3 md:px-6">
                     {/* Left: Menu toggle + Teacher name */}
                     <div className="flex items-center gap-2">
@@ -84,7 +314,7 @@ const AppLayout: React.FC = () => {
                         </div>
                         {metadata && (
                             <span className="hidden md:inline text-xs text-slate-400 dark:text-slate-500">
-                                HK{metadata.semester} • {metadata.academicYear}
+                                {formatSemester(metadata.semester)} • {metadata.academicYear}
                             </span>
                         )}
                     </div>
@@ -113,10 +343,10 @@ const AppLayout: React.FC = () => {
             </header>
 
             {/* Main Area */}
-            <div className="flex h-[calc(100dvh-48px)] md:h-[calc(100dvh-56px)] pt-12 md:pt-14 relative">
+            <div className={`flex h-[calc(100dvh-48px)] md:h-[calc(100dvh-56px)] ${mockState && isMockEnabled ? 'pt-[88px] md:pt-[96px]' : 'pt-12 md:pt-14'} relative transition-all duration-150`}>
                 {/* Sidebar (desktop only) */}
                 <aside
-                    className={`hidden lg:flex flex-col fixed top-12 md:top-14 bottom-0 left-0 z-30 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-all duration-300 ${sidebarCollapsed ? 'w-20' : 'w-48'
+                    className={`hidden lg:flex flex-col fixed ${mockState && isMockEnabled ? 'top-[88px] md:top-[96px]' : 'top-12 md:top-14'} bottom-0 left-0 z-30 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-all duration-150 ${sidebarCollapsed ? 'w-20' : 'w-48'
                         }`}
                 >
                     <nav className="flex-1 py-4 space-y-1 px-3 overflow-y-auto">

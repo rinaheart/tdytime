@@ -2,35 +2,72 @@
   "scenarios": [
     {
       "id": "mock-realtime",
+      "type": "native",
       "title": "Bình thường (Realtime)",
       "description": "Quay về thời gian thực của máy tính. Không giả lập.",
       "file": null,
-      "mockTime": null,
+      "timeStrategy": "realtime",
       "multiplier": 1
     },
     {
-      "id": "mock-fastforward-boundary",
-      "title": "Tua nhanh: Chuyển giao Tiết học",
-      "description": "Bắt đầu lúc 06:59 sáng T2 (có lớp 07:00). Tua nhanh 1 giây = 1 phút để test UI chuyển từ Sắp diễn ra ➝ Đang dạy.",
-      "file": "scenario-1-base.html",
-      "mockTime": "2026-03-23T06:59:00",
+      "id": "dynamic-full-day",
+      "type": "dynamic",
+      "title": "Ngày mật độ cao (Full Day)",
+      "description": "Test UI 'Today' với quá khứ, đang diễn ra và 2 slot sắp tới. Giả lập lúc 16:00 (đang trong Slot 4).",
+      "timeStrategy": "align-current-day",
+      "scenarioType": "dense-day",
+      "mockTimeOffset": "16:00:00",
+      "multiplier": 1
+    },
+    {
+      "id": "dynamic-full-week",
+      "type": "dynamic",
+      "title": "Tuần mật độ cao (Full Week)",
+      "description": "Lịch học liên tục 6 ngày, random số slot để test biểu đồ. Giả lập lúc 16:00.",
+      "timeStrategy": "align-current-day",
+      "scenarioType": "dense-week",
+      "mockTimeOffset": "16:00:00",
+      "multiplier": 1
+    },
+    {
+      "id": "dynamic-overlap",
+      "type": "dynamic",
+      "title": "Lỗi trùng lịch (Overlap)",
+      "description": "Test UI khi 2 slot học đè lên nhau (ví dụ 13:30-16:05 và 14:25-17:00).",
+      "timeStrategy": "align-current-day",
+      "scenarioType": "overlap",
+      "mockTimeOffset": "14:45:00",
+      "multiplier": 1
+    },
+    {
+      "id": "dynamic-semi-empty",
+      "type": "dynamic",
+      "title": "Tuần thưa thớt (Semi-Empty)",
+      "description": "Test UI tuần thưa thớt, dễ bị gãy layout (chỉ có lịch vào chiều T4).",
+      "timeStrategy": "align-current-day",
+      "scenarioType": "semi-empty",
+      "mockTimeOffset": "08:00:00",
+      "multiplier": 1
+    },
+    {
+      "id": "dynamic-empty-week",
+      "type": "dynamic",
+      "title": "Tuần nghỉ (Empty Week)",
+      "description": "Test giao diện trống (Empty states) khi nghỉ nguyên tuần.",
+      "timeStrategy": "align-current-day",
+      "scenarioType": "empty",
+      "mockTimeOffset": "08:00:00",
+      "multiplier": 1
+    },
+    {
+      "id": "dynamic-fastforward",
+      "type": "dynamic",
+      "title": "Tua nhanh (Boundary/Transition)",
+      "description": "Bắt đầu 1 phút trước Slot 1 (06:59). Chạy x60 để test quá trình chuyển từ Sắp diễn ra sang Đang dạy.",
+      "timeStrategy": "align-current-day",
+      "scenarioType": "fastforward",
+      "mockTimeOffset": "06:59:00",
       "multiplier": 60
-    },
-    {
-      "id": "mock-pwa-resume",
-      "title": "Thức dậy PWA (Tua thời gian)",
-      "description": "Bắt đầu lúc 08:00 (Đang dạy). Tua nhanh 1 giây = 5 phút để test progress bar cập nhật liên tục.",
-      "file": "scenario-1-base.html",
-      "mockTime": "2026-03-23T08:00:00",
-      "multiplier": 300
-    },
-    {
-      "id": "mock-empty-week",
-      "title": "Tuần giữa HK trống lịch",
-      "description": "Tuần từ 23/03 không có lịch, tuần 30/03 mới có lịch.",
-      "file": "scenario-2-empty.html",
-      "mockTime": "2026-03-23T08:00:00",
-      "multiplier": 1
     }
   ]
 }

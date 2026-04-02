@@ -9,6 +9,7 @@ import { ChevronRight, Clock, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useScheduleStore } from '@/core/stores';
 import { getPeriodTimes } from '@/core/constants';
+import { formatRoom, formatClassDisplay } from '@/core/schedule/schedule.utils';
 import type { CourseSession } from '@/core/schedule/schedule.types';
 import type { NextTeachingInfo, DisplayState } from './useTodayData';
 
@@ -70,9 +71,14 @@ const NextTeachingSection: React.FC<NextTeachingSectionProps> = ({ nextTeaching,
                         <p className="text-accent-600 dark:text-accent-400 font-black text-[10px] uppercase tracking-widest mb-1.5 opacity-80">
                             {dayName}, {dateStr}
                         </p>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-snug line-clamp-2">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 mb-1">
                             {abbreviations[nextTeaching.sessions[0].courseName] || nextTeaching.sessions[0].courseName}
                         </h3>
+                        <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                            <span className="truncate">{formatRoom(nextTeaching.sessions[0].room)}</span>
+                            <span className="opacity-40 shrink-0">•</span>
+                            <span className="truncate">{formatClassDisplay(nextTeaching.sessions[0])}</span>
+                        </div>
                     </div>
                     <div className="shrink-0 w-10 h-10 rounded-xl bg-accent-50 dark:bg-accent-950/30 flex items-center justify-center text-accent-600 dark:text-accent-400 group-hover:bg-accent-600 group-hover:text-white transition-all">
                         <ChevronRight size={20} strokeWidth={2.5} />

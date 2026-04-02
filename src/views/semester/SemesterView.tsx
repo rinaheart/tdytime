@@ -104,9 +104,9 @@ const SemesterView: React.FC = () => {
     if (weeks.length === 0) return <div className="p-8 text-center text-slate-400">{t('stats.today.noDataTitle')}</div>;
 
     return (
-        <div className="pb-6 animate-in fade-in duration-300 relative">
+        <div className="pb-6 animate-in fade-in duration-300 relative -mt-3 md:-mt-8">
             {/* Sticky Header Container */}
-            <div className="sticky top-0 md:top-0 z-30 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md -mx-4 px-4 py-4 space-y-4 mb-6 border-b border-slate-100 dark:border-slate-800 transition-colors font-sans">
+            <div className="sticky top-0 md:top-0 z-30 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md -mx-4 px-4 pt-3 pb-4 space-y-4 mb-6 border-b border-slate-100 dark:border-slate-800 transition-colors font-sans">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                 <div>
@@ -165,7 +165,6 @@ const SemesterView: React.FC = () => {
                             showTeacher={!filters.teacher}
                             viewMode={viewMode}
                             now={now}
-                            overrides={overrides!}
                             abbreviations={abbreviations!}
                         />
                     );

@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { Play } from 'lucide-react';
 import SessionCard from '@/views/shared/SessionCard';
 import { useScheduleStore } from '@/core/stores';
+import { formatClassDisplay } from '@/core/schedule/schedule.utils';
 import type { SessionWithStatus } from './useTodayData';
 
 interface SessionListProps {
@@ -17,7 +18,6 @@ interface SessionListProps {
 
 const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
     const { t } = useTranslation();
-    const overrides = useScheduleStore((s) => s.overrides);
     const abbreviations = useScheduleStore((s) => s.abbreviations);
 
     const completedSessions = sessions.filter((s) => s.status === 'COMPLETED');
@@ -52,7 +52,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
             {/* Cards */}
             <div className="space-y-3">
                 {activeSessions.map((session, idx) => (
-                    <SessionCard key={`${session.courseCode}-${idx}`} session={session} status={session.status} overrides={overrides} abbreviations={abbreviations} />
+                    <SessionCard key={`${session.courseCode}-${idx}`} session={session} status={session.status} abbreviations={abbreviations} />
                 ))}
 
                 {completedSessions.length > 0 && (
@@ -73,9 +73,9 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
                                     <div className="flex-1 min-w-0">
                                         <span className="font-semibold text-slate-600 dark:text-slate-400 truncate block">{abbreviations[s.courseName] || s.courseName}</span>
                                     </div>
-                                    <div className="shrink-0 text-right ml-2">
-                                        <span className="text-[11px] text-slate-400 dark:text-slate-500 font-bold whitespace-nowrap">
-                                            {s.className} <span className="opacity-70">({s.group})</span>
+                                    <div className="shrink-0 text-right ml-2 min-w-0 max-w-[120px]">
+                                        <span className="text-[11px] text-slate-400 dark:text-slate-500 font-bold truncate block">
+                                            {formatClassDisplay(s)}
                                         </span>
                                     </div>
                                 </div>

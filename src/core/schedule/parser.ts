@@ -138,8 +138,8 @@ const processSlotRow = (
             const periods = periodEnd - periodStart + 1;
 
             // SMART DEFAULTS: Auto-detect TH based on groupCode containing '-TH.'
-            // If it contains '-TH.', it's Practical (TH), otherwise Theory (LT).
-            const isPractice = COURSE_TYPE_TH_REGEX.test(groupCode);
+            // OR courseName starting with 'TT ' (Thực tập)
+            const isPractice = COURSE_TYPE_TH_REGEX.test(groupCode) || courseName.startsWith('TT ');
             const type = isPractice ? CourseType.TH : CourseType.LT;
 
             const timeSlot = `${periodStart}-${periodEnd}`;
@@ -218,8 +218,8 @@ export const sanitizeScheduleData = (data: ScheduleData): ScheduleData => {
 
             const sessions = [...dayParts.morning, ...dayParts.afternoon, ...dayParts.evening];
             sessions.forEach(session => {
-                // Re-apply the deterministic rule
-                const isPractice = COURSE_TYPE_TH_REGEX.test(session.courseCode);
+                // Re-apply the deterministic rule (including 'TT ' prefix check)
+                const isPractice = COURSE_TYPE_TH_REGEX.test(session.courseCode) || session.courseName.startsWith('TT ');
                 session.type = isPractice ? CourseType.TH : CourseType.LT;
             });
         });

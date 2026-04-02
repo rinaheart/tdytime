@@ -375,6 +375,16 @@
         "changelog": "Changelog",
         "history": [
             {
+                "version": "v1.6.0",
+                "date": "2026-04-02",
+                "changes": [
+                    "Hệ thống Loại hình (TypeBadge): Quy chuẩn hóa hiển thị LT/TH thông qua cấu hình tập trung, loại bỏ mã lặp.",
+                    "Tự động Nhận diện Thực hành: Tự động phân loại các môn 'TT ' (Thực tập) vào nhóm Thực hành (TH) khi nạp lịch.",
+                    "Ổn định Bố cục (Layout): Khóa độ rộng cột T2-T7 và xử lý tràn ô (overflow) ở view Học kỳ, ngăn chặn thẻ bị chồng lấp.",
+                    "Chuẩn hóa Thẻ bài giảng: Cố định độ cao vùng tên môn học (2 dòng/3 dòng) giúp các thẻ luôn đều nhau trên lưới."
+                ]
+            },
+            {
                 "version": "v1.5.0",
                 "date": "2026-03-30",
                 "changes": [

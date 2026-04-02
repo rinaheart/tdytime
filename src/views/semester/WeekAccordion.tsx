@@ -20,7 +20,6 @@ interface WeekAccordionProps {
     showTeacher: boolean;
     viewMode: 'horizontal' | 'vertical';
     now: Date;
-    overrides: Record<string, CourseType>;
     abbreviations: Record<string, string>;
 }
 
@@ -31,7 +30,7 @@ const formatDateRange = (range: string) => {
 };
 
 const WeekAccordion: React.FC<WeekAccordionProps> = ({ 
-    week, weekIdx, isExpanded, onToggle, showTeacher, viewMode, now, overrides, abbreviations 
+    week, weekIdx, isExpanded, onToggle, showTeacher, viewMode, now, abbreviations 
 }) => {
     const { t } = useTranslation();
 
@@ -96,7 +95,6 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
                             <WeekCardLayout 
                                 week={week} 
                                 now={now} 
-                                overrides={overrides} 
                                 abbreviations={abbreviations} 
                                 showTeacher={showTeacher} 
                                 isCurrent={isCurrent}
@@ -106,7 +104,6 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
                         <WeekTableLayout 
                             week={week} 
                             now={now} 
-                            overrides={overrides} 
                             abbreviations={abbreviations} 
                             showTeacher={showTeacher} 
                             isCurrent={isCurrent}

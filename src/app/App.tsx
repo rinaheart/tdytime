@@ -20,6 +20,22 @@ const App: React.FC = () => {
         initFromStorage();
     }, [initFromStorage]);
 
+    // Keyboard shortcut for DevTools
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            const tag = (e.target as HTMLElement)?.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+            
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'D') {
+                e.preventDefault();
+                localStorage.setItem('devtools_enabled', 'true');
+                window.location.hash = '#/dev';
+            }
+        };
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, []);
+
     return (
         <>
             <PWAUpdateHandler />

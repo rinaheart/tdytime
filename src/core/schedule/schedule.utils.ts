@@ -187,3 +187,61 @@ export const getFilteredWeek = (week: WeekSchedule, filterFn: (s: CourseSession)
     const filteredWeek = isChanged ? { ...week, days: newDays as typeof week.days } : week;
     return { filteredWeek, hasSessions, isChanged };
 };
+
+/**
+ * Format semester string
+ * - If single number or starts with number: "HK1", "HK2"
+ * - If starts with 'hk' already: keep as is
+ * - Otherwise: "HK Hè", "HK Spring"
+ */
+export const formatSemester = (sem: string): string => {
+    if (!sem) return '';
+    const trimmed = sem.trim();
+    if (/^\d/.test(trimmed)) return `HK${trimmed}`;
+    if (/^hk\s*/i.test(trimmed)) return trimmed;
+    return `HK ${trimmed}`;
+};
+
+/**
+ * Format room name with fallback
+ * @param room - e.g. "C.A101"
+ */
+export const formatRoom = (room?: string): string => {
+    return room?.trim() || '—';
+};
+
+/**
+ * Format group name for concise display (e.g., "Nhóm 1" -> "N1")
+ * Handles various input formats and guards against invalid groups.
+ */
+export const formatGroup = (group?: string | number): string => {
+    if (!group) return '';
+    
+    const g = String(group).trim();
+    if (!g) return '';
+
+    // If already in N1 format, return as is (normalized to uppercase)
+    if (/^N\d+$/i.test(g)) return g.toUpperCase();
+
+    // Extract first number sequence
+    const match = g.match(/\d+/);
+    if (match) {
+        const num = Number(match[0]);
+        // Guard against "Nhóm 0" or non-positive numbers
+        if (num > 0) return `N${num}`;
+    }
+
+    // Fallback: return trimmed original string
+    return g;
+};
+
+/**
+ * Format class and group for unified display (e.g., "DS 13A (N1)")
+ * Defensive against missing fields.
+ */
+export const formatClassDisplay = (session: Partial<CourseSession>): string => {
+    const className = session.className?.trim() || '—';
+    const groupText = formatGroup(session.group);
+    
+    return groupText ? `${className} (${groupText})` : className;
+};

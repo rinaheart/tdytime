@@ -7,6 +7,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, Hash, Calendar, FastForward, AlertTriangle } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
+import { formatSemester } from '@/core/schedule';
 
 interface StatsHeaderProps {
     isCollapsed?: boolean;
@@ -49,7 +50,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({ isCollapsed = false, onToggle
                             {metadata.teacher}
                         </h2>
                         <p className="text-xs font-bold text-slate-500 dark:text-slate-400 font-num mt-1 truncate">
-                            HK{metadata.semester} • {metadata.academicYear}
+                            {formatSemester(metadata.semester)} • {metadata.academicYear}
                         </p>
                     </div>
 

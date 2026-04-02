@@ -6,12 +6,12 @@
   <p>Phân tích và Quản lý Lịch giảng thông minh.</p>
 
   <div>
-    <img src="https://img.shields.io/badge/version-v1.5.0-blue.svg?style=flat-square" alt="Version">
+    <img src="https://img.shields.io/badge/version-v1.6.0-blue.svg?style=flat-square" alt="Version">
     <img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat-square" alt="License">
   </div>
   <div style="margin-top: 5px;">
     <img src="https://img.shields.io/badge/React-v19-blue?style=flat-square&logo=react&logoColor=61DAFB" alt="React">
-    <img src="https://img.shields.io/badge/TS-v5-blue?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
+    <img src="https://img.shields.io/badge/TS-v6-blue?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
     <img src="https://img.shields.io/badge/Tailwind-v4-blue?style=flat-square&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
     <img src="https://img.shields.io/badge/PWA-Ready-blue?style=flat-square&logo=pwa&logoColor=white" alt="PWA">
   </div>
@@ -26,6 +26,7 @@
     <li><a href="#-cách-dùng">Cách dùng</a></li>
     <li><a href="#-cài-app-pwa">Cài app (PWA)</a></li>
     <li><a href="#-lộ-trình--công-nghệ">Lộ trình & Công nghệ</a></li>
+    <li><a href="#-changelog">Changelog</a></li>
     <li><a href="#-liên-hệ--hỗ-trợ">Liên hệ & Hỗ trợ</a></li>
   </ol>
 </details>
@@ -46,6 +47,7 @@ TdyTime bắt đầu từ một câu hỏi quen thuộc: “Hôm nay dạy gì, 
 - 🌐 **Đa ngôn ngữ**: Hỗ trợ Việt/Eng.
 - 🎨 **Giao diện hiện đại**: Dark Mode + 7 màu accent.
 - 📊 **Dashboard trực quan**: Thống kê giảng dạy chi tiết.
+- 🏷️ **Tự động nhận diện**: Phân loại LT/TH thông minh từ dữ liệu gốc.
 
 ---
 
@@ -83,6 +85,7 @@ Cài trực tiếp lên thiết bị, mở nhanh và dùng offline.
 **✅ Đã hoàn thành**
 - Theo dõi lịch giảng theo Ngày/Tuần/Học kỳ
 - Thống kê tiến độ giảng dạy
+- Tự động nhận diện loại học phần (LT/TH)
 
 **🚀 Sắp tới**
 - Ghi chú (Notes)
@@ -92,7 +95,7 @@ Cài trực tiếp lên thiết bị, mở nhanh và dùng offline.
 ### Tech Stack
 
 - **Vibe Coding**: Google AI Studio & Antigravity.
-- **Core**: React 19, TypeScript 5, Zustand.
+- **Core**: React 19, TypeScript 6, Zustand.
 - **UI**: Tailwind CSS v4, Lucide Icons.
 - **PWA**: Vite PWA Plugin.
 
@@ -103,6 +106,12 @@ Cài trực tiếp lên thiết bị, mở nhanh và dùng offline.
 Nếu bạn gặp vấn đề hoặc có đề xuất gì, hãy mở một Issue hoặc nhắn tin với tôi qua:
 - **Github**: [@TdyPhan](https://github.com/TdyPhan)
 - **Email**: tdyphan@gmail.com
+
+---
+
+<h2 id="-changelog">📝 Changelog</h2>
+
+Xem chi tiết các thay đổi của từng phiên bản tại [CHANGELOG.md](./CHANGELOG.md).
 
 ---
 <div align="center">
