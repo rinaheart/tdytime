@@ -7,14 +7,14 @@
 
   <div>
     <img src="https://img.shields.io/github/package-json/v/rinaheart/tdytime" alt="Version">
-	    <img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat-square" alt="License">
+	<img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat-square" alt="License">
+	<img src="https://img.shields.io/badge/PWA-Ready-blue?style=flat-square&logo=pwa&logoColor=white" alt="PWA">
   </div>
   <div style="margin-top: 5px;">
     <img src="https://img.shields.io/badge/React-v19-blue?style=flat-square&logo=react&logoColor=61DAFB" alt="React">
     <img src="https://img.shields.io/badge/TS-v6-blue?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
     <img src="https://img.shields.io/badge/Tailwind-v4-blue?style=flat-square&logo=tailwind-css&logoColor=white" alt="Tailwind CSS">
     <img src="https://img.shields.io/badge/Vite-v8-blue?style=flat-square&logo=vite&logoColor=FFD62E" alt="Vite 8">
-    <img src="https://img.shields.io/badge/PWA-Ready-blue?style=flat-square&logo=pwa&logoColor=white" alt="PWA">
   </div>
 </div>
 
