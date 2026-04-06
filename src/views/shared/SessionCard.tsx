@@ -126,19 +126,21 @@ const TodayCard: React.FC<{ session: CourseSession; displayName: string; isLive:
             </div>
 
             {/* Subject Name */}
-            <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200 leading-snug mb-3 text-pretty">
+            <h3 className={`text-base leading-snug mb-3 text-pretty ${
+                isLive ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-600 dark:text-slate-300'
+            }`}>
                 {displayName}
             </h3>
 
-            {/* Meta Row */}
+            {/* Meta Row — Room prominent, class secondary */}
             <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-3 overflow-hidden">
                     <div className="flex items-center gap-1.5 shrink-0">
                         <MapPin size={14} strokeWidth={1.5} />
-                        <span className="font-medium">{formatRoom(session.room)}</span>
+                        <span className="font-bold text-slate-700 dark:text-slate-200">{formatRoom(session.room)}</span>
                     </div>
                     <span className="text-slate-300 dark:text-slate-700 shrink-0">•</span>
-                    <div className="truncate font-semibold text-slate-600 dark:text-slate-300">
+                    <div className="truncate font-medium text-slate-400 dark:text-slate-500 text-xs">
                         {formatClassDisplay(session)}
                     </div>
                 </div>

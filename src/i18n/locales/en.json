@@ -195,6 +195,8 @@
             "next": "Next Teaching Day",
             "firstOfSemester": "First Teaching Day",
             "nextHeader": "{{day}}, {{date}} — {{count}} sessions",
+            "tomorrow": "Tomorrow",
+            "inDays": "In {{count}} days",
             "emptyStates": {
                 "noData": "No schedule data available.",
                 "noDataHint": "Please upload a schedule file to view details.",

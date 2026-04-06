@@ -11,7 +11,7 @@ import { EmptyState } from '@/ui';
 import NextTeachingSection from './NextTeachingSection';
 
 const TodayView: React.FC = () => {
-    const { dateInfo, dayOfWeekIdx, displayState, todaySessions, nextTeaching, greeting, daysUntilSemester, isWeekEmpty, currentWeekRange } = useTodayData();
+    const { now, dateInfo, dayOfWeekIdx, displayState, todaySessions, nextTeaching, greeting, daysUntilSemester, isWeekEmpty, currentWeekRange } = useTodayData();
 
     const isFinished = todaySessions.length > 0 && todaySessions.every((s) => s.status === 'COMPLETED');
 
@@ -27,7 +27,7 @@ const TodayView: React.FC = () => {
                 )}
 
                 {nextTeaching && displayState !== 'AFTER_SEMESTER' && (
-                    <NextTeachingSection nextTeaching={nextTeaching} displayState={displayState} isTodayFinished={isFinished} isWeekEmpty={isWeekEmpty} />
+                    <NextTeachingSection nextTeaching={nextTeaching} displayState={displayState} isTodayFinished={isFinished} isWeekEmpty={isWeekEmpty} now={now} />
                 )}
             </main>
         </div>

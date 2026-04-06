@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronRight, Clock, Play } from 'lucide-react';
+import { ChevronRight, Play } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useScheduleStore } from '@/core/stores';
 import { getPeriodTimes } from '@/core/constants';
@@ -18,6 +18,7 @@ interface NextTeachingSectionProps {
     displayState: DisplayState;
     isTodayFinished: boolean;
     isWeekEmpty?: boolean;
+    now: Date;
 }
 
 const getTimeStr = (session: CourseSession) => {
@@ -27,7 +28,7 @@ const getTimeStr = (session: CourseSession) => {
     return periodStart ? `${String(periodStart.start[0]).padStart(2, '0')}:${String(periodStart.start[1]).padStart(2, '0')}` : '07:00';
 };
 
-const NextTeachingSection: React.FC<NextTeachingSectionProps> = ({ nextTeaching, displayState, isTodayFinished, isWeekEmpty }) => {
+const NextTeachingSection: React.FC<NextTeachingSectionProps> = ({ nextTeaching, displayState, isTodayFinished, isWeekEmpty, now }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const abbreviations = useScheduleStore((s) => s.abbreviations);
@@ -36,6 +37,14 @@ const NextTeachingSection: React.FC<NextTeachingSectionProps> = ({ nextTeaching,
     const dayNames = [t('days.6'), t('days.0'), t('days.1'), t('days.2'), t('days.3'), t('days.4'), t('days.5')];
     const dayName = dayNames[nextTeaching.date.getDay()];
     const dateStr = `${String(nextTeaching.date.getDate()).padStart(2, '0')}/${String(nextTeaching.date.getMonth() + 1).padStart(2, '0')}/${nextTeaching.date.getFullYear()}`;
+
+    // Relative time calculation (uses mock-aware `now`)
+    const today = new Date(now); today.setHours(0, 0, 0, 0);
+    const target = new Date(nextTeaching.date); target.setHours(0, 0, 0, 0);
+    const daysUntil = Math.round((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    const relativeLabel = daysUntil === 1 ? t('stats.today.tomorrow', { defaultValue: 'Ngày mai' })
+        : daysUntil >= 2 && daysUntil <= 3 ? t('stats.today.inDays', { defaultValue: 'Sau {{count}} ngày', count: daysUntil })
+        : null;
 
     const isBeforeSemester = displayState === 'BEFORE_SEMESTER';
     const isNoSessions = displayState === 'NO_SESSIONS';
@@ -68,30 +77,43 @@ const NextTeachingSection: React.FC<NextTeachingSectionProps> = ({ nextTeaching,
             >
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex-1 min-w-0 pr-12">
-                        <p className="text-accent-600 dark:text-accent-400 font-black text-[10px] uppercase tracking-widest mb-1.5 opacity-80">
-                            {dayName}, {dateStr}
+                        <p className="flex flex-wrap items-center gap-1.5 mb-1.5 text-[11px] leading-tight">
+                            {relativeLabel && (
+                                <>
+                                    <span className={`normal-case font-semibold ${daysUntil === 1 ? 'text-accent-600 dark:text-accent-500' : 'text-slate-600 dark:text-slate-400'}`}>
+                                        {relativeLabel}
+                                    </span>
+                                    <span className="opacity-50 text-slate-400 dark:text-slate-500 font-bold">•</span>
+                                </>
+                            )}
+                            <span className={`font-num ${relativeLabel ? 'font-medium text-slate-700 dark:text-slate-200' : 'font-bold text-slate-700 dark:text-slate-200'}`}>
+                                {getTimeStr(nextTeaching.sessions[0])}
+                            </span>
                         </p>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 mb-1">
+                        <h3 className={`text-base leading-snug line-clamp-2 mb-1 ${showHighlight ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-600 dark:text-slate-300'}`}>
                             {abbreviations[nextTeaching.sessions[0].courseName] || nextTeaching.sessions[0].courseName}
                         </h3>
-                        <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
-                            <span className="truncate">{formatRoom(nextTeaching.sessions[0].room)}</span>
+                        <div className="flex items-center gap-1.5 text-xs font-medium">
+                            <span className={`truncate ${showHighlight ? 'font-bold text-slate-700 dark:text-slate-200' : 'font-bold text-slate-500 dark:text-slate-400'}`}>{formatRoom(nextTeaching.sessions[0].room)}</span>
                             <span className="opacity-40 shrink-0">•</span>
-                            <span className="truncate">{formatClassDisplay(nextTeaching.sessions[0])}</span>
+                            <span className="truncate text-slate-400 dark:text-slate-500">{formatClassDisplay(nextTeaching.sessions[0])}</span>
                         </div>
                     </div>
-                    <div className="shrink-0 w-10 h-10 rounded-xl bg-accent-50 dark:bg-accent-950/30 flex items-center justify-center text-accent-600 dark:text-accent-400 group-hover:bg-accent-600 group-hover:text-white transition-all">
+                    <div className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 active:scale-95 ${
+                        showHighlight
+                            ? 'text-accent-600 dark:text-accent-400 bg-accent-50/60 dark:bg-accent-950/20 group-hover:bg-accent-100 dark:group-hover:bg-accent-900/40'
+                            : 'text-slate-400 dark:text-slate-500 bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800'
+                    }`}>
                         <ChevronRight size={20} strokeWidth={2.5} />
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-800/50">
-                    <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-                        <Clock size={14} />
-                        <span className="text-xs font-bold leading-none">{getTimeStr(nextTeaching.sessions[0])}</span>
-                    </div>
+                <div className="flex items-center gap-2 pt-3.5 border-t border-slate-100 dark:border-slate-800/50">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                        {dayName}, {dateStr}
+                    </span>
                     <div className="h-1 w-1 rounded-full bg-slate-300 dark:bg-slate-700" />
-                    <p className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">
+                    <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
                         {nextTeaching.sessions.length === 1 
                             ? t('common.oneSession', { defaultValue: '1 BUỔI DẠY' }) 
                             : t('stats.today.sessionsCount', { count: nextTeaching.sessions.length })

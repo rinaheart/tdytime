@@ -207,7 +207,11 @@ export const formatSemester = (sem: string): string => {
  * @param room - e.g. "C.A101"
  */
 export const formatRoom = (room?: string): string => {
-    return room?.trim() || '—';
+    if (!room) return '—';
+    const trimmed = room.trim();
+    if (!trimmed) return '—';
+    // Remove leading dot and optional whitespace after it
+    return trimmed.replace(/^\.\s*/, '') || '—';
 };
 
 /**

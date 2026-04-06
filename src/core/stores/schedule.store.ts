@@ -76,25 +76,31 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         const historyList = historyService.getAll();
         set({ historyList });
 
+        const savedAbbrStr = localStorage.getItem('global_abbreviations');
+        const globalAbbr = savedAbbrStr ? JSON.parse(savedAbbrStr) : {};
+
         const saved = localStorage.getItem('last_schedule_data');
         if (saved) {
             try {
                 const parsed = JSON.parse(saved) as ScheduleData;
                 const sanitized = sanitizeScheduleData(parsed);
+                // Merge loaded abbreviations with global ones (global takes precedence)
+                const mergedAbbr = { ...(sanitized.abbreviations || {}), ...globalAbbr };
+                
                 set({
                     data: sanitized,
                     metrics: calculateMetrics(sanitized),
                     currentWeekIndex: findCurrentWeekIndex(sanitized),
                     overrides: sanitized.overrides || {},
-                    abbreviations: sanitized.abbreviations || {},
+                    abbreviations: mergedAbbr,
                     isInitialized: true,
                 });
             } catch (e) {
                 console.error('Failed to load saved data:', e);
-                set({ isInitialized: true });
+                set({ abbreviations: globalAbbr, isInitialized: true });
             }
         } else {
-            set({ isInitialized: true });
+            set({ abbreviations: globalAbbr, isInitialized: true });
         }
     },
 
@@ -128,6 +134,11 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         }
 
         const metrics = calculateMetrics(sanitizedData);
+        
+        // Retain global abbreviations when loading a new file
+        const currentAbbr = get().abbreviations;
+        const mergedAbbr = { ...currentAbbr, ...(sanitizedData.abbreviations || {}) };
+        sanitizedData.abbreviations = mergedAbbr;
 
         // Persist the newly sanitized data
         localStorage.setItem('last_schedule_data', JSON.stringify(sanitizedData));
@@ -137,7 +148,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             data: sanitizedData,
             metrics,
             overrides: sanitizedData.overrides || {},
-            abbreviations: sanitizedData.abbreviations || {},
+            abbreviations: mergedAbbr,
             error: null,
             currentWeekIndex: targetWeekIdx,
             toastMessage: { text: message, id: Date.now() },
@@ -223,6 +234,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     setAbbreviations: (abbreviations) => {
         const { data, overrides } = get();
         set({ abbreviations });
+        localStorage.setItem('global_abbreviations', JSON.stringify(abbreviations));
         if (data) {
             const updatedData = { ...data, overrides, abbreviations };
             localStorage.setItem('last_schedule_data', JSON.stringify(updatedData));
@@ -237,6 +249,11 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         const sanitizedData = sanitizeScheduleData(item.data);
         const metrics = calculateMetrics(sanitizedData);
         const weekIdx = findCurrentWeekIndex(sanitizedData);
+        
+        // Retain global abbreviations
+        const currentAbbr = get().abbreviations;
+        const mergedAbbr = { ...currentAbbr, ...(sanitizedData.abbreviations || {}) };
+        sanitizedData.abbreviations = mergedAbbr;
 
         localStorage.setItem('last_schedule_data', JSON.stringify(sanitizedData));
 
@@ -245,7 +262,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             metrics,
             currentWeekIndex: weekIdx,
             overrides: sanitizedData.overrides || {},
-            abbreviations: sanitizedData.abbreviations || {},
+            abbreviations: mergedAbbr,
             error: null,
             toastMessage: { text: t('success.loadedHistory'), id: Date.now() },
         });

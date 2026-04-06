@@ -196,6 +196,8 @@
             "next": "Lịch giảng tiếp theo",
             "firstOfSemester": "Lịch giảng đầu kỳ",
             "nextHeader": "{{day}}, {{date}} — {{count}} buổi giảng",
+            "tomorrow": "Ngày mai",
+            "inDays": "Sau {{count}} ngày",
             "emptyStates": {
                 "noData": "Chưa có dữ liệu lịch giảng.",
                 "noDataHint": "Vui lòng tải file lịch giảng để xem chi tiết.",

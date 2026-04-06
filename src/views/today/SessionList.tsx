@@ -23,7 +23,6 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
     const completedSessions = sessions.filter((s) => s.status === 'COMPLETED');
     const activeSessions = sessions.filter((s) => s.status !== 'COMPLETED');
 
-    const liveCount = sessions.filter((s) => s.status === 'LIVE').length;
     const pendingCount = sessions.filter((s) => s.status === 'PENDING').length;
     const isTodayFinished = sessions.length > 0 && sessions.every((s) => s.status === 'COMPLETED');
     const totalPeriods = sessions.reduce((acc, s) => acc + s.periodCount, 0);
@@ -41,10 +40,9 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
                         }
                     </h2>
                 </div>
-                {!isTodayFinished && (
+                {!isTodayFinished && pendingCount > 0 && (
                     <div className="flex items-center gap-2 text-xs ml-auto">
-                        {liveCount > 0 && <span className="px-2 py-0.5 rounded-full bg-accent-50 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400 font-bold animate-pulse">{liveCount} LIVE</span>}
-                        {pendingCount > 0 && <span className="text-slate-400 font-medium whitespace-nowrap">{t('stats.today.upcomingCount', { count: pendingCount })}</span>}
+                        <span className="text-slate-400 font-medium whitespace-nowrap">{t('stats.today.upcomingCount', { count: pendingCount })}</span>
                     </div>
                 )}
             </div>
@@ -56,7 +54,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
                 ))}
 
                 {completedSessions.length > 0 && (
-                    <div className="bg-slate-50/80 dark:bg-slate-900/60 border-2 border-slate-400 dark:border-slate-500 rounded-2xl p-5 mt-6 shadow-sm">
+                    <div className="bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 rounded-2xl p-5 mt-6">
                         {!isTodayFinished && (
                             <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">
                                 {t('common.completedItem')}
@@ -65,7 +63,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
                         <div className="space-y-4">
                             {completedSessions.map((s, idx) => (
                                 <div key={idx} className="flex items-center gap-2 text-sm">
-                                    <div className="flex items-center gap-1 font-bold shrink-0 min-w-[78px] text-[12px]">
+                                    <div className="flex items-center gap-1 font-bold shrink-0 min-w-[78px] text-[12px] font-num">
                                         <span className="text-slate-500 dark:text-slate-400">{s.startTimeStr}</span>
                                         <span className="text-slate-300 dark:text-slate-700 font-light">/</span>
                                         <span className="text-slate-400 dark:text-slate-500 font-medium">{s.endTimeStr}</span>

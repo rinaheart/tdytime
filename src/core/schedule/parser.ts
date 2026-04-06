@@ -153,7 +153,7 @@ const processSlotRow = (
                 className,
                 timeSlot,
                 periodCount: periods,
-                room: roomMatch ? roomMatch[1].trim() : 'Unknown',
+                room: roomMatch ? roomMatch[1].trim().replace(/^\.\s*/, '') : 'Unknown',
                 teacher: teacherMatch ? teacherMatch[1].trim() : CHUA_RO,
                 type,
                 dayOfWeek: dayName,
@@ -221,6 +221,11 @@ export const sanitizeScheduleData = (data: ScheduleData): ScheduleData => {
                 // Re-apply the deterministic rule (including 'TT ' prefix check)
                 const isPractice = COURSE_TYPE_TH_REGEX.test(session.courseCode) || session.courseName.startsWith('TT ');
                 session.type = isPractice ? CourseType.TH : CourseType.LT;
+                
+                // Sanitize room name (remove leading dots)
+                if (session.room) {
+                    session.room = session.room.trim().replace(/^\.\s*/, '');
+                }
             });
         });
     });

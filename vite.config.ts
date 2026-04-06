@@ -11,6 +11,7 @@ export default defineConfig({
     server: {
         port: 3000,
         host: '0.0.0.0',
+        forwardConsole: true,
     },
     plugins: [
         react(),
@@ -75,16 +76,28 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                manualChunks: {
-                    'vendor-react': ['react', 'react-dom', 'react-i18next', 'i18next'],
-                    'vendor-router': ['react-router-dom'],
-                    'vendor-utils': ['lucide-react', 'zustand'],
+                manualChunks(id) {
+                    if (id.includes('node_modules')) {
+                        if (id.includes('react') || id.includes('i18next')) {
+                            return 'vendor-react';
+                        }
+                        if (id.includes('react-router')) {
+                            return 'vendor-router';
+                        }
+                        if (id.includes('lucide-react') || id.includes('zustand')) {
+                            return 'vendor-utils';
+                        }
+                    }
                 },
             },
         },
         chunkSizeWarningLimit: 1000,
+        modulePreload: {
+            polyfill: true,
+        },
     },
     resolve: {
+        tsconfigPaths: true,
         alias: {
             '@': path.resolve(__dirname, './src'),
         },

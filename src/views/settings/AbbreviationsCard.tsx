@@ -40,6 +40,7 @@ const AbbreviationsCard: React.FC<AbbreviationsCardProps> = ({ onSuccess }) => {
             if (!next[name]) next[name] = abbr;
         });
         setTempAbbr(next);
+        setAbbreviations(next); // Auto-save when suggesting
         onSuccess(t('settings.toast.abbreviationsSuggested'));
     };
 
