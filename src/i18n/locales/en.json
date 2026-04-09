@@ -376,6 +376,26 @@
         "changelog": "Changelog",
         "history": [
             {
+                "version": "v1.7.2",
+                "date": "2026-04-09",
+                "changes": [
+                    "Execution Surgery: Optimized useTodayData hook, replaced 60s polling with Event-based timing (setTimeout).",
+                    "Zustand Indexing: Built Sessions Index for O(1) current/next session lookup.",
+                    "Stable Component Context: Applied React.memo and stable props to SessionCard, minimizing redundant re-renders.",
+                    "Drift Handling: Automatically synchronized Dashboard time when users return to the tab (Visibility API)."
+                ]
+            },
+            {
+                "version": "v1.7.1",
+                "date": "2026-04-09",
+                "changes": [
+                    "Instant Offline-First: Switched Service Worker to CacheFirst for HTML shell, app starts in ~100ms.",
+                    "Critical CSS Inlining: Inlined app shell CSS into index.html to improve FCP and eliminate layout shifts.",
+                    "Bundle Splitting v2: Separated React Core into vendor-react (reduced main bundle to 187KB) and isolated i18n/router.",
+                    "Async resource loading: Switched Google Fonts to async preload and deferred Analytics/SpeedInsights loading."
+                ]
+            },
+            {
                 "version": "v1.7.0",
                 "date": "2026-04-06",
                 "changes": [

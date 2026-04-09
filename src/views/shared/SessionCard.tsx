@@ -21,6 +21,8 @@ interface SessionCardProps {
     abbreviations?: Record<string, string>;
     showTeacher?: boolean;
     className?: string;
+    startTimeStr?: string; // Precomputed
+    endTimeStr?: string;   // Precomputed
 }
 
 /** Compute human-readable start/end time from period range */
@@ -39,10 +41,12 @@ const getTimeStrings = (session: CourseSession) => {
 };
 
 // ─── WEEKLY VARIANT (Compact 3-Line) ─────────────────────────
-const WeeklyCard: React.FC<{ session: CourseSession; displayName: string; showTeacher: boolean; className?: string }> = ({
-    session, displayName, showTeacher, className = '',
+const WeeklyCard: React.FC<{ session: CourseSession; displayName: string; showTeacher: boolean; className?: string; startTimeStr?: string; endTimeStr?: string }> = ({
+    session, displayName, showTeacher, className = '', startTimeStr, endTimeStr,
 }) => {
-    const { startTime, endTime } = getTimeStrings(session);
+    const times = getTimeStrings(session);
+    const startTime = startTimeStr || times.startTime;
+    const endTime = endTimeStr || times.endTime;
     return (
         <div className={`p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-[1px] hover:border-slate-300 dark:hover:border-slate-600 group flex flex-col min-w-0 w-full overflow-hidden ${className}`}>
             {/* Row 1: Time + Room */}
@@ -81,8 +85,10 @@ const WeeklyCard: React.FC<{ session: CourseSession; displayName: string; showTe
 };
 
 // ─── TODAY COMPLETED (Collapsed row) ─────────────────────────
-const CompletedCard: React.FC<{ session: CourseSession; displayName: string; className?: string }> = ({ session, displayName, className = '' }) => {
-    const { startTime, endTime } = getTimeStrings(session);
+const CompletedCard: React.FC<{ session: CourseSession; displayName: string; className?: string; startTimeStr?: string; endTimeStr?: string }> = ({ session, displayName, className = '', startTimeStr, endTimeStr }) => {
+    const times = getTimeStrings(session);
+    const startTime = startTimeStr || times.startTime;
+    const endTime = endTimeStr || times.endTime;
     return (
         <div className={`bg-slate-100 dark:bg-slate-800/80 rounded-lg p-3 border border-slate-200 dark:border-slate-700 opacity-70 transition-all ${className}`}>
             <div className="flex flex-col gap-0.5">
@@ -101,10 +107,12 @@ const CompletedCard: React.FC<{ session: CourseSession; displayName: string; cla
 };
 
 // ─── TODAY FULL CARD (LIVE / PENDING) ────────────────────────
-const TodayCard: React.FC<{ session: CourseSession; displayName: string; isLive: boolean; showTeacher: boolean; className?: string }> = ({
-    session, displayName, isLive, showTeacher, className = '',
+const TodayCard: React.FC<{ session: CourseSession; displayName: string; isLive: boolean; showTeacher: boolean; className?: string; startTimeStr?: string; endTimeStr?: string }> = ({
+    session, displayName, isLive, showTeacher, className = '', startTimeStr, endTimeStr,
 }) => {
-    const { startTime, endTime } = getTimeStrings(session);
+    const times = getTimeStrings(session);
+    const startTime = startTimeStr || times.startTime;
+    const endTime = endTimeStr || times.endTime;
     return (
         <div className={`relative rounded-2xl p-5 transition-all duration-200 ${isLive
             ? 'bg-white dark:bg-slate-900 border border-accent-500 dark:border-accent-500 ring-2 ring-accent-500/20 shadow-sm hover:shadow-lg'
@@ -165,15 +173,17 @@ const SessionCard: React.FC<SessionCardProps> = ({
     abbreviations = {},
     showTeacher = false,
     className = '',
+    startTimeStr,
+    endTimeStr,
 }) => {
     const displayName = abbreviations[session.courseName] || session.courseName;
 
     if (variant === 'weekly') {
-        return <WeeklyCard session={session} displayName={displayName} showTeacher={showTeacher} className={className} />;
+        return <WeeklyCard session={session} displayName={displayName} showTeacher={showTeacher} className={className} startTimeStr={startTimeStr} endTimeStr={endTimeStr} />;
     }
 
     if (status === 'COMPLETED') {
-        return <CompletedCard session={session} displayName={displayName} className={className} />;
+        return <CompletedCard session={session} displayName={displayName} className={className} startTimeStr={startTimeStr} endTimeStr={endTimeStr} />;
     }
 
     return (
@@ -183,6 +193,8 @@ const SessionCard: React.FC<SessionCardProps> = ({
             isLive={status === 'LIVE'}
             showTeacher={showTeacher}
             className={className}
+            startTimeStr={startTimeStr}
+            endTimeStr={endTimeStr}
         />
     );
 };

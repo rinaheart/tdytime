@@ -377,6 +377,26 @@
         "changelog": "Changelog",
         "history": [
             {
+                "version": "v1.7.2",
+                "date": "2026-04-09",
+                "changes": [
+                    "Execution Surgery: Tối ưu hóa hook useTodayData, loại bỏ cơ chế polling 60s và chuyển sang Event-based timing (setTimeout).",
+                    "Zustand Indexing: Xây dựng Sessions Index giúp tra cứu tiết học hiện tại/tiếp theo với chi phí O(1).",
+                    "Stable Component Context: Áp dụng React.memo và stable props cho SessionCard, giảm thiểu re-render thừa.",
+                    "Drift Handling: Tự động đồng bộ thời gian Dashboard ngay khi người dùng quay lại tab (Visibility API)."
+                ]
+            },
+            {
+                "version": "v1.7.1",
+                "date": "2026-04-09",
+                "changes": [
+                    "Instant Offline-First: Chuyển Service Worker sang CacheFirst cho HTML shell, ứng dụng khởi động trong ~100ms.",
+                    "Critical CSS Inlining: Nhúng CSS app shell trực tiếp vào index.html để cải thiện FCP và loại bỏ hiện tượng giật cục.",
+                    "Bundle Splitting v2: Tách React Core vào vendor-react (giảm size file chính xuống 187KB) và cô lập i18n/router.",
+                    "Async resource loading: Chuyển Google Fonts sang async preload và trì hoãn tải script Analytics/SpeedInsights."
+                ]
+            },
+            {
                 "version": "v1.7.0",
                 "date": "2026-04-06",
                 "changes": [

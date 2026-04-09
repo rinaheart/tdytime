@@ -13,6 +13,8 @@ import {
     calculateMetrics,
     parseDateFromRange,
     isCurrentWeek,
+    buildScheduleIndex,
+    type FlatSession,
 } from '../schedule';
 import { historyService, type HistoryItem } from '../schedule/history.service';
 import { parseScheduleHTML, sanitizeScheduleData } from '../schedule/parser';
@@ -27,6 +29,7 @@ interface ScheduleState {
     thresholds: Thresholds;
     overrides: Record<string, CourseType>;
     abbreviations: Record<string, string>;
+    sessionsIndex: FlatSession[];
 
     // UI state
     error: string | null;
@@ -64,6 +67,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     thresholds: DEFAULT_THRESHOLDS,
     overrides: {},
     abbreviations: {},
+    sessionsIndex: [],
     error: null,
     isProcessing: false,
     isInitialized: false,
@@ -93,6 +97,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
                     currentWeekIndex: findCurrentWeekIndex(sanitized),
                     overrides: sanitized.overrides || {},
                     abbreviations: mergedAbbr,
+                    sessionsIndex: buildScheduleIndex(sanitized),
                     isInitialized: true,
                 });
             } catch (e) {
@@ -149,6 +154,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             metrics,
             overrides: sanitizedData.overrides || {},
             abbreviations: mergedAbbr,
+            sessionsIndex: buildScheduleIndex(sanitizedData),
             error: null,
             currentWeekIndex: targetWeekIdx,
             toastMessage: { text: message, id: Date.now() },
@@ -179,7 +185,10 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             }
         } catch (err: unknown) {
             const message = err instanceof Error ? t(err.message) : t('error.noData');
-            set({ error: message });
+            set({ 
+                error: message,
+                isProcessing: false // Ensure processing is reset on error
+            });
         }
     },
 
@@ -227,7 +236,11 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         if (data) {
             const updatedData = { ...data, overrides, abbreviations };
             localStorage.setItem('last_schedule_data', JSON.stringify(updatedData));
-            set({ data: updatedData, metrics: calculateMetrics(updatedData) });
+            set({ 
+                data: updatedData, 
+                metrics: calculateMetrics(updatedData),
+                sessionsIndex: buildScheduleIndex(updatedData)
+            });
         }
     },
 
@@ -238,7 +251,11 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         if (data) {
             const updatedData = { ...data, overrides, abbreviations };
             localStorage.setItem('last_schedule_data', JSON.stringify(updatedData));
-            set({ data: updatedData, metrics: calculateMetrics(updatedData) });
+            set({ 
+                data: updatedData, 
+                metrics: calculateMetrics(updatedData),
+                sessionsIndex: buildScheduleIndex(updatedData)
+            });
         }
     },
 
@@ -263,6 +280,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             currentWeekIndex: weekIdx,
             overrides: sanitizedData.overrides || {},
             abbreviations: mergedAbbr,
+            sessionsIndex: buildScheduleIndex(sanitizedData),
             error: null,
             toastMessage: { text: t('success.loadedHistory'), id: Date.now() },
         });
@@ -286,6 +304,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             toastMessage: null,
             mockState: null,
             isMockEnabled: false,
+            sessionsIndex: [],
         });
     },
 
@@ -308,6 +327,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             historyList: [],
             mockState: null,
             isMockEnabled: false,
+            sessionsIndex: [],
         });
     },
 }));

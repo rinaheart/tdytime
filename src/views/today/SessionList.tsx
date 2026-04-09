@@ -50,7 +50,14 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
             {/* Cards */}
             <div className="space-y-3">
                 {activeSessions.map((session, idx) => (
-                    <SessionCard key={`${session.courseCode}-${idx}`} session={session} status={session.status} abbreviations={abbreviations} />
+                    <SessionCard 
+                        key={`${session.courseCode}-${idx}`} 
+                        session={session} 
+                        status={session.status} 
+                        abbreviations={abbreviations} 
+                        startTimeStr={session.startTimeStr}
+                        endTimeStr={session.endTimeStr}
+                    />
                 ))}
 
                 {completedSessions.length > 0 && (

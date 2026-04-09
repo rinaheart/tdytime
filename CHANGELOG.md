@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.2] - 2026-04-09
+
+### Added
+
+- **Zustand Sessions Indexing**: Triển khai hệ thống index phẳng (`sessionsIndex`) trong store, cho phép truy vấn tiết học hiện tại/kế tiếp chỉ trong $O(1)$ thay vì scan toàn bộ dữ liệu thô mỗi lần render.
+- **Event-based Timing Framework**: Thay thế cơ chế polling "mỗi phút" bằng hệ thống lập lịch dựa trên sự kiện (`setTimeout`). Ứng dụng giờ đây "ngủ" hoàn toàn khi ở trạng thái idle, chỉ tỉnh dậy khi có sự thay đổi trạng thái tiết học thực tế.
+- **Resilient Time Synchronization**: Bổ sung cơ chế tự động đồng bộ lại thời gian thông qua `visibilitychange` và `focus` events, đảm bảo Dashboard luôn chính xác ngay khi người dùng quay lại tab sau khi máy tính sleep.
+
+### Changed
+
+- **Today View Execution Surgery**: Tái cấu trúc toàn diện hook `useTodayData`, tách biệt logic tính toán thời gian khỏi render path của React.
+- **Stable Component Context**: Tối ưu hóa `SessionCard` và `SessionList` để sử dụng tham chiếu props ổn định và precomputed time strings, giảm thiểu tối đa chi phí render thừa.
+
+### Fixed
+
+- **Main-thread CPU Spikes**: Loại bỏ hiện tượng CPU spike định kỳ mỗi 60 giây, đạt mức tiêu thụ tài nguyên gần như bằng 0 khi Dashboard ở trạng thái tĩnh.
+
 ## [1.7.1] - 2026-04-09
 
 ### Added
