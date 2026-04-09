@@ -1,113 +1,160 @@
-import path from 'path';
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
+VitePWA({
+  registerType: 'prompt',
 
-export default defineConfig({
-    define: {
-        __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-        __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
-    },
-    server: {
-        port: 3000,
-        host: '0.0.0.0',
-        forwardConsole: true,
-    },
-    plugins: [
-        react(),
-        VitePWA({
-            registerType: 'prompt',
-            includeAssets: ['favicon.svg', 'pwa-192x192.png', 'pwa-512x512.png'],
-            manifest: {
-                name: 'TdyTime - Phân tích Lịch giảng',
-                short_name: 'TdyTime',
-                description: 'Công cụ Phân tích và Quản lý Lịch giảng thông minh.',
-                theme_color: '#ffffff',
-                background_color: '#ffffff',
-                display: 'standalone',
-                start_url: '/',
-                icons: [
-                    {
-                        src: 'pwa-192x192.png',
-                        sizes: '192x192',
-                        type: 'image/png',
-                        purpose: 'any',
-                    },
-                    {
-                        src: 'pwa-512x512.png',
-                        sizes: '512x512',
-                        type: 'image/png',
-                        purpose: 'any',
-                    },
-                ],
-            },
-            workbox: {
-                globPatterns: ['**/*.{js,css,ico,png,svg,json,woff2}'], // ❌ Bỏ html
-                cleanupOutdatedCaches: true,
-                clientsClaim: true,
-                skipWaiting: true,
-                runtimeCaching: [
-                    {
-                        urlPattern: ({ request }: any) => request.mode === 'navigate',
-                        handler: 'NetworkFirst',
-                        options: {
-                            cacheName: 'html-cache',
-                            networkTimeoutSeconds: 3,
-                        },
-                    },
-                    {
-                        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'google-fonts-cache',
-                            expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
-                            cacheableResponse: { statuses: [0, 200] },
-                        },
-                    },
-                    {
-                        urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'gstatic-fonts-cache',
-                            expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
-                            cacheableResponse: { statuses: [0, 200] },
-                        },
-                    },
-                ],
-            },
-            devOptions: {
-                enabled: true,
-                type: 'module',
-            },
-        }),
+  includeAssets: [
+    'favicon.svg',
+    'pwa-192x192.png',
+    'pwa-512x512.png',
+  ],
+
+  manifest: {
+    name: 'TdyTime - Phân tích Lịch giảng',
+    short_name: 'TdyTime',
+    description: 'Công cụ Phân tích và Quản lý Lịch giảng thông minh.',
+    theme_color: '#ffffff',
+    background_color: '#ffffff',
+    display: 'standalone',
+    start_url: '/',
+    icons: [
+      {
+        src: 'pwa-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        src: 'pwa-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+      },
     ],
-    build: {
-        rollupOptions: {
-            output: {
-                manualChunks(id) {
-                    if (id.includes('node_modules')) {
-                        if (id.includes('react') || id.includes('i18next')) {
-                            return 'vendor-react';
-                        }
-                        if (id.includes('react-router')) {
-                            return 'vendor-router';
-                        }
-                        if (id.includes('lucide-react') || id.includes('zustand')) {
-                            return 'vendor-utils';
-                        }
-                    }
-                },
+  },
+
+  workbox: {
+    // ===== CORE =====
+    globPatterns: ['**/*.{js,css,html,ico,png,svg,json,woff2}'],
+    navigateFallback: '/index.html',
+    navigateFallbackDenylist: [/^\/api/],
+
+    cleanupOutdatedCaches: true,
+    clientsClaim: false,
+    skipWaiting: false,
+
+    // Giữ mức hợp lý để tránh cache bundle quá lớn
+    maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
+
+    // Optional (bật nếu muốn future-proof, không critical với SWR)
+    navigationPreload: false,
+
+    // ===== RUNTIME CACHING =====
+    runtimeCaching: [
+      /**
+       * 1. HTML Navigation (App Shell)
+       * Instant load + background update
+       */
+      {
+        urlPattern: ({ request }) => request.mode === 'navigate',
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'tdytime-html-v1',
+          plugins: [
+            {
+              cacheWillUpdate: async ({ response }) => {
+                // chỉ cache response hợp lệ
+                if (response && response.status === 200) return response;
+                return null;
+              },
             },
+          ],
         },
-        chunkSizeWarningLimit: 1000,
-        modulePreload: {
-            polyfill: true,
+      },
+
+      /**
+       * 2. JS / CSS (Hashed assets → CacheFirst)
+       */
+      {
+        urlPattern: ({ request }) =>
+          request.destination === 'script' ||
+          request.destination === 'style',
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'tdytime-static-v1',
+          expiration: {
+            maxEntries: 60,
+            maxAgeSeconds: 60 * 60 * 24 * 30,
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
         },
-    },
-    resolve: {
-        tsconfigPaths: true,
-        alias: {
-            '@': path.resolve(__dirname, './src'),
+      },
+
+      /**
+       * 3. Images
+       */
+      {
+        urlPattern: ({ request }) => request.destination === 'image',
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'tdytime-images-v1',
+          expiration: {
+            maxEntries: 100,
+            maxAgeSeconds: 60 * 60 * 24 * 30,
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
         },
-    },
-});
+      },
+
+      /**
+       * 4. Fonts (Google)
+       */
+      {
+        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+        handler: 'StaleWhileRevalidate',
+        options: {
+          cacheName: 'tdytime-fonts-css',
+        },
+      },
+      {
+        urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: 'tdytime-fonts-files',
+          expiration: {
+            maxEntries: 20,
+            maxAgeSeconds: 60 * 60 * 24 * 365,
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
+        },
+      },
+
+      /**
+       * 5. API (future-ready)
+       * Không cache aggressive để tránh stale data
+       */
+      {
+        urlPattern: /^\/api\/.*$/,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'tdytime-api',
+          networkTimeoutSeconds: 3,
+          expiration: {
+            maxEntries: 30,
+            maxAgeSeconds: 60 * 5, // 5 phút
+          },
+          cacheableResponse: {
+            statuses: [0, 200],
+          },
+        },
+      },
+    ],
+  },
+
+  devOptions: {
+    enabled: true,
+    type: 'module',
+  },
+})
