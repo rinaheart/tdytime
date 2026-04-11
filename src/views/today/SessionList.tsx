@@ -10,7 +10,7 @@ import { Play } from 'lucide-react';
 import SessionCard from '@/views/shared/SessionCard';
 import { useScheduleStore } from '@/core/stores';
 import { formatClassDisplay } from '@/core/schedule/schedule.utils';
-import type { SessionWithStatus } from './useTodayData';
+import type { SessionWithStatus } from './today.types';
 
 interface SessionListProps {
     sessions: SessionWithStatus[];

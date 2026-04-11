@@ -1,5 +1,5 @@
 import { CourseSession, ScheduleData } from './schedule.types';
-import { getDayDateString, parseDateFromRange } from './schedule.utils';
+import { getDayDateString } from './schedule.utils';
 import { getPeriodTimes } from '../constants';
 
 export interface FlatSession extends CourseSession {
@@ -19,7 +19,7 @@ export const buildScheduleIndex = (data: ScheduleData): FlatSession[] => {
     const index: FlatSession[] = [];
 
     data.weeks.forEach((week) => {
-        Object.entries(week.days).forEach(([dayName, daySchedule], dayIdx) => {
+        Object.entries(week.days).forEach(([_, daySchedule], dayIdx) => {
             const dateStr = getDayDateString(week.dateRange, dayIdx);
             if (!dateStr) return;
 

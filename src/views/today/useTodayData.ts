@@ -7,9 +7,8 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useScheduleStore } from '@/core/stores';
-import { DAYS_OF_WEEK } from '@/core/constants';
 import { parseDateFromRange, isCurrentWeek, getCurrentWeekRange } from '@/core/schedule/schedule.utils';
-import type { SessionWithStatus, NextTeachingInfo, DisplayState } from './useTodayData';
+import type { SessionWithStatus, NextTeachingInfo, DisplayState } from './today.types';
 
 // Re-export type since it was moved from the original file to a shared definition or kept here
 // For consistency with existing components, we'll keep the types here or ensure they match.
@@ -110,7 +109,6 @@ export const useTodayData = () => {
     // Calendar Day Level derived state (Memoized)
     const currentJsDay = now.getDay();
     const dayOfWeekIdx = currentJsDay === 0 ? 6 : currentJsDay - 1;
-    const dayName = DAYS_OF_WEEK[dayOfWeekIdx];
     const dateInfo = useMemo(() => formatDateVN(now), [now.getDate(), now.getMonth(), now.getFullYear()]);
 
     const semesterBounds = useMemo(() => {

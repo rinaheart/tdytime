@@ -48,7 +48,7 @@ const WeeklyCard: React.FC<{ session: CourseSession; displayName: string; showTe
     const startTime = startTimeStr || times.startTime;
     const endTime = endTimeStr || times.endTime;
     return (
-        <div className={`p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-[1px] hover:border-slate-300 dark:hover:border-slate-600 group flex flex-col min-w-0 w-full overflow-hidden ${className}`}>
+        <div className={`p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-[1px] hover:border-slate-300 dark:hover:border-slate-600 group flex flex-col min-w-0 w-full overflow-hidden ${className}`}>
             {/* Row 1: Time + Room */}
             <div className="flex items-center justify-between text-[10px] mb-1 min-w-0">
                 <div className="flex items-center font-bold shrink-0">
@@ -76,7 +76,7 @@ const WeeklyCard: React.FC<{ session: CourseSession; displayName: string; showTe
 
             {/* Optional Teacher Footer Strip */}
             {showTeacher && (
-                <div className="mt-2.5 -mx-2.5 -mb-2.5 px-2.5 py-1.5 bg-accent-50 dark:bg-accent-900/40 rounded-b-lg text-[10px] font-bold border-t border-accent-100/50 dark:border-accent-800/30">
+                <div className="mt-2.5 -mx-2.5 -mb-2.5 px-2.5 py-1.5 bg-accent-50 dark:bg-accent-900/40 rounded-b-md text-[10px] font-bold border-t border-accent-100/50 dark:border-accent-800/30">
                     <span className="text-slate-900 dark:text-accent-100">{session.teacher}</span>
                 </div>
             )}
@@ -90,7 +90,7 @@ const CompletedCard: React.FC<{ session: CourseSession; displayName: string; cla
     const startTime = startTimeStr || times.startTime;
     const endTime = endTimeStr || times.endTime;
     return (
-        <div className={`bg-slate-100 dark:bg-slate-800/80 rounded-lg p-3 border border-slate-200 dark:border-slate-700 opacity-70 transition-all ${className}`}>
+        <div className={`bg-slate-100 dark:bg-slate-800/80 rounded-md p-3 border border-slate-200 dark:border-slate-700 opacity-70 transition-all ${className}`}>
             <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
                     < Clock size={12} strokeWidth={1.5} />
