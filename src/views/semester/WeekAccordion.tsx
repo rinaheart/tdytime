@@ -53,7 +53,6 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
             className={`relative z-10 bg-white dark:bg-slate-900 rounded-2xl border transition-all duration-300 overflow-hidden ${isCurrent 
                 ? 'border-accent-500 dark:border-accent-400 ring-2 ring-accent-500/20 shadow-lg shadow-accent-500/5' 
                 : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'}`}
-            style={{ contentVisibility: 'auto', containIntrinsicSize: viewMode === 'vertical' ? '100px 500px' : '1024px 500px' }}
         >
             {/* Timeline dot (Vertical only) */}
             {viewMode === 'vertical' && (

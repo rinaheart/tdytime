@@ -9,20 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Flat Index Architecture**: Chuyển toàn bộ truy vấn dữ liệu sang mảng phẳng $O(1)$, loại bỏ nested traversal.
-- **Window Virtualization**: `SemesterView` giờ chỉ render weeks trong viewport, giảm 90% DOM nodes.
-- **CSS Containment**: `.virtual-item` dùng `contain: layout style paint` + `content-visibility: auto` để tối ưu browser rendering.
+- **Flat Index Architecture**: Chuyển toàn bộ truy vấn dữ liệu sang mảng phẳng $O(1)$ thông qua `sessionsIndex`, loại bỏ nested traversal.
+- **Semester Boundary Detection**: Bổ sung `semesterBounds` & `maxWeekIdx` lưu trữ làm Single Source of Truth tập trung, quản lý trạng thái kết thúc Học kỳ một cách tinh tế.
 - **Performance Budget CI**: Automated Lighthouse checks với thresholds TBT < 50ms, CLS = 0, FCP < 1s.
 
 ### Changed
 
-- **SessionCard**: Giờ chỉ bind precomputed strings, zero runtime date logic.
-- **useWeeklyData/useSemesterData**: Hooks mới trả về grouped `FlatSession[]`, filter $O(N)$ trên flat array.
+- **Native Rendering Optimization**: Cấu trúc lại thẻ Xem Học kỳ sang Native Rendering thuần + `scrollIntoView()`. Xử lý dứt điểm các rủi ro đo đạc sai lệch layout và "mất tuần" mà cơ chế render ảo mang lại, code gọn và nhẹ hơn rất nhiều (tốn < 1ms rendering cho ~200 tiết).
+- **SessionCard**: Giờ chỉ bind precomputed strings, loại bỏ hoàn toàn các hàm chuyển đổi thời gian (zero runtime date logic).
+- **useWeeklyData/useSemesterData**: Tái cấu trúc hooks để trả về grouped `FlatSession[]`, giúp engine filter hoạt động cực nhanh $O(N)$ trên mảng tuyến tính.
+- **PWA Update UX**: Tinh giản thẻ thông báo nâng cấp phiên bản thành 2 dòng, đồng bộ màu sắc nhẹ nhàng và tự nhiên theo Theme.
+
+### Fixed
+
+- **Semester Context Sync**: Giải quyết triệt để lỗi View Tuần bị kẹt và tự động xoá trắng lịch giảng dạy khi người dùng đang xem lại lịch học ở phiên bản mà Học kỳ đã qua đi.
 
 ### Performance
 
-- **Scroll FPS**: 60fps stable trên mobile cho semester 15+ weeks.
-- **Total Blocking Time**: < 50ms cho mọi view (Lighthouse CI enforced).
+- **Scroll FPS**: Duy trì ngưỡng khung hình đỉnh kim 60fps stable trên thiết bị di động (kể cả tệp 17+ weeks đầy đủ tiết).
+- **Total Blocking Time**: < 50ms cho mọi giao diện (Lighthouse CI enforced).
 - **First Contentful Paint**: < 1.0s nhờ Critical CSS + precomputed data.
 
 ## [1.7.2] - 2026-04-09

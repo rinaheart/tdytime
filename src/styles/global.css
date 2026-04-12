@@ -165,16 +165,7 @@ h4,
 .virtual-item {
     will-change: transform;
     contain: layout style paint; /* 🔥 Isolate rendering cycles */
-    content-visibility: auto; /* Skip render offscreen items (Chrome 85+) */
-    contain-intrinsic-size: 280px; /* Hint: approximate height for scroll estimation */
     backface-visibility: hidden; /* Avoid flicker on Safari/Chrome */
-}
-
-/* Progressive enhancement: fallback gracefully if content-visibility unsupported */
-@supports not (content-visibility: auto) {
-    .virtual-item {
-        contain: layout style; /* Fallback to basic containment */
-    }
 }
 
 /* Debug helper (dev mode only) */

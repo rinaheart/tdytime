@@ -1,8 +1,7 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Zap, LayoutTemplate, Columns, Search, ChevronDown, ChevronUp } from 'lucide-react';
-import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useScheduleStore } from '@/core/stores/schedule.store';
 import { FilterBar } from '@/ui';
 import { isCurrentWeek as checkIsCurrentWeek, getCurrentWeekRange } from '@/core/schedule/schedule.utils';
@@ -36,9 +35,6 @@ const SemesterView: React.FC = () => {
     const [expandedWeeks, setExpandedWeeks] = useState<Record<number, boolean>>({});
     const [toast, setToast] = useState<string | null>(null);
 
-    // Scroll container ref
-    const listRef = useRef<HTMLDivElement>(null);
-
     // Filtered weeks to show (only weeks that have sessions after filtering, or ALL weeks if no active filter)
     const visibleWeekIndices = useMemo(() => {
         return weeksMetadata
@@ -49,14 +45,6 @@ const SemesterView: React.FC = () => {
             });
     }, [weeksMetadata, byWeek, hasActiveFilters]);
 
-    // Virtualization setup
-    const virtualizer = useWindowVirtualizer({
-        count: visibleWeekIndices.length,
-        estimateSize: () => 100, // Balanced estimate for collapsed state
-        overscan: 5,
-        scrollMargin: 300, // Top margin for navigation
-    });
-
     // Cross-view navigation auto-expand
     useEffect(() => {
         if (location.state && typeof location.state.autoExpandWeek === 'number') {
@@ -65,24 +53,20 @@ const SemesterView: React.FC = () => {
             
             // Wait for expansion to render then scroll
             setTimeout(() => {
-                const listIdx = visibleWeekIndices.indexOf(wIdx);
-                if (listIdx !== -1) {
-                    virtualizer.scrollToIndex(listIdx, { align: 'center', behavior: 'smooth' });
+                const element = document.getElementById(`week-card-${wIdx}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }, 100);
             
             window.history.replaceState({}, document.title);
         }
-    }, [location.state, visibleWeekIndices, virtualizer]);
+    }, [location.state]);
 
     useEffect(() => { if (window.innerWidth < 768) setViewMode('vertical'); }, []);
 
     const toggleWeek = (wIdx: number) => {
         setExpandedWeeks((prev) => ({ ...prev, [wIdx]: !prev[wIdx] }));
-        // Important: Height changed, must re-measure in next frame
-        requestAnimationFrame(() => {
-            virtualizer.measure();
-        });
     };
 
     const isAllExpanded = useMemo(() => {
@@ -95,15 +79,13 @@ const SemesterView: React.FC = () => {
         const newState: Record<number, boolean> = {};
         visibleWeekIndices.forEach(idx => { newState[idx] = shouldExpand; });
         setExpandedWeeks(newState);
-        requestAnimationFrame(() => {
-            virtualizer.measure();
-        });
     };
 
     const scrollToCurrentWeek = () => {
         if (isBeforeSemester) {
             setExpandedWeeks(prev => ({ ...prev, [0]: true }));
-            virtualizer.scrollToIndex(0, { align: 'center', behavior: 'smooth' });
+            const element = document.getElementById(`week-card-0`);
+            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
@@ -119,9 +101,9 @@ const SemesterView: React.FC = () => {
             const weekSessions = byWeek[currentWIdx + 1] || [];
             if (weekSessions.length > 0 || !hasActiveFilters) {
                 setExpandedWeeks(prev => ({ ...prev, [currentWIdx]: true }));
-                const listIdx = visibleWeekIndices.indexOf(currentWIdx);
-                if (listIdx !== -1) {
-                    virtualizer.scrollToIndex(listIdx, { align: 'center', behavior: 'smooth' });
+                const element = document.getElementById(`week-card-${currentWIdx}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             } else {
                 setToast(t('semester.toast.noSchedule', { range: weeksMetadata[currentWIdx].dateRange }));
@@ -153,10 +135,7 @@ const SemesterView: React.FC = () => {
                             <Zap size={16} className="fill-current" />
                             <span className="hidden sm:inline">{t('common.current')}</span>
                         </button>
-                        <button onClick={() => {
-                            setViewMode(v => v === 'vertical' ? 'horizontal' : 'vertical');
-                            requestAnimationFrame(() => virtualizer.measure());
-                        }} className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm">
+                        <button onClick={() => setViewMode(v => v === 'vertical' ? 'horizontal' : 'vertical')} className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm">
                             {viewMode === 'vertical' ? <Columns size={16} className="text-accent-500" /> : <LayoutTemplate size={16} className="text-accent-500" />}
                             <span className="hidden sm:inline">{viewMode === 'vertical' ? t('common.verticalList') : t('common.horizontalList')}</span>
                         </button>
@@ -179,14 +158,11 @@ const SemesterView: React.FC = () => {
                 )}
             </div>
 
-            {/* Virtualized Weeks List */}
+            {/* Native Weeks List */}
             <div 
-                ref={listRef}
-                className={`relative ${viewMode === 'vertical' ? 'before:absolute before:left-[19px] md:before:left-[23px] before:top-4 before:bottom-4 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800 before:z-0' : ''}`}
-                style={{ height: `${virtualizer.getTotalSize()}px` }}
+                className={`relative flex flex-col gap-8 ${viewMode === 'vertical' ? 'before:absolute before:left-[19px] md:before:left-[23px] before:top-4 before:bottom-4 before:w-0.5 before:bg-slate-200 dark:before:bg-slate-800 before:z-0' : ''}`}
             >
-                {virtualizer.getVirtualItems().map((virtualRow) => {
-                    const wIdx = visibleWeekIndices[virtualRow.index];
+                {visibleWeekIndices.map((wIdx) => {
                     const weekMeta = weeksMetadata[wIdx];
                     const weekSessions = byWeek[wIdx + 1] || [];
                     const isCurrent = checkIsCurrentWeek(weekMeta.dateRange, now);
@@ -196,13 +172,7 @@ const SemesterView: React.FC = () => {
                     const isExpanded = expandedWeeks[wIdx] ?? isDefaultExpanded;
 
                     return (
-                        <div 
-                            key={virtualRow.key}
-                            data-index={virtualRow.index}
-                            ref={virtualizer.measureElement}
-                            className={`absolute top-0 left-0 w-full virtual-item pb-8`}
-                            style={{ transform: `translateY(${virtualRow.start - virtualizer.options.scrollMargin}px)` }}
-                        >
+                        <div key={wIdx} className="w-full">
                             <WeekAccordion
                                 weekSessions={weekSessions}
                                 weekIdx={wIdx}
