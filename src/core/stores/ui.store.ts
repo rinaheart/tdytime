@@ -13,10 +13,13 @@ interface UIState {
     darkMode: boolean;
     accentTheme: AccentTheme;
     sidebarCollapsed: boolean;
+    toast: { message: string | null; type: 'success' | 'error' | 'info' };
     toggleDarkMode: () => void;
     setAccentTheme: (theme: AccentTheme) => void;
     toggleSidebar: () => void;
     setSidebarCollapsed: (collapsed: boolean) => void;
+    setToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+    clearToast: () => void;
     resetAll: () => void;
 }
 
@@ -52,6 +55,8 @@ export const useUIStore = create<UIState>((set) => ({
     })(),
 
     sidebarCollapsed: typeof window !== 'undefined' ? window.innerWidth < 1024 : true,
+    
+    toast: { message: null, type: 'success' },
 
     toggleDarkMode: () =>
         set((state) => {
@@ -73,6 +78,10 @@ export const useUIStore = create<UIState>((set) => ({
 
     setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
 
+    setToast: (message, type = 'success') => set({ toast: { message, type } }),
+    
+    clearToast: () => set({ toast: { message: null, type: 'success' } }),
+
     resetAll: () => {
         localStorage.removeItem('color-theme');
         localStorage.removeItem('accent-theme');
@@ -84,7 +93,8 @@ export const useUIStore = create<UIState>((set) => ({
         set({
             darkMode: systemDark,
             accentTheme: DEFAULT_THEME,
-            sidebarCollapsed: typeof window !== 'undefined' ? window.innerWidth < 1024 : true
+            sidebarCollapsed: typeof window !== 'undefined' ? window.innerWidth < 1024 : true,
+            toast: { message: null, type: 'success' }
         });
     },
 }));

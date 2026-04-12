@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useShallow } from 'zustand/react/shallow';
 import { useScheduleStore } from '@/core/stores/schedule.store';
 import { isCurrentWeek } from '@/core/schedule';
 import type { SessionWithStatus, NextTeachingInfo, DisplayState } from './today.types';
@@ -11,6 +12,7 @@ const formatDateVN = (date: Date) => {
     return { day, month, year, full: `${day}/${month}/${year}` };
 };
 
+const EMPTY_ARRAY: any[] = [];
 /**
  * useTodayData — Feature Hook (Adapter Refactor v2.0)
  * Refactored to leverage FlatSession index for O(1) queries.
@@ -20,11 +22,11 @@ export const useTodayData = () => {
     const { t } = useTranslation();
     
     // Select specific slices to avoid unnecessary re-renders
-    const sessionsIndex = useScheduleStore(s => s.sessionsIndex);
-    const semesterBounds = useScheduleStore(s => s.semesterBounds);
+    const sessionsIndex = useScheduleStore(useShallow(s => s.sessionsIndex));
+    const semesterBounds = useScheduleStore(useShallow(s => s.semesterBounds));
     const mockState = useScheduleStore(s => s.mockState);
     const teacherName = useScheduleStore(s => s.data?.metadata?.teacher || '');
-    const weekData = useScheduleStore(s => s.data?.weeks || []);
+    const weekData = useScheduleStore(useShallow(s => s.data?.weeks)) || EMPTY_ARRAY;
 
     const [now, setNow] = useState(new Date());
 

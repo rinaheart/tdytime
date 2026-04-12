@@ -13,6 +13,8 @@ import type { HistoryItem } from '@/core/schedule';
 import { APP_VERSION } from '@/core/constants';
 import ThemePicker from '@/ui/composites/ThemePicker';
 import { changeLanguage } from '@/i18n/config';
+import { useExamStore } from '@/core/stores/exam.store';
+import { parseExamText } from '@/core/exam/exam.parser';
 
 // ============================================
 // Sub-components
@@ -173,6 +175,7 @@ const WelcomeView: React.FC = () => {
     const handleFileUpload = useScheduleStore((s) => s.handleFileUpload);
     const loadHistoryItem = useScheduleStore((s) => s.loadHistoryItem);
     const deleteHistoryItem = useScheduleStore((s) => s.deleteHistoryItem);
+    const setExamData = useExamStore((s) => s.setExamData);
 
     const [isDragging, setIsDragging] = useState(false);
     const [showPaste, setShowPaste] = useState(false);
@@ -194,11 +197,26 @@ const WelcomeView: React.FC = () => {
     }, [data, isForceUpload, navigate]);
 
     const processContent = useCallback((content: string) => {
+        // Try parsing as Exam Schedule first
+        try {
+            const exams = parseExamText(content);
+            if (exams && exams.length > 0) {
+                setExamData('', exams);
+                // We show an alert for simplicity because Toast component in TdyTime is tied to ScheduleStore
+                // in the current generic WelcomeView.
+                alert(t('exam.toastSuccess', { count: exams.length, defaultValue: `Đã nhận diện ${exams.length} buổi coi thi.` }));
+                navigate('/exam', { replace: true });
+                return;
+            }
+        } catch (e) {
+            // Ignore error and fallthrough to HTML schedule parse
+        }
+
         handleFileUpload(content, t, i18n.language);
         if (useScheduleStore.getState().data) {
             navigate('/today', { replace: true });
         }
-    }, [handleFileUpload, t, i18n.language, navigate]);
+    }, [handleFileUpload, t, i18n.language, navigate, setExamData]);
 
     const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

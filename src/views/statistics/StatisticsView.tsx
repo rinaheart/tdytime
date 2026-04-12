@@ -11,14 +11,22 @@ import { DAYS_OF_WEEK, getPeriodTimes } from '@/core/constants';
 import type { CourseSession } from '@/core/schedule/schedule.types';
 import { StatsHeader, ProgressCard, InsightCard, TeachingStructureCard, TopSubjectsCard, CoTeachersTable } from './cards';
 import { HeatmapChart, WeeklyTrendChart, DailyBarChart } from './charts';
-import { LayoutGrid } from 'lucide-react';
+import { LayoutGrid, CalendarCheck, ChevronRight } from 'lucide-react';
+import { useExamStore } from '@/core/stores/exam.store';
+import { useNavigate } from 'react-router-dom';
+import { getExamDateRange } from '@/core/exam/exam.utils';
 
 const COLORS = { primary: 'var(--color-accent-600)', secondary: 'var(--color-accent-400)' };
 
 const StatisticsView: React.FC = () => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const data = useScheduleStore((s) => s.data);
     const metrics = useScheduleStore((s) => s.metrics);
+    const hasExamData = useExamStore((s) => !!s.data);
+    const examSessions = useExamStore((s) => s.data?.sessions ?? []);
+    const examCount = examSessions.length;
+    const examDateRange = useMemo(() => getExamDateRange(examSessions), [examSessions]);
 
     const [currentTime, setCurrentTime] = useState(new Date());
     const mockState = useScheduleStore((s) => s.mockState);
@@ -234,6 +242,25 @@ const StatisticsView: React.FC = () => {
 
                     {/* 6. Co-teachers */}
                     <CoTeachersTable />
+
+                    {/* 7. Exam Schedule — Persistent Bottom Banner */}
+                    {hasExamData && (
+                        <button
+                            onClick={() => navigate('/exam')}
+                            className="w-full bg-gradient-to-r from-accent-50 to-transparent dark:from-accent-900/20 dark:to-transparent p-4 rounded-2xl border border-accent-200/60 dark:border-accent-800/40 cursor-pointer transition-all hover:shadow-sm hover:border-accent-300 dark:hover:border-accent-700 active:scale-[0.99] flex items-center justify-between group text-left"
+                        >
+                            <div className="flex items-center gap-3">
+                                <CalendarCheck size={20} strokeWidth={1.5} className="text-accent-600 dark:text-accent-400 shrink-0" />
+                                <div>
+                                    <p className="font-medium text-sm text-slate-800 dark:text-slate-200">{t('exam.statsCard', 'Lịch coi thi học kỳ này')}</p>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                                        {examCount} {t('common.sessions', 'buổi')} • {examDateRange}
+                                    </p>
+                                </div>
+                            </div>
+                            <ChevronRight size={16} className="text-slate-400 dark:text-slate-500 group-hover:text-accent-500 group-hover:translate-x-0.5 transition-all shrink-0" />
+                        </button>
+                    )}
                 </div>
             )}
         </div>

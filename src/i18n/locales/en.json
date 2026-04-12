@@ -19,6 +19,7 @@
         "error": "Error",
         "success": "Success",
         "cancel": "Cancel",
+        "delete": "Delete Data",
         "save": "Save",
         "reset": "Reset",
         "close": "Close",
@@ -378,6 +379,19 @@
         "changelog": "Changelog",
         "history": [
             {
+                "version": "v1.9.0",
+                "date": "2026-04-13",
+                "changes": [
+                    "Exam Invigilation Module: Independent architecture (src/core/exam), versatile TSV Parser from WelcomeView.",
+                    "UI Dual Mode: Daily grouped Card View & Mobile-first Flexbox Table View.",
+                    "Smart Entry Points: Animated TodayHeader Badge & Quick navigation shortcut in StatisticsView.",
+                    "Live Status: 'Ongoing' Pulse Accent indicator within Table View for current sessions.",
+                    "Table Architecture: Flexbox-based 2-column layout to save space and auto-hide empty shifts.",
+                    "UX & Experience: Improved post-delete navigation, confirmation Toasts, and Zero-Jank lazy-loading.",
+                    "Mobile Optimization: Table layout guaranteed zero horizontal scroll on narrow screens."
+                ]
+            },
+            {
                 "version": "v1.8.0",
                 "date": "2026-04-12",
                 "changes": [
@@ -655,5 +669,46 @@
         "install_title": "Install TdyTime",
         "install_desc": "Add the app to your home screen to access your teaching schedule offline.",
         "install_button": "Install"
+    },
+    "exam": {
+        "title": "Exam Schedule",
+        "total": "Total",
+        "completed": "Done",
+        "room": "Room",
+        "format": "Format",
+        "role": "Role",
+        "duration": "Duration (min)",
+        "upcoming": "Upcoming",
+        "ongoing": "Ongoing",
+        "past": "Finished",
+        "emptyTitle": "No Exam Schedule",
+        "emptyDesc": "Paste exam schedule text on the home page to display it here.",
+        "toastSuccess": "✅ Detected {{count}} exam sessions.",
+        "viewAction": "View Schedule",
+        "shortLabel": "Exams",
+        "ongoingShort": "Live",
+        "statsCard": "Exam Schedule This Semester",
+        "statsCardDesc": "Track upcoming exam supervision sessions.",
+        "confirmClear": "Clear current exam schedule?",
+        "confirmClearTitle": "Confirm Data Deletion?",
+        "confirmClearDesc": "This action will delete the entire current exam schedule. This cannot be undone.",
+        "summaryDone": "✓ {{total}} sessions — Completed",
+        "summaryActive": "{{total}} exam sessions",
+        "liveCount": "{{count}} live",
+        "pendingCount": "{{count}} upcoming",
+        "detailedView": "Detailed mode",
+        "compactView": "Compact mode",
+        "detail": "Detail",
+        "compact": "Compact",
+        "celebrationTitle": "Congratulations!",
+        "celebrationDesc": "You have completed all exam supervision sessions.",
+        "clearData": "Clear exam data",
+        "cardView": "Card View",
+        "tableView": "Table View",
+        "colDateSubject": "Day / Subject",
+        "colTimeRoom": "Time / Room",
+        "toast": {
+            "deleted": "Exam schedule deleted"
+        }
     }
 }

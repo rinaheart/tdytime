@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-04-13
+
+### Added
+
+- **Lịch coi thi (Exam Invigilation Module)**:
+    - **Module độc lập**: Kiến trúc tách biệt hoàn toàn (`src/core/exam/`, `exam.store.ts`) đảm bảo Zero Regression Risk cho logic lịch giảng chính.
+    - **Parser đa năng**: Hỗ trợ paste dữ liệu TSV (Mã học phần, Phòng, Giờ thi...) ngay từ WelcomeView.
+- **UI Dual Mode**:
+    - **Card View**: Nhóm theo ngày, layout 3 dòng chuẩn mobile.
+    - **Table View (Mới)**: Thiết kế lại bằng Flexbox (thay thế HTML Table), bỏ Header row, nhóm thông minh theo Ngày/Buổi (Sáng/Chiều/Tối). Layout 2 cột (Môn | Giờ/Phòng) tối ưu Mobile-first.
+- **Smart Entry Points**:
+    - **TodayHeader**: Pill Badge động hiển thị số buổi thi trong tuần (tự động ẩn nếu không có thi trong 14 ngày).
+    - **StatisticsView**: Thêm điều hướng nhanh xuống cuối màn hình.
+- **Live Status**: Indicator "Đang diễn ra" (Chấm Pulse Accent) tại chế độ Bảng giúp nhận biết ca thi hiện tại.
+
+### Changed
+
+- **Table View Architecture**: Chuyển từ `<table>` sang Flexbox 2 cột giúp tiết kiệm không gian, loại bỏ cuộn ngang, cải thiện tốc độ quét thông tin.
+- **Navigation & UX**:
+    - Cải thiện luồng điều hướng sau khi Xóa lịch (tự động về Today hoặc Welcome).
+    - Thêm Toast xác nhận khi xóa.
+    - Ẩn tự động các buổi (Sáng/Chiều/Tối) không có lịch tại chế độ Bảng.
+
+### Performance
+
+- **Zero-Jank**: Sử dụng lazy-loading cho ExamView và precomputed time strings.
+- **Mobile Optimization**: Giao diện Bảng đảm bảo không gây Horizontal Scroll trên thiết bị màn hình hẹp.
+
 ## [1.8.0] - 2026-04-12
 
 ### Added

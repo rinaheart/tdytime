@@ -38,7 +38,6 @@ interface ScheduleState {
     error: string | null;
     isProcessing: boolean;
     isInitialized: boolean;
-    toastMessage: { text: string; id: number } | null;
     historyList: HistoryItem[];
 
     // Mock/Demo testing state
@@ -78,7 +77,6 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     error: null,
     isProcessing: false,
     isInitialized: false,
-    toastMessage: null,
     historyList: [],
     mockState: null,
     isMockEnabled: false,
@@ -171,11 +169,12 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             maxWeekIdx: calculateMaxWeekIdx(sessions),
             error: null,
             currentWeekIndex: targetWeekIdx,
-            toastMessage: { text: message, id: Date.now() },
             isProcessing: false,
             isInitialized: true,
             historyList: historyService.getAll(),
         });
+        
+        useUIStore.getState().setToast(message);
     },
 
     handleFileUpload: (content, t, lang) => {
@@ -306,8 +305,9 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             semesterBounds: calculateSemesterBounds(sessions),
             maxWeekIdx: calculateMaxWeekIdx(sessions),
             error: null,
-            toastMessage: { text: t('success.loadedHistory'), id: Date.now() },
         });
+
+        useUIStore.getState().setToast(t('success.loadedHistory'));
     },
 
     deleteHistoryItem: (id) => {
@@ -325,7 +325,6 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             abbreviations: {},
             error: null,
             isProcessing: false,
-            toastMessage: null,
             mockState: null,
             isMockEnabled: false,
             sessionsIndex: [],
@@ -361,7 +360,6 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             abbreviations: {},
             error: null,
             isProcessing: false,
-            toastMessage: null,
             historyList: [],
             mockState: null,
             isMockEnabled: false,

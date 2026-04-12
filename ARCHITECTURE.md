@@ -4,6 +4,156 @@ TdyTime được thiết kế với triết lý **"Performance as a Feature"**. 
 
 ---
 
+## 📂 Project Structure
+
+```
+tdytime/
+├── index.html                          # Entry HTML, critical CSS inline, async font loading
+├── package.json                        # Dependencies & scripts
+├── vite.config.ts                      # Vite build config, manualChunks, PWA plugin
+├── tsconfig.json                       # TypeScript config
+├── postcss.config.js                   # PostCSS (Tailwind + Autoprefixer)
+├── vercel.json                         # Vercel deploy, immutable cache headers, rewrites
+├── vite-env.d.ts                       # Vite client type reference
+├── ARCHITECTURE.md                     # This file
+├── CHANGELOG.md                        # Version history
+├── DESIGN.md                           # Design system & tokens
+├── README.md                           # Project overview
+│
+├── public/
+│   ├── favicon.svg                     # App icon (SVG)
+│   ├── pwa-192x192.png                 # PWA icon 192px
+│   ├── pwa-512x512.png                 # PWA icon 512px
+│   ├── robots.txt                      # Crawler rules
+│   └── mocks/
+│       ├── manifest.json               # Mock PWA manifest for testing
+│       ├── scenario-1-base.html        # Mock schedule HTML (base case)
+│       └── scenario-2-empty.html       # Mock schedule HTML (empty case)
+│
+├── scripts/
+│   └── desktop_audit.py                # Lighthouse desktop audit script
+│
+└── src/
+    ├── main.tsx                         # React entry point, i18n init, router mount
+    ├── types.d.ts                       # Global type augmentations (vite-plugin-pwa)
+    │
+    ├── app/                             # ── App Shell Layer ──
+    │   ├── App.tsx                      # Root component, RouterProvider wrapper
+    │   ├── router.tsx                   # Hash-based routing, lazy loading, guards
+    │   ├── Monitoring.tsx               # Vercel Analytics & Speed Insights (deferred)
+    │   ├── PWAUpdateHandler.tsx         # SW update lifecycle, skip-waiting toast
+    │   └── layout/
+    │       └── AppLayout.tsx            # Main layout: sidebar nav, bottom tab bar, Outlet
+    │
+    ├── core/                            # ── Domain Logic Layer ──
+    │   ├── constants.ts                 # App version, days, period times (LT/TH), colors, thresholds
+    │   ├── hooks/
+    │   │   └── useScheduleFilter.ts     # Reusable filter hook (search, class, room, teacher)
+    │   ├── schedule/
+    │   │   ├── index.ts                 # Public API barrel (re-exports all schedule modules)
+    │   │   ├── schedule.types.ts        # Domain types: CourseSession, WeekSchedule, Metrics, etc.
+    │   │   ├── parser.ts                # HTML parser: UMS schedule HTML → ScheduleData
+    │   │   ├── analyzer.ts              # Metrics calculator: ScheduleData → Metrics
+    │   │   ├── schedule.index.ts        # Flat index builder: week/day tree → sorted FlatSession[]
+    │   │   ├── schedule.utils.ts        # Date parsing, session filtering, formatting helpers
+    │   │   ├── history.service.ts       # LocalStorage history CRUD (10 items, dedup)
+    │   │   └── schedule.index.test.ts   # Unit tests for flat index builder
+    │   ├── stores/
+    │   │   ├── index.ts                 # Store barrel export
+    │   │   ├── schedule.store.ts        # Zustand: schedule data, metrics, overrides, abbreviations
+    │   │   └── ui.store.ts              # Zustand: theme, language, view mode, thresholds
+    │   └── themes/
+    │       └── theme.registry.ts        # 7 accent themes definition, migration map, validators
+    │
+    ├── i18n/                            # ── Internationalization ──
+    │   ├── config.ts                    # i18next config (vi/en, localStorage persistence)
+    │   └── locales/
+    │       ├── vi.json                  # Vietnamese translations (~38KB)
+    │       └── en.json                  # English translations (~33KB)
+    │
+    ├── styles/                          # ── Design Tokens & Global CSS ──
+    │   ├── tokens.css                   # CSS custom properties: accent colors per theme, spacing
+    │   └── global.css                   # Tailwind directives, base resets, utility classes
+    │
+    ├── ui/                              # ── Reusable UI Components ──
+    │   ├── index.ts                     # UI barrel (primitives + composites)
+    │   ├── ui.types.ts                  # UI-only types (ChangeLogEntry)
+    │   ├── primitives/
+    │   │   ├── index.ts                 # Primitives barrel
+    │   │   ├── Button.tsx               # Button component with variants
+    │   │   ├── Card.tsx                 # Card container with glass effect
+    │   │   ├── Badge.tsx                # Badge with color variants
+    │   │   ├── Skeleton.tsx             # Loading skeleton + SessionCardSkeleton
+    │   │   └── Toast.tsx                # Toast notification component
+    │   └── composites/
+    │       ├── index.ts                 # Composites barrel
+    │       ├── FilterBar.tsx            # Search + filter dropdowns (class/room/teacher)
+    │       ├── EmptyState.tsx           # Empty data illustration + message
+    │       ├── TypeBadge.tsx            # LT/TH course type badge
+    │       └── ThemePicker.tsx          # Theme selection grid with preview swatches
+    │
+    ├── utils/                           # ── Shared Utilities ──
+    │   ├── mockGenerator.ts             # Generate realistic demo ScheduleData
+    │   └── timezone.ts                  # Time range formatting with Intl.DateTimeFormat
+    │
+    └── views/                           # ── Page Views ──
+        ├── welcome/
+        │   └── WelcomeView.tsx          # Landing page: file upload, history list, demo mode
+        ├── today/
+        │   ├── TodayView.tsx            # Today's sessions overview
+        │   ├── TodayHeader.tsx          # Date display header
+        │   ├── NextTeachingSection.tsx   # "Next class" countdown card
+        │   ├── SessionList.tsx          # Session list renderer
+        │   ├── useTodayData.ts          # Hook: filter today's sessions from flat index
+        │   └── today.types.ts           # Today view-specific types
+        ├── weekly/
+        │   ├── WeeklyView.tsx           # Weekly schedule with table/card toggle
+        │   ├── WeekNavigation.tsx       # Week prev/next navigator with date range
+        │   └── useWeeklyData.ts         # Hook: weekly data from store + current week detection
+        ├── semester/
+        │   ├── SemesterView.tsx         # Full semester accordion view
+        │   ├── WeekAccordion.tsx         # Collapsible week panel with day columns
+        │   └── useSemesterData.ts       # Hook: semester-level data aggregation
+        ├── statistics/
+        │   ├── StatisticsView.tsx       # Dashboard with charts and insight cards
+        │   ├── cards/
+        │   │   ├── index.ts             # Cards barrel
+        │   │   ├── StatsHeader.tsx      # Summary header (total hours/sessions/weeks)
+        │   │   ├── InsightCard.tsx      # Single metric insight card
+        │   │   ├── ProgressCard.tsx     # Progress bar card (completion %)
+        │   │   ├── TopSubjectsCard.tsx  # Top subjects by period count
+        │   │   ├── TeachingStructureCard.tsx  # LT/TH breakdown card
+        │   │   └── CoTeachersTable.tsx  # Co-teacher details table
+        │   └── charts/
+        │       ├── index.ts             # Charts barrel
+        │       ├── DailyBarChart.tsx    # Hours per day of week (bar chart)
+        │       ├── WeeklyTrendChart.tsx # Weekly hours trend (line chart)
+        │       └── HeatmapChart.tsx     # Week × Day heatmap grid
+        ├── settings/
+        │   ├── SettingsView.tsx         # Settings page layout
+        │   ├── ThresholdsCard.tsx       # Warning/danger threshold sliders
+        │   ├── CourseTypeCard.tsx       # LT/TH override editor per course
+        │   ├── AbbreviationsCard.tsx    # Course name abbreviation editor
+        │   ├── PeriodStandardsCard.tsx  # Period time reference table
+        │   ├── DangerZoneCard.tsx       # Reset data / clear cache
+        │   └── AboutCard.tsx           # Version info, changelog
+        ├── shared/
+        │   ├── SessionCard.tsx          # Universal session card (used across views)
+        │   ├── WeekTableLayout.tsx      # Table-mode week layout (rows = periods)
+        │   └── WeekCardLayout.tsx       # Card-mode week layout (columns = shifts)
+        └── dev/
+            ├── DevToolsView.tsx         # Developer tools page (DEV-only)
+            ├── components/
+            │   └── CollapsibleSection.tsx  # Collapsible panel for dev sections
+            ├── sections/
+            │   ├── ScheduleBuilderForm.tsx # Manual schedule JSON builder
+            │   └── StateInspector.tsx      # Zustand store state viewer
+            └── utils/
+                └── snapshotGenerator.ts    # Store snapshot export utility
+```
+
+---
+
 ## 🚀 PWA & Service Worker (Offline-First)
 
 TdyTime áp dụng chiến lược **Offline-First** thực thụ giúp ứng dụng hoạt động như một App Native.

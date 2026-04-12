@@ -10,6 +10,7 @@ import {
     Zap, LayoutGrid, BarChart3, Settings,
     CalendarDays, Menu, Upload, Globe, Wrench, Calendar, Clock
 } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 import { useUIStore, useScheduleStore } from '@/core/stores';
 import { Toast } from '@/ui/primitives';
 import { APP_VERSION } from '@/core/constants';
@@ -32,7 +33,7 @@ const AppLayout: React.FC = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { sidebarCollapsed, toggleSidebar } = useUIStore();
-    const metadata = useScheduleStore((s) => s.data?.metadata);
+    const metadata = useScheduleStore(useShallow(s => s.data?.metadata));
     const mockState = useScheduleStore(s => s.mockState);
     const isMockEnabled = useScheduleStore(s => s.isMockEnabled);
     const toggleMockEnabled = useScheduleStore(s => s.toggleMockEnabled);

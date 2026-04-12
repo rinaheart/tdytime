@@ -19,6 +19,7 @@
         "error": "Lỗi",
         "success": "Thành công",
         "cancel": "Hủy",
+        "delete": "Xóa dữ liệu",
         "save": "Lưu",
         "reset": "Đặt lại",
         "close": "Đóng",
@@ -379,6 +380,19 @@
         "changelog": "Changelog",
         "history": [
             {
+                "version": "v1.9.0",
+                "date": "2026-04-13",
+                "changes": [
+                    "Lịch coi thi (Exam Invigilation Module): Kiến trúc độc lập (src/core/exam), Parser TSV đa năng từ WelcomeView.",
+                    "UI Dual Mode: Card View nhóm theo ngày & Table View (Flexbox 2 cột) Mobile-first.",
+                    "Smart Entry Points: Tự động Badge tại TodayHeader & Phím tắt điều hướng nhanh tại StatisticsView.",
+                    "Live Status: Chấm Pulse Accent 'Đang diễn ra' ngay tại giao diện Bảng giúp nhận biết ca thi.",
+                    "Hạ tầng Bảng: Chuyển sang Flexbox 2 cột tiết kiệm không gian, ẩn tự động các buổi không có lịch.",
+                    "Trải nghiệm (UX): Cải thiện luồng sau xóa lịch, thêm Toast xác nhận và Zero-Jank lazy-loading.",
+                    "Mobile Optimization: Giao diện Bảng đảm bảo tuyệt đối không gây Horizontal Scroll trên màn hình hẹp."
+                ]
+            },
+            {
                 "version": "v1.8.0",
                 "date": "2026-04-12",
                 "changes": [
@@ -663,5 +677,46 @@
         "install_title": "Cài đặt TdyTime",
         "install_desc": "Thêm ứng dụng vào màn hình chính và theo dõi lịch giảng offline (không cần internet).",
         "install_button": "Cài đặt"
+    },
+    "exam": {
+        "title": "Lịch coi thi",
+        "total": "Tổng buổi",
+        "completed": "Đã xong",
+        "room": "Phòng",
+        "format": "Hình thức",
+        "role": "Vai trò",
+        "duration": "Thời gian (phút)",
+        "upcoming": "Sắp tới",
+        "ongoing": "Đang diễn ra",
+        "past": "Đã xong",
+        "emptyTitle": "Chưa có lịch thi",
+        "emptyDesc": "Dán nội dung lịch coi thi vào trang bắt đầu để hiển thị tại đây.",
+        "toastSuccess": "✅ Đã nhận diện {{count}} buổi coi thi.",
+        "viewAction": "Xem lịch",
+        "shortLabel": "Coi thi",
+        "ongoingShort": "Đang thi",
+        "statsCard": "Lịch coi thi học kỳ này",
+        "statsCardDesc": "Theo dõi các buổi coi thi sắp tới.",
+        "confirmClear": "Xóa lịch coi thi hiện tại?",
+        "confirmClearTitle": "Xác nhận xóa dữ liệu?",
+        "confirmClearDesc": "Hành động này sẽ xóa toàn bộ lịch coi thi hiện tại. Bạn không thể hoàn tác.",
+        "summaryDone": "✓ {{total}} buổi — Hoàn thành",
+        "summaryActive": "{{total}} buổi coi thi",
+        "liveCount": "{{count}} đang diễn ra",
+        "pendingCount": "{{count}} sắp tới",
+        "detailedView": "Chế độ chi tiết",
+        "compactView": "Chế độ gọn",
+        "detail": "Chi tiết",
+        "compact": "Gọn",
+        "celebrationTitle": "Chúc mừng!",
+        "celebrationDesc": "Bạn đã hoàn thành tất cả các buổi coi thi.",
+        "clearData": "Xóa dữ liệu thi",
+        "cardView": "Chế độ thẻ",
+        "tableView": "Chế độ bảng",
+        "colDateSubject": "Thứ / Môn thi",
+        "colTimeRoom": "Giờ / Phòng",
+        "toast": {
+            "deleted": "Đã xóa lịch coi thi"
+        }
     }
 }

@@ -6,6 +6,7 @@
 import React, { lazy, Suspense } from 'react';
 import { createHashRouter, Navigate, useRouteError } from 'react-router-dom';
 import { useScheduleStore } from '../core/stores/schedule.store';
+import { useExamStore } from '../core/stores/exam.store';
 import { SessionCardSkeleton } from '../ui/primitives';
 
 /** Global Error Boundary for Router */
@@ -18,6 +19,7 @@ const SemesterView = lazy(() => import('../views/semester/SemesterView'));
 const StatisticsView = lazy(() => import('../views/statistics/StatisticsView'));
 const SettingsView = lazy(() => import('../views/settings/SettingsView'));
 const DevToolsView = lazy(() => import('../views/dev/DevToolsView'));
+const ExamView = lazy(() => import('../views/exam/ExamView'));
 
 const DevGuard = ({ children }: { children: React.ReactNode }) => {
     const allowed = import.meta.env.DEV || localStorage.getItem('devtools_enabled') === 'true';
@@ -67,11 +69,16 @@ const LoadingFallback = () => (
 
 /** Redirect to /welcome if no data loaded, otherwise render children */
 const RequireData = ({ children }: { children: React.ReactNode }) => {
-    const isInitialized = useScheduleStore((s) => s.isInitialized);
+    const isInitSchedule = useScheduleStore((s) => s.isInitialized);
     const hasData = useScheduleStore((s) => !!s.data);
+    const isInitExam = useExamStore((s) => s.isInitialized);
+    const hasExamData = useExamStore((s) => !!s.data);
 
-    if (!isInitialized) return <LoadingFallback />;
-    if (!hasData) return <Navigate to="/" replace />;
+    if (!isInitSchedule || !isInitExam) return <LoadingFallback />;
+    if (!hasData && !hasExamData) return <Navigate to="/" replace />;
+    
+    // If user only has exam data and tries to access empty layout routes, ideally we redirect to /exam
+    // but React Router handles this by just rendering what's requested. It's fine for now.
     return <>{children}</>;
 };
 
@@ -147,6 +154,14 @@ export const router = createHashRouter([
                 element: (
                     <Suspense fallback={<LoadingFallback />}>
                         <SettingsView />
+                    </Suspense>
+                ),
+            },
+            {
+                path: '/exam',
+                element: (
+                    <Suspense fallback={<LoadingFallback />}>
+                        <ExamView />
                     </Suspense>
                 ),
             },
