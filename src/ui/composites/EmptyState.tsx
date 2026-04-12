@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Zap, Coffee, CheckCircle2, PartyPopper } from 'lucide-react';
+import { Zap, Coffee, PartyPopper } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 type EmptyStateType = 'NO_DATA' | 'BEFORE_SEMESTER' | 'AFTER_SEMESTER' | 'NO_SESSIONS';

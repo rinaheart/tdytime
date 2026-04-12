@@ -14,7 +14,6 @@ const WeeklyView: React.FC = () => {
     const { t } = useTranslation();
     const currentWeekIndex = useScheduleStore((s) => s.currentWeekIndex);
     const abbreviations = useScheduleStore((s) => s.abbreviations);
-    const semesterBounds = useScheduleStore((s) => s.semesterBounds);
     const teacherName = useScheduleStore((s) => s.data?.metadata?.teacher || '');
     
     const {
