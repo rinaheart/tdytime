@@ -198,6 +198,8 @@
             "nextHeader": "{{day}}, {{date}} — {{count}} buổi giảng",
             "tomorrow": "Ngày mai",
             "inDays": "Sau {{count}} ngày",
+            "semesterCompleted": "🎉 Học kỳ đã hoàn thành!",
+            "semesterCompletedDesc": "Chúc mừng bạn đã hoàn thành toàn bộ lịch giảng của học kỳ này.",
             "emptyStates": {
                 "noData": "Chưa có dữ liệu lịch giảng.",
                 "noDataHint": "Vui lòng tải file lịch giảng để xem chi tiết.",
@@ -380,10 +382,12 @@
                 "version": "v1.8.0",
                 "date": "2026-04-12",
                 "changes": [
-                    "Flat Index Architecture: Chuyển toàn bộ truy vấn dữ liệu sang mảng phẳng $O(1)$, loại bỏ nested traversal.",
-                    "Window Virtualization: SemesterView giờ chỉ render weeks trong viewport, giảm 90% DOM nodes.",
-                    "CSS Containment: .virtual-item dùng contain: layout style paint + content-visibility: auto để tối ưu browser rendering.",
-                    "Performance Budget CI: Automated Lighthouse checks với thresholds TBT < 50ms, CLS = 0, FCP < 1s."
+                    "Flat Index Architecture: Tuyệt đối hóa hiệu năng truy vấn thông qua sessionsIndex, loại bỏ vòng lặp lồng nhau (nested traversal).",
+                    "Native Rendering Optimization: Loại bỏ render ảo (virtualization) để chuyển sang Native Rendering thuần + scrollIntoView(). Tăng độ tin cậy và sự ổn định của giao diện.",
+                    "Semester End Boundary: Tinh chỉnh điều kiện kết thúc học kỳ linh hoạt hơn (sau 23:59 UTC). Hỗ trợ giảng viên tổng kết lịch tuần cuối thuận tiện.",
+                    "Today View Banner: Bổ sung banner ăn mừng 🎉 hoàn thành học kỳ ngay khi tiết cuối kết thúc, giữ trọn vẹn trải nghiệm cho đến khi sang ngày mới.",
+                    "Performance CI: Áp dụng Performance Budget tự động (Lighthouse), đảm bảo mọi thay đổi luôn đạt chuẩn Core Web Vitals (FCP < 1s, CLS = 0).",
+                    "WeekCardLayout Fix: Khắc phục lỗi SessionCard bị cắt chiều cao ở chế độ xem dọc. Loại bỏ overflow-hidden, h-full, và flex-1 wrapper gây ép layout sai. Bổ sung min-w-0 + shrink-0 để ổn định grid trên mọi viewport."
                 ]
             },
             {

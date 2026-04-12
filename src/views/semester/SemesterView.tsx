@@ -82,6 +82,26 @@ const SemesterView: React.FC = () => {
     };
 
     const scrollToCurrentWeek = () => {
+        // 🔑 Priority 1: Try to find a week that matches today's date range
+        const currentWIdx = weeksMetadata.findIndex((w) => checkIsCurrentWeek(w.dateRange, now));
+
+        if (currentWIdx !== -1) {
+            const weekSessions = byWeek[currentWIdx + 1] || [];
+            if (weekSessions.length > 0 || !hasActiveFilters) {
+                setExpandedWeeks(prev => ({ ...prev, [currentWIdx]: true }));
+                const element = document.getElementById(`week-card-${currentWIdx}`);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return;
+            } else {
+                setToast(t('semester.toast.noSchedule', { range: weeksMetadata[currentWIdx].dateRange }));
+                setTimeout(() => setToast(null), 3500);
+                return;
+            }
+        }
+
+        // 🔑 Priority 2: Not in an active week range? Check extreme bounds
         if (isBeforeSemester) {
             setExpandedWeeks(prev => ({ ...prev, [0]: true }));
             const element = document.getElementById(`week-card-0`);
@@ -95,31 +115,16 @@ const SemesterView: React.FC = () => {
             return;
         }
 
-        const currentWIdx = weeksMetadata.findIndex((w) => checkIsCurrentWeek(w.dateRange, now));
-
-        if (currentWIdx !== -1) {
-            const weekSessions = byWeek[currentWIdx + 1] || [];
-            if (weekSessions.length > 0 || !hasActiveFilters) {
-                setExpandedWeeks(prev => ({ ...prev, [currentWIdx]: true }));
-                const element = document.getElementById(`week-card-${currentWIdx}`);
-                if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            } else {
-                setToast(t('semester.toast.noSchedule', { range: weeksMetadata[currentWIdx].dateRange }));
-                setTimeout(() => setToast(null), 3500);
-            }
-        } else {
-            const weekRange = getCurrentWeekRange(now);
-            setToast(t('semester.toast.noSchedule', { range: weekRange }));
-            setTimeout(() => setToast(null), 3500);
-        }
+        // 🔑 Priority 3: Fallback for empty gaps or unknown ranges
+        const weekRange = getCurrentWeekRange(now);
+        setToast(t('semester.toast.noSchedule', { range: weekRange }));
+        setTimeout(() => setToast(null), 3500);
     };
 
     if (weeksMetadata.length === 0) return <div className="p-8 text-center text-slate-400">{t('stats.today.noDataTitle')}</div>;
 
     return (
-        <div className="pb-6 animate-in fade-in duration-300 relative -mt-3 md:-mt-8">
+        <div className="pt-1 pb-6 animate-in fade-in duration-300 relative">
             {/* Sticky Header Container */}
             <div className="sticky top-0 z-30 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md -mx-4 px-4 pt-3 pb-4 space-y-4 mb-6 border-b border-slate-100 dark:border-slate-800 transition-colors font-sans">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">

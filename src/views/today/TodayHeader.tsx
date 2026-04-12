@@ -15,7 +15,7 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
     const { t } = useTranslation();
 
     return (
-        <header className="px-2 pt-2 pb-8 md:pb-10">
+        <header className="px-2 pt-1 pb-8 md:pb-10">
             <div className="flex flex-col gap-0.5 select-none">
                 <h1 className="text-[22px] md:text-2xl font-semibold text-slate-800 dark:text-slate-100 tracking-tight">
                     {t(`days.${dayOfWeekIdx}`)}, {dateInfo.day}/{dateInfo.month}/{dateInfo.year}

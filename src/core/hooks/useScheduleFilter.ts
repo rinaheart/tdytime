@@ -55,9 +55,20 @@ export function useScheduleFilter(_deprecatedWeeks?: WeekSchedule[], initialTeac
 
     const semesterBounds = useScheduleStore((s) => s.semesterBounds);
     
+    /**
+     * Returns true when current time is AFTER 23:59:59 UTC of the last session's day.
+     * This allows users to review the final week's schedule during the evening/weekend.
+     * 
+     * Boundary behavior:
+     * - Session status: Changes to "Done" immediately when session.endTs <= now
+     * - Semester state: Changes to "Ended" only after end-of-day of last session
+     * - Weekly View: Still shows schedule if current week contains last session
+     */
     const isAfterSemester = useMemo(() => {
         if (!semesterBounds) return false;
-        return now.getTime() >= semesterBounds.end;
+        const endOfDay = new Date(semesterBounds.end);
+        endOfDay.setUTCHours(23, 59, 59, 999);
+        return now.getTime() > endOfDay.getTime();
     }, [semesterBounds, now]);
 
     const isBeforeSemester = useMemo(() => {

@@ -197,6 +197,8 @@
             "nextHeader": "{{day}}, {{date}} — {{count}} sessions",
             "tomorrow": "Tomorrow",
             "inDays": "In {{count}} days",
+            "semesterCompleted": "🎉 Semester Completed!",
+            "semesterCompletedDesc": "You have completed all teaching sessions for this semester.",
             "emptyStates": {
                 "noData": "No schedule data available.",
                 "noDataHint": "Please upload a schedule file to view details.",
@@ -379,10 +381,12 @@
                 "version": "v1.8.0",
                 "date": "2026-04-12",
                 "changes": [
-                    "Flat Index Architecture: Migrated all data queries to a flat O(1) array, eliminating nested traversal.",
-                    "Window Virtualization: SemesterView now renders only weeks in viewport, reducing DOM nodes by 90%.",
-                    "CSS Containment: Applied contain: layout style paint + content-visibility: auto to .virtual-item for optimized browser rendering.",
-                    "Performance Budget CI: Automated Lighthouse checks with TBT < 50ms, CLS = 0, FCP < 1s thresholds."
+                    "Flat Index Architecture: Maximized query performance via sessionsIndex, completely eliminating nested traversal complexity.",
+                    "Native Rendering Optimization: Replaced virtualization with Native Rendering + scrollIntoView(). Improved layout reliability and fixed Semester View edge cases.",
+                    "Semester End Boundary: Refined semester-end conditions to be day-gated (23:59 UTC). Allows for final week reviews during evenings and weekends.",
+                    "Today View Banner: Added a festive 🎉 completion banner that triggers immediately after the last session, maintaining context until the next day.",
+                    "Performance CI: Integrated automated Performance Budget (Lighthouse) to maintain Core Web Vitals standards (FCP < 1s, CLS = 0).",
+                    "WeekCardLayout Fix: Fixed SessionCard height truncation in vertical view mode. Removed overflow-hidden, h-full, and flex-1 wrapper that forced incorrect layout compression. Added min-w-0 + shrink-0 for stable grid across all viewports."
                 ]
             },
             {

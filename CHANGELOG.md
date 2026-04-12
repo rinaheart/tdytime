@@ -11,11 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Flat Index Architecture**: Chuyển toàn bộ truy vấn dữ liệu sang mảng phẳng $O(1)$ thông qua `sessionsIndex`, loại bỏ nested traversal.
 - **Semester Boundary Detection**: Bổ sung `semesterBounds` & `maxWeekIdx` lưu trữ làm Single Source of Truth tập trung, quản lý trạng thái kết thúc Học kỳ một cách tinh tế.
+- **Today View Semester Banner**: Hiển thị banner "🎉 Học kỳ đã hoàn thành!" ngay khi tiết cuối kết thúc, trong khi vẫn giữ danh sách session để review. Banner xuất hiện với animation bounce nhẹ, tự ẩn khi sang ngày mới.
 - **Performance Budget CI**: Automated Lighthouse checks với thresholds TBT < 50ms, CLS = 0, FCP < 1s.
 
 ### Changed
 
 - **Native Rendering Optimization**: Cấu trúc lại thẻ Xem Học kỳ sang Native Rendering thuần + `scrollIntoView()`. Xử lý dứt điểm các rủi ro đo đạc sai lệch layout và "mất tuần" mà cơ chế render ảo mang lại, code gọn và nhẹ hơn rất nhiều (tốn < 1ms rendering cho ~200 tiết).
+- **Semester End Boundary**: Chuyển điều kiện "Semester Ended" từ "ngay khi session cuối kết thúc" sang "sau 23:59 UTC của ngày chứa session cuối". Giúp giảng viên vẫn xem lại được lịch tuần cuối để tổng kết trong buổi tối/cuối tuần. Navigation logic ("Current" button) ưu tiên tìm tuần hiện tại trước khi check semester end state.
 - **SessionCard**: Giờ chỉ bind precomputed strings, loại bỏ hoàn toàn các hàm chuyển đổi thời gian (zero runtime date logic).
 - **useWeeklyData/useSemesterData**: Tái cấu trúc hooks để trả về grouped `FlatSession[]`, giúp engine filter hoạt động cực nhanh $O(N)$ trên mảng tuyến tính.
 - **PWA Update UX**: Tinh giản thẻ thông báo nâng cấp phiên bản thành 2 dòng, đồng bộ màu sắc nhẹ nhàng và tự nhiên theo Theme.
@@ -23,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - **Semester Context Sync**: Giải quyết triệt để lỗi View Tuần bị kẹt và tự động xoá trắng lịch giảng dạy khi người dùng đang xem lại lịch học ở phiên bản mà Học kỳ đã qua đi.
+- **WeekCardLayout Vertical View**: Khắc phục lỗi SessionCard bị cắt chiều cao ở chế độ xem dọc. Loại bỏ `overflow-hidden`, `h-full`, và `flex-1` wrapper gây ép layout sai. Bổ sung `min-w-0` + `shrink-0` để ổn định grid trên mọi viewport.
 
 ### Performance
 

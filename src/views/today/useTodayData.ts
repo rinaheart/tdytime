@@ -162,10 +162,14 @@ export const useTodayData = () => {
         const nowTs = now.getTime();
         const startOfDay = new Date(now); startOfDay.setHours(0, 0, 0, 0);
         
-        // 1. Semester End is now the HIGHEST priority (Immediate Feedback)
-        // If current time is past the end of the last session ever, semester is OVER.
-        if (semesterBounds?.end && nowTs >= semesterBounds.end) {
-            return 'AFTER_SEMESTER';
+        // 1. Semester End Priority (Day-gated transition)
+        // Only trigger AFTER_SEMESTER once the entire day of the last session has passed.
+        if (semesterBounds?.end) {
+            const endOfDay = new Date(semesterBounds.end);
+            endOfDay.setUTCHours(23, 59, 59, 999);
+            if (nowTs > endOfDay.getTime()) {
+                return 'AFTER_SEMESTER';
+            }
         }
 
         // 2. Before Semester (Day-based comparison for "Not started yet")
@@ -214,6 +218,11 @@ export const useTodayData = () => {
         return Math.ceil((semesterBounds.start - now.getTime()) / (1000 * 60 * 60 * 24));
     }, [semesterBounds, now.getTime()]);
 
+    const isSemesterOver = useMemo(() => {
+        if (!semesterBounds?.end) return false;
+        return now.getTime() >= semesterBounds.end;
+    }, [semesterBounds, now]);
+
     const isAfterSemester = displayState === 'AFTER_SEMESTER';
     const isBeforeSemester = displayState === 'BEFORE_SEMESTER';
 
@@ -231,6 +240,7 @@ export const useTodayData = () => {
         currentWeek, 
         currentWeekRange, 
         isAfterSemester, 
-        isBeforeSemester 
+        isBeforeSemester,
+        isSemesterOver
     };
 };
