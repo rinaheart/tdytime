@@ -24,13 +24,11 @@ const ExamRow = React.memo(({
     viewMode, 
     isNext,
     globalIndex,
-    t
 }: { 
     session: any, 
     viewMode: string, 
     isNext: boolean, 
     globalIndex: number,
-    t: any
 }) => {
     const isOngoing = session.status === 'ongoing';
     
@@ -96,7 +94,7 @@ const ExamRow = React.memo(({
     );
 });
 
-const CompletedExamRow = React.memo(({ session, t }: { session: any, t: any }) => (
+const CompletedExamRow = React.memo(({ session }: { session: any }) => (
     <div className="flex items-center gap-3 py-2 text-sm opacity-60 hover:opacity-100 transition-opacity">
         <div className="w-7 text-center shrink-0 text-[11px] font-black text-slate-400 dark:text-slate-500 font-num">
             {String(session.globalIndex).padStart(2, '0')}
@@ -281,7 +279,6 @@ const ExamView: React.FC = () => {
                                                                 viewMode={viewMode}
                                                                 isNext={s.id === nextExam?.id}
                                                                 globalIndex={s.globalIndex}
-                                                                t={t}
                                                             />
                                                         ))}
                                                     </div>
@@ -311,7 +308,7 @@ const ExamView: React.FC = () => {
                                                 </h4>
                                                 <div className="space-y-1">
                                                     {group.sessions.map((s) => (
-                                                        <CompletedExamRow key={s.id} session={s} t={t} />
+                                                        <CompletedExamRow key={s.id} session={s} />
                                                     ))}
                                                 </div>
                                             </div>

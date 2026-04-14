@@ -3,7 +3,7 @@
  * Orchestrates all cards and charts. Reads from Zustand store.
  */
 
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Calendar, Clock, Activity, Zap, Users, MapPin } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
