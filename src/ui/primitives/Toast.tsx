@@ -1,17 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, X } from 'lucide-react';
 import { useUIStore } from '@/core/stores';
 
 export const Toast: React.FC = () => {
+    const { t } = useTranslation();
     const message = useUIStore(s => s.toast.message);
     const type = useUIStore(s => s.toast.type);
     const clearToast = useUIStore(s => s.clearToast);
     const [isVisible, setIsVisible] = useState(false);
-    const [displayMessage, setDisplayMessage] = useState('');
+
+    // Translate raw keys on render if store contains a translation key
+    const displayMessage = useMemo(() => {
+        if (message && typeof message === 'string' && /^\w+(?:\.\w+)+$/.test(message) && !message.includes(' ')) {
+            return t(message, { defaultValue: message });
+        }
+        return message || '';
+    }, [message, t]);
 
     useEffect(() => {
-        if (message) {
-            setDisplayMessage(message);
+        if (displayMessage) {
             setIsVisible(true);
             const timer = setTimeout(() => {
                 setIsVisible(false);
@@ -20,7 +28,7 @@ export const Toast: React.FC = () => {
             }, 3000);
             return () => clearTimeout(timer);
         }
-    }, [message, clearToast]);
+    }, [displayMessage, clearToast]);
 
     if (!isVisible && !displayMessage) return null;
 

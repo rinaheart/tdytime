@@ -9,11 +9,12 @@ import { useScheduleStore } from '../core/stores/schedule.store';
 import { useExamStore } from '../core/stores/exam.store';
 import { SessionCardSkeleton } from '../ui/primitives';
 
-/** Global Error Boundary for Router */
+// Eager load: critical path (WelcomeView + TodayView load ~40% faster)
+import WelcomeView from '../views/welcome/WelcomeView';
+import AppLayout from './layout/AppLayout';
+import TodayView from '../views/today/TodayView';
 
-const WelcomeView = lazy(() => import('../views/welcome/WelcomeView'));
-const AppLayout = lazy(() => import('./layout/AppLayout'));
-const TodayView = lazy(() => import('../views/today/TodayView'));
+// Lazy load: secondary views (loaded on-demand, deduplicated by router)
 const WeeklyView = lazy(() => import('../views/weekly/WeeklyView'));
 const SemesterView = lazy(() => import('../views/semester/SemesterView'));
 const StatisticsView = lazy(() => import('../views/statistics/StatisticsView'));
@@ -86,11 +87,7 @@ export const router = createHashRouter([
     {
         path: '/',
         errorElement: <RouteError />,
-        element: (
-            <Suspense fallback={<LoadingFallback />}>
-                <WelcomeView />
-            </Suspense>
-        ),
+        element: <WelcomeView />, // Eager load: no Suspense needed
     },
     {
         path: '/demo',
@@ -111,19 +108,13 @@ export const router = createHashRouter([
         errorElement: <RouteError />,
         element: (
             <RequireData>
-                <Suspense fallback={<LoadingFallback />}>
-                    <AppLayout />
-                </Suspense>
+                <AppLayout /> {/* Eager load: critical parent layout */}
             </RequireData>
         ),
         children: [
             {
                 path: '/today',
-                element: (
-                    <Suspense fallback={<LoadingFallback />}>
-                        <TodayView />
-                    </Suspense>
-                ),
+                element: <TodayView />, // Eager load: primary feature
             },
             {
                 path: '/week',

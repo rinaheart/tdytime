@@ -32,29 +32,74 @@ export default defineConfig({
                 'pwa-512x512.png',
             ],
 
-            manifest: {
-                name: 'TdyTime - Phân tích Lịch giảng',
-                short_name: 'TdyTime',
-                description: 'Công cụ Phân tích và Quản lý Lịch giảng thông minh.',
-                theme_color: '#ffffff',
-                background_color: '#ffffff',
-                display: 'standalone',
-                start_url: '/',
-                icons: [
-                    {
-                        src: 'pwa-192x192.png',
-                        sizes: '192x192',
-                        type: 'image/png',
-                        purpose: 'any',
-                    },
-                    {
-                        src: 'pwa-512x512.png',
-                        sizes: '512x512',
-                        type: 'image/png',
-                        purpose: 'any',
-                    },
-                ],
-            },
+			manifest: {
+				id: '/tdytime', // ← Explicit App ID (tránh conflict khi update)
+				name: 'TdyTime - Your Today, Your Time',
+				short_name: 'TdyTime',
+				description: 'Your Today, Your Time',
+				theme_color: '#ffffff',
+				background_color: '#ffffff',
+				display: 'standalone',
+				start_url: '/',
+				
+				// 🎯 Richer Install UI: Support both desktop & mobile
+				form_factors: ['wide', 'narrow'],
+				
+				// Optional: Enable Window Controls Overlay on desktop PWA
+				display_override: ['standalone', 'window-controls-overlay'],
+
+				icons: [
+					{
+						src: 'pwa-192x192.png',
+						sizes: '192x192',
+						type: 'image/png',
+						purpose: 'any',
+					},
+					{
+						src: 'pwa-512x512.png',
+						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'any',
+					},
+					// Recommended: Add maskable icon for adaptive launcher icons
+					{
+						src: 'pwa-512x512.png',
+						sizes: '512x512',
+						type: 'image/png',
+						purpose: 'maskable',
+					},
+				],
+
+				// 📸 Screenshots for App Store-like Install Prompt
+				screenshots: [
+					{
+						src: '/screenshots/desktop-welcome.png',
+						sizes: '1280x720',
+						type: 'image/png',
+						form_factor: 'wide',
+						label: 'TdyTime - Upload & quản lý lịch giảng trên Desktop'
+					},
+					{
+						src: '/screenshots/mobile-today.png',
+						sizes: '390x844',
+						type: 'image/png',
+						form_factor: 'narrow',
+						label: 'TdyTime - Xem lịch hôm nay trên Mobile'
+					}
+				],
+
+				// Optional: Protocol handler for deep-linking (ví dụ: tdytime://load?url=...)
+				protocol_handlers: [{
+					protocol: 'web+tdytime',
+					url: '/?source=%s'
+				}],
+
+				// Optional: Categories for app store discovery
+				categories: ['education', 'productivity', 'utilities'],
+				
+				// Optional: Prefer related applications (nếu có native app sau này)
+				prefer_related_applications: false,
+			},
 
             workbox: {
                 globPatterns: process.env.NODE_ENV === 'production' 
@@ -164,7 +209,7 @@ export default defineConfig({
                         if (id.includes('react-router')) {
                             return 'vendor-router';
                         }
-                        if (id.includes('lucide-react') || id.includes('zustand')) {
+                        if (id.includes('lucide-react') || id.includes('zustand') || id.includes('@tanstack')) {
                             return 'vendor-utils';
                         }
                         // Vercel monitoring — separate to defer loading
@@ -182,7 +227,7 @@ export default defineConfig({
         chunkSizeWarningLimit: 1000,
 
         modulePreload: {
-            polyfill: true,
+            polyfill: false,
         },
     },
 

@@ -276,7 +276,7 @@ const WelcomeView: React.FC = () => {
                             </button>
                         ) : (
                             <div className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                                TdyTime
+                                {t('common.appName', { defaultValue: 'TdyTime' })}
                             </div>
                         )}
                     </div>

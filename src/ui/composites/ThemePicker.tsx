@@ -44,13 +44,13 @@ const ThemePicker: React.FC = () => {
                     {/* Unified Header: Theme Title & Dark Mode Switch */}
                     <div className="p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50 flex items-center justify-between">
                         <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest pl-1 leading-none">
-                            {t('settings.themes.title').toUpperCase()}
+                            {t('settings.themes.title', { defaultValue: 'Themes' }).toUpperCase()}
                         </span>
                         
                         <button
                             onClick={(e) => { e.stopPropagation(); toggleDarkMode(); }}
-                            aria-label={t('nav.appearance')}
-                            title={darkMode ? t('common.lightMode') : t('common.darkMode')}
+                            aria-label={t('nav.appearance', { defaultValue: 'Appearance' })}
+                            title={darkMode ? t('common.lightMode', { defaultValue: 'Light' }) : t('common.darkMode', { defaultValue: 'Dark' })}
                             className="relative flex items-center p-1 w-16 h-8 rounded-full bg-slate-200 dark:bg-slate-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 shadow-inner shrink-0"
                         >
                             {/* Sliding thumb */}
@@ -88,7 +88,7 @@ const ThemePicker: React.FC = () => {
                                 }`}
                             >
                                 <span className={`text-sm ${accentTheme === theme.id ? 'font-bold' : 'font-medium'} whitespace-nowrap`}>
-                                    {t(theme.nameKey)}
+                                    {t(theme.nameKey, { defaultValue: theme.id })}
                                 </span>
                                 <div className="flex items-center">
                                     <div className="flex w-[60px] h-3.5 rounded shadow-[inset_0_1px_2px_rgba(0,0,0,0.1)] overflow-hidden border border-black/5 dark:border-white/5 opacity-80 group-hover:opacity-100 transition-opacity">
