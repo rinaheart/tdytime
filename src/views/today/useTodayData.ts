@@ -152,8 +152,7 @@ export const useTodayData = () => {
         return {
             date: new Date(next.startTs),
             sessions: nextSessions as any,
-            weekIdx: next.weekIdx - 1, // Store expects 0-based for some reason or we keep it 1-based?
-                                       // Actually the original code said "wIdx" which was 0-based index.
+            weekIdx: next.weekIdx - 1,
             dayIdx: next.dayIdx
         };
     }, [sessionsIndex, now.getTime()]);
