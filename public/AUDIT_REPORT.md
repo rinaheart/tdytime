@@ -86,5 +86,5 @@ Dựa trên quá trình phân tích chuyên sâu về Logic, Kiến trúc (Archi
 2. **Thư mục Store quá cồng kềnh**: File `schedule.store.ts` đang đóng vai trò "God Store" - chứa cả state, logic parse, logic sanitize, xử lý upload. Nên tách logic upload, logic parser ra các Service Classes độc lập, Store chỉ nên giữ pure state setters.
 
 ---
-> *Report Generated on: 2025-02-23 12:00:00*
+> *Report Generated on: [CURRENT_TIMESTAMP]*
 > *Auditor: TdyTime Auto-Audit System*
