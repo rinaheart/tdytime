@@ -62,7 +62,7 @@ const WeeklyCard: React.FC<{ session: FlatSession | CourseSession; displayName: 
 }) => {
     const { start: startTime, end: endTime } = resolveTimes(session, { startTimeStr, endTimeStr });
     const [isNoteOpen, setIsNoteOpen] = useState(false);
-    const handleCloseNote = useCallback(() => setIsNoteOpen(false), []);
+    const handleCloseNote = useCallback(() => setIsNoteOpen(false), [setIsNoteOpen]);
     const getNote = useNotesStore(s => s.getNote);
     const hasNote = !!getNote(session.id);
     
@@ -155,7 +155,7 @@ const TodayCard: React.FC<{ session: FlatSession | CourseSession; displayName: s
 }) => {
     const { start: startTime, end: endTime } = resolveTimes(session, { startTimeStr, endTimeStr });
     const [isNoteOpen, setIsNoteOpen] = useState(false);
-    const handleCloseNote = useCallback(() => setIsNoteOpen(false), []);
+    const handleCloseNote = useCallback(() => setIsNoteOpen(false), [setIsNoteOpen]);
     const getNote = useNotesStore(s => s.getNote);
     const hasNote = !!getNote(session.id);
 
