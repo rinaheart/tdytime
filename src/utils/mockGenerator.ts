@@ -54,6 +54,15 @@ export const DEFAULT_GRID: Record<DayKey, ShiftCount> = {
     sun: { morning: 0, afternoon: 0, evening: 0 }
 };
 
+export function cloneGrid(grid: Record<DayKey, ShiftCount> = DEFAULT_GRID): Record<DayKey, ShiftCount> {
+    const cloned = {} as Record<DayKey, ShiftCount>;
+    for (const key in grid) {
+        const k = key as DayKey;
+        cloned[k] = { ...grid[k] };
+    }
+    return cloned;
+}
+
 const MOCK_COURSES = [
     { code: 'PRJ301', name: 'Java Web Application Development', room: 'AL-301' },
     { code: 'SWP391', name: 'Application Development Project', room: 'BE-402' },
@@ -119,10 +128,10 @@ interface OverlappingShift {
     blocks: readonly number[];
 }
 export function patternToGrid(pattern: PatternMode, seedStr: string): Record<DayKey, ShiftCount> {
-    if (pattern === 'balanced') return JSON.parse(JSON.stringify(DEFAULT_GRID));
+    if (pattern === 'balanced') return cloneGrid(DEFAULT_GRID);
     
     // Deep copy base grid to modify for others
-    const grid: Record<DayKey, ShiftCount> = JSON.parse(JSON.stringify(DEFAULT_GRID));
+    const grid: Record<DayKey, ShiftCount> = cloneGrid(DEFAULT_GRID);
     const random = mulberry32(xmur3(seedStr || 'default')());
     
     const days: DayKey[] = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
