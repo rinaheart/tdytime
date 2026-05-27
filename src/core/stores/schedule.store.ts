@@ -109,8 +109,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
                     maxWeekIdx: calculateMaxWeekIdx(sessions),
                     isInitialized: true,
                 });
-            } catch (e) {
-                console.error('Failed to load saved data:', e);
+            } catch {
                 set({ abbreviations: globalAbbr, isInitialized: true });
             }
         } else {
