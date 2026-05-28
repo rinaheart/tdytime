@@ -146,7 +146,7 @@
         "exportPDF": "Xuất PDF",
         "exportICS": {
             "title": "Xuất Lịch Google",
-            "description": "Chọn GV để xuất lịch cho <strong>Tuần {{week}}</strong>.",
+            "description": "Chọn GV để xuất lịch cho Tuần {{week}}.",
             "selectAll": "Chọn tất cả",
             "deselectAll": "Bỏ chọn tất cả",
             "teacherList": "Danh sách GV ({{count}})",

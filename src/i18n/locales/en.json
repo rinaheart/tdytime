@@ -150,7 +150,7 @@
         "exportPDF": "Export PDF",
         "exportICS": {
             "title": "Export to Google Calendar",
-            "description": "Select teachers to export schedule for <strong>Week {{week}}</strong>.",
+            "description": "Select teachers to export schedule for Week {{week}}.",
             "selectAll": "Select All",
             "deselectAll": "Deselect All",
             "teacherList": "Teacher List ({{count}})",
