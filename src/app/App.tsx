@@ -18,8 +18,10 @@ const App: React.FC = () => {
         initFromStorage();
     }, [initFromStorage]);
 
-    // Keyboard shortcut for DevTools
+    // Keyboard shortcut for DevTools (Development only)
     useEffect(() => {
+        if (!import.meta.env.DEV) return;
+
         const handler = (e: KeyboardEvent) => {
             const tag = (e.target as HTMLElement)?.tagName;
             if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
