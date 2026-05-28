@@ -34,14 +34,12 @@ const HistoryCard = React.memo(({ item, isActive, onLoad, onDelete }: {
     const { teacherName, avatarChar, dateLabel } = useMemo(() => {
         const name = item.data.metadata.teacher.trim();
         const names = name.split(' ');
-        // Get last name initial (like StatsHeader)
         const avatar = names.pop()?.charAt(0) || '?';
 
         const d = new Date(item.savedAt);
         const day = String(d.getDate()).padStart(2, '0');
         const month = String(d.getMonth() + 1).padStart(2, '0');
         const year = d.getFullYear();
-        // Custom pale date format: # YYYY-MM-DD
         return {
             teacherName: name,
             avatarChar: avatar,
