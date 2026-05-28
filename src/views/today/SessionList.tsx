@@ -20,12 +20,25 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
     const { t } = useTranslation();
     const abbreviations = useScheduleStore((s) => s.abbreviations);
 
-    const completedSessions = sessions.filter((s) => s.status === 'COMPLETED');
-    const activeSessions = sessions.filter((s) => s.status !== 'COMPLETED');
+    const { completedSessions, activeSessions, pendingCount, totalPeriods } = sessions.reduce((acc, s) => {
+        if (s.status === 'COMPLETED') {
+            acc.completedSessions.push(s);
+        } else {
+            acc.activeSessions.push(s);
+            if (s.status === 'PENDING') {
+                acc.pendingCount++;
+            }
+        }
+        acc.totalPeriods += s.periodCount;
+        return acc;
+    }, {
+        completedSessions: [] as SessionWithStatus[],
+        activeSessions: [] as SessionWithStatus[],
+        pendingCount: 0,
+        totalPeriods: 0
+    });
 
-    const pendingCount = sessions.filter((s) => s.status === 'PENDING').length;
-    const isTodayFinished = sessions.length > 0 && sessions.every((s) => s.status === 'COMPLETED');
-    const totalPeriods = sessions.reduce((acc, s) => acc + s.periodCount, 0);
+    const isTodayFinished = sessions.length > 0 && activeSessions.length === 0;
 
     return (
         <div className="px-2">
