@@ -76,9 +76,6 @@ const ThemePicker: React.FC = () => {
                                 key={theme.id}
                                 onClick={() => {
                                     setAccentTheme(theme.id);
-                                    // Removed setIsOpen(false) to keep open for visual feedback if needed, 
-                                    // but user usually wants to see the change.
-                                    // For now, let's keep it based on current logic.
                                     setIsOpen(false);
                                 }}
                                 className={`w-full flex items-center justify-between p-2.5 rounded-xl transition-all group ${
