@@ -55,7 +55,14 @@ export const getExamProximity = (sessions: ExamSession[]): ExamProximity => {
 export const getUpcomingExamCount = (sessions: ExamSession[], days: number = 7): number => {
     const now = Date.now();
     const threshold = now + days * 24 * 60 * 60 * 1000;
-    return sessions.filter(s => s.startTime >= now && s.startTime <= threshold).length;
+    let count = 0;
+    for (let i = 0; i < sessions.length; i++) {
+        const s = sessions[i];
+        if (s.startTime >= now && s.startTime <= threshold) {
+            count++;
+        }
+    }
+    return count;
 };
 
 /**
