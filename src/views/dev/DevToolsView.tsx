@@ -13,7 +13,8 @@ import {
     type ShiftCount,
     DEFAULT_GRID, 
     patternToGrid,
-    generateFromBuilder 
+    generateFromBuilder,
+    cloneGrid
 } from '@/utils/mockGenerator';
 import { generateDebugSnapshot, downloadSnapshot } from './utils/snapshotGenerator';
 
@@ -91,7 +92,7 @@ const DevToolsView: React.FC = () => {
             speedMultiplier: 1,
             seed: `seed-${presetName}-${Date.now()}`,
             pattern: 'balanced',
-            sessionsGrid: JSON.parse(JSON.stringify(DEFAULT_GRID)),
+            sessionsGrid: cloneGrid(DEFAULT_GRID),
             teacherName: 'Nguyễn Văn A',
             semester: 'Spring 2026',
             academicYear: { start: 2025, end: 2026 },

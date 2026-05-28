@@ -20,6 +20,7 @@ import {
     DEFAULT_GRID,
     patternToGrid,
     generateFromBuilder,
+    cloneGrid,
 } from '@/utils/mockGenerator';
 
 // --- Constants ---
@@ -106,7 +107,7 @@ const ScheduleBuilderForm: React.FC<ScheduleBuilderFormProps> = ({ initialConfig
     const [seed, setSeed] = useState(initialConfig?.seed || '');
     const [pattern, setPattern] = useState<PatternMode>(initialConfig?.pattern || 'balanced');
     const [grid, setGrid] = useState<Record<DayKey, ShiftCount>>(
-        initialConfig?.sessionsGrid || JSON.parse(JSON.stringify(DEFAULT_GRID))
+        initialConfig?.sessionsGrid || cloneGrid(DEFAULT_GRID)
     );
     const [showAdvanced, setShowAdvanced] = useState(false);
     const [teacherName, setTeacherName] = useState(initialConfig?.teacherName || 'Nguyễn Văn A');
