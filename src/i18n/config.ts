@@ -15,9 +15,7 @@ try {
     console.warn('LocalStorage not accessible, falling back to "vi"');
 }
 
-// Pre-load the initial language statically for first render if possible, 
-// but since we want to split chunks, we'll initialize without resources 
-// and add them immediately.
+// Initialize i18n without resources to support chunk splitting
 i18n.use(initReactI18next).init({
     resources: {},
     lng: defaultLanguage,
