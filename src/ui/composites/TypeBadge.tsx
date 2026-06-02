@@ -27,8 +27,6 @@ const FALLBACK_CONFIG: TypeConfig = {
   Icon: HelpCircle,
 };
 
-const warnedTypes = new Set<string>();
-
 interface TypeBadgeProps {
   type?: string;
   compact?: boolean;
@@ -38,17 +36,6 @@ export const TypeBadge: React.FC<TypeBadgeProps> = ({ type, compact }) => {
   const normalizedType = typeof type === "string" ? type.trim().toUpperCase() : "";
 
   const config = TYPE_CONFIG[normalizedType] || FALLBACK_CONFIG;
-
-  if (
-    !TYPE_CONFIG[normalizedType] &&
-    normalizedType &&
-    process.env.NODE_ENV === "development"
-  ) {
-    if (!warnedTypes.has(normalizedType)) {
-      console.warn("Unknown course type:", normalizedType);
-      warnedTypes.add(normalizedType);
-    }
-  }
 
   const sizeClass = compact ? "text-[9px] px-1.5 py-0.5" : "text-xs px-2 py-1";
   const iconSize = compact ? 10 : 14;
