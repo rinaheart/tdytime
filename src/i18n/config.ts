@@ -12,7 +12,9 @@ let defaultLanguage = 'vi';
 try {
     defaultLanguage = localStorage.getItem('language') || 'vi';
 } catch {
-    console.warn('LocalStorage not accessible, falling back to "vi"');
+    if (import.meta.env.DEV) {
+        console.warn('LocalStorage not accessible, falling back to "vi"');
+    }
 }
 
 // Initialize i18n without resources to support chunk splitting
