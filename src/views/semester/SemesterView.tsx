@@ -135,7 +135,7 @@ const SemesterView: React.FC = () => {
             exportToCSV(sessionsIndex, filename);
             setToastGlobal(t('settings.toast.csvExported'));
         } catch (error) {
-            console.error('CSV Export failed', error);
+            setToastGlobal(t('common.error'));
         }
     };
 
@@ -189,7 +189,7 @@ const SemesterView: React.FC = () => {
 
             setToastGlobal(t('common.success'));
         } catch (error) {
-            console.error('PDF Export failed', error);
+            setToastGlobal(t('common.error'));
         } finally {
             setIsExporting(false);
         }
