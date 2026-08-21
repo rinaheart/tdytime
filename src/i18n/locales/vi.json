@@ -58,6 +58,11 @@
         "confirmDiscardTitle": "Hủy thay đổi",
         "confirmDiscard": "Nội dung ghi chú đã thay đổi. Bạn có muốn bỏ qua các thay đổi này không?"
     },
+    "schedule": {
+        "weeklyTitle": "LỊCH GIẢNG DẠY TUẦN",
+        "weekFrom": "Từ ngày:",
+        "weekTo": "đến ngày:"
+    },
     "shifts": {
         "morning": "Sáng",
         "afternoon": "Chiều",
@@ -405,6 +410,14 @@
         "changelog": "Changelog",
         "history": [
             {
+                "version": "v1.9.4",
+                "date": "2026-08-21",
+                "changes": [
+                    "Clean Code & Tech Debt: Xóa bỏ 100% cảnh báo ESLint, giải quyết triệt để lỗi React hooks (stale closures, set-state-in-effect).",
+                    "Project Structure: Tái cấu trúc thư mục, hệ thống hóa tài liệu Audit và Changelog."
+                ]
+            },
+            {
                 "version": "v1.9.3",
                 "date": "2026-05-07",
                 "changes": [
@@ -721,7 +734,10 @@
         "invalidStructure": "⚠️ Cấu trúc file không đúng định dạng UMS.",
         "demoNotFound": "⚠️ Không tìm thấy dữ liệu mẫu (Mã: {{code}}).",
         "loadDemoError": "⚠️ Gặp lỗi khi tải dữ liệu mẫu.",
-        "processing": "Đang xử lý dữ liệu..."
+        "processing": "Đang xử lý dữ liệu...",
+        "parseWeekNotFound": "⚠️ Không tìm thấy dữ liệu tuần (.hitec-td-tkbTuan). Vui lòng kiểm tra lại file HTML.",
+        "parseTableNotFound": "⚠️ Không tìm thấy bảng thời khóa biểu (table.table-bordered).",
+        "parseNoWeeks": "⚠️ Không thể trích xuất dữ liệu theo tuần."
     },
     "pwa": {
         "offlineReady": "Sẵn sàng hoạt động ngoại tuyến",

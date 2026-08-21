@@ -3,7 +3,7 @@
  * Allows toggling LT/TH for each course group.
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ListChecks, ChevronUp, ChevronDown, Check, Save, RotateCcw } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
@@ -21,12 +21,16 @@ const CourseTypeCard: React.FC<CourseTypeCardProps> = ({ onSuccess }) => {
     const overrides = useScheduleStore((s) => s.overrides);
     const setOverrides = useScheduleStore((s) => s.setOverrides);
 
-    const allCourses = data?.allCourses || [];
+    const allCourses = useMemo(() => data?.allCourses || [], [data?.allCourses]);
     const [tempOverrides, setTempOverrides] = useState<Record<string, CourseType>>(overrides);
+    const [prevOverrides, setPrevOverrides] = useState<Record<string, CourseType>>(overrides);
     const [sortField, setSortField] = useState<SortField>('code');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-    useEffect(() => { setTempOverrides(overrides); }, [overrides]);
+    if (overrides !== prevOverrides) {
+        setPrevOverrides(overrides);
+        setTempOverrides(overrides);
+    }
 
     const sortedCourses = useMemo(() => {
         return [...allCourses].sort((a, b) => {
@@ -36,8 +40,8 @@ const CourseTypeCard: React.FC<CourseTypeCardProps> = ({ onSuccess }) => {
                 const cmp = typeA.localeCompare(typeB);
                 return sortOrder === 'asc' ? cmp : -cmp;
             }
-            let valA: any = a[sortField as Exclude<SortField, 'type'>];
-            let valB: any = b[sortField as Exclude<SortField, 'type'>];
+            let valA = a[sortField as Exclude<SortField, 'type'>] as string | string[];
+            let valB = b[sortField as Exclude<SortField, 'type'>] as string | string[];
             if (Array.isArray(valA)) valA = valA.join(', ');
             if (Array.isArray(valB)) valB = valB.join(', ');
             const cmp = String(valA).localeCompare(String(valB));
@@ -61,7 +65,7 @@ const CourseTypeCard: React.FC<CourseTypeCardProps> = ({ onSuccess }) => {
         onSuccess(t('settings.toast.courseTypeSaved'));
     };
 
-    const SortIcon = ({ field }: { field: SortField }) => {
+    const renderSortIcon = (field: SortField) => {
         if (sortField !== field) return <ChevronUp size={12} className="opacity-20" />;
         return sortOrder === 'asc' ? <ChevronUp size={12} className="text-accent-500" /> : <ChevronDown size={12} className="text-accent-500" />;
     };
@@ -102,14 +106,14 @@ const CourseTypeCard: React.FC<CourseTypeCardProps> = ({ onSuccess }) => {
                                 { id: 'groups', label: t('settings.courseType.group') },
                             ] as const).map((col) => (
                                 <th key={col.id} onClick={() => handleSort(col.id)} className="px-4 py-3 font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                                    <div className="flex items-center gap-2">{col.label} <SortIcon field={col.id} /></div>
+                                    <div className="flex items-center gap-2">{col.label} {renderSortIcon(col.id)}</div>
                                 </th>
                             ))}
                             <th onClick={() => handleSort('type')} className="px-4 py-3 font-bold text-slate-400 uppercase text-center w-20 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                                <div className="flex items-center justify-center gap-1">LT <SortIcon field="type" /></div>
+                                <div className="flex items-center justify-center gap-1">LT {renderSortIcon('type')}</div>
                             </th>
                             <th onClick={() => handleSort('type')} className="px-4 py-3 font-bold text-slate-400 uppercase text-center w-20 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                                <div className="flex items-center justify-center gap-1">TH <SortIcon field="type" /></div>
+                                <div className="flex items-center justify-center gap-1">TH {renderSortIcon('type')}</div>
                             </th>
                         </tr>
                     </thead>

@@ -39,7 +39,9 @@ export interface DebugSnapshot {
 }
 
 export function generateDebugSnapshot(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     scheduleState: any,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     uiState: any,
 ): DebugSnapshot {
     const data = scheduleState.data;
@@ -48,7 +50,9 @@ export function generateDebugSnapshot(
     // Count sessions safely
     let sessionCount = 0;
     if (data?.weeks) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data.weeks.forEach((w: any) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             Object.values(w.days).forEach((d: any) => {
                 sessionCount += (d.morning?.length || 0) + (d.afternoon?.length || 0) + (d.evening?.length || 0);
             });

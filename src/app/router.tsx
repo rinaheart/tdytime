@@ -45,7 +45,7 @@ const RouteError = () => {
                 Something went wrong while rendering this page. 
                 <br />
                 <span className="text-[10px] opacity-70 mt-2 block">
-                    Hint: If you're using Google Translate, try disabling it for this site.
+                    Hint: If you&apos;re using Google Translate, try disabling it for this site.
                 </span>
             </p>
             <button

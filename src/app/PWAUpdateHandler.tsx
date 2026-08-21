@@ -44,6 +44,7 @@ export const PWAUpdateHandler: React.FC = () => {
             const ts = Number(lastDismissed);
             if (!Number.isNaN(ts)) {
                 const timePassed = Date.now() - ts;
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setIsDismissed(timePassed < DISMISS_DURATION);
             } else {
                 setIsDismissed(false);
@@ -59,10 +60,10 @@ export const PWAUpdateHandler: React.FC = () => {
     }, []);
 
     const sw = useRegisterSW({
-        onRegistered(_r: ServiceWorkerRegistration | undefined) {
+        onRegistered() {
             // SW registered successfully
         },
-        onRegisterError(_error: any) {
+        onRegisterError() {
             // SW registration failed silently
         },
     });
@@ -155,15 +156,17 @@ export const PWAUpdateHandler: React.FC = () => {
                 } else {
                     throw new Error('Service Workers not supported');
                 }
-            } catch (error) {
+            } catch {
                 setCheckStatus('error');
                 addTimeout(() => setCheckStatus('idle'), 3000);
             }
         };
 
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (window as any).checkPWAUpdate = checkFn;
 
         return () => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             delete (window as any).checkPWAUpdate;
         };
     }, []);

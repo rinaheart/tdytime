@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.4] - 2026-08-21
+
+### Changed
+- **Dependencies Upgrade:** Nâng cấp tất cả thư viện (Vite, React, Tailwind, PWA, Vitest...) lên latest LTS/Stable version qua `pnpm up --latest`.
+- **Stability Lock:** Khóa `eslint@8.57.1` và `typescript@6.0.3` để tránh các breaking changes nghiêm trọng ảnh hưởng đến hệ thống AST parser và plugin.
+
+### Fixed
+- **Lint Cleanup:** Sửa lỗi React hooks triệt để (stale closures, set-state-in-effect) và xóa bỏ 100% cảnh báo ESLint.
+- **Tech Debt:** Tái cấu trúc thư mục, hệ thống hóa tài liệu Audit và Changelog để dễ theo dõi.
+- **Performance:** Áp dụng Lazy-load cho thư viện `@react-pdf/renderer` giúp loại bỏ hoàn toàn library nặng ra khỏi main bundle lúc tải trang.
+- **Core Parser:** Tối ưu hóa Regex nhận diện nhóm Thực hành (TH), hỗ trợ các biến thể nâng cao như `...TH1`.
+- **History Service:** Cập nhật bộ sinh mã (ID Generator) sử dụng `crypto.randomUUID()` an toàn.
+- **Testing & CI/CD:** Di chuyển file Mock HTML về chuẩn `tests/mocks/`, viết đủ 15 unit tests cho parser và thiết lập thành công GitHub Actions Pipeline.
+
 ## [1.9.3] - 2026-05-07
 
 ### Added

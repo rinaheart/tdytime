@@ -29,7 +29,7 @@ export const historyService = {
             let history: HistoryItem[] = existingJson ? JSON.parse(existingJson) : [];
 
             const newItem: HistoryItem = {
-                id: Date.now().toString(),
+                id: crypto.randomUUID(),
                 teacher: data.metadata.teacher,
                 semester: data.metadata.semester,
                 academicYear: data.metadata.academicYear,

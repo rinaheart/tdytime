@@ -40,6 +40,7 @@ const NoteModal: React.FC<NoteModalProps> = ({
     // Sync content when modal opens or initialContent changes
     useEffect(() => {
         if (isOpen) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setContent(initialContent);
         }
     }, [isOpen, initialContent]);

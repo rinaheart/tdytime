@@ -143,7 +143,7 @@ export function patternToGrid(pattern: PatternMode, seedStr: string): Record<Day
                 grid[d] = { morning: 2, afternoon: 2, evening: 1 };
             }
             break;
-        case 'sparse':
+        case 'sparse': {
             for (const d of days) {
                 grid[d] = { morning: 0, afternoon: 0, evening: 0 };
             }
@@ -153,6 +153,7 @@ export function patternToGrid(pattern: PatternMode, seedStr: string): Record<Day
             const rDay2 = days[Math.floor(random() * 5)];
             grid[rDay2].morning = 1;
             break;
+        }
         case 'randomized':
             for (const d of days) {
                 if (d === 'sun') {

@@ -11,8 +11,6 @@ import { useSemesterData } from './useSemesterData';
 import WeekAccordion from './WeekAccordion';
 import { exportToCSV } from '@/utils/export-csv';
 import type { FlatSession } from '@/core/schedule/schedule.index';
-import { pdf } from '@react-pdf/renderer';
-import { ScheduleReport } from '../shared/ScheduleReport';
 import { useNotesStore } from '@/core/stores/notes.store';
 import { saveAs } from 'file-saver';
 
@@ -22,7 +20,7 @@ const SemesterView: React.FC = () => {
     const sessionsIndex = useScheduleStore((s) => s.sessionsIndex);
     const abbreviations = useScheduleStore((s) => s.abbreviations);
     const setToastGlobal = useUIStore((s) => s.setToast);
-    const weeksMetadata = data?.weeks || [];
+    const weeksMetadata = useMemo(() => data?.weeks || [], [data?.weeks]);
     const teacherName = data?.metadata?.teacher || '';
     const location = useLocation();
 
@@ -59,6 +57,7 @@ const SemesterView: React.FC = () => {
     useEffect(() => {
         if (location.state && typeof location.state.autoExpandWeek === 'number') {
             const wIdx = location.state.autoExpandWeek;
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setExpandedWeeks(prev => ({ ...prev, [wIdx]: true }));
 
             // Wait for expansion to render then scroll
@@ -134,7 +133,7 @@ const SemesterView: React.FC = () => {
             const filename = `tdytime-export-${new Date().toISOString().split('T')[0]}.csv`;
             exportToCSV(sessionsIndex, filename);
             setToastGlobal(t('settings.toast.csvExported'));
-        } catch (error) {
+        } catch {
             setToastGlobal(t('common.error'));
         }
     };
@@ -175,20 +174,23 @@ const SemesterView: React.FC = () => {
     const handleExportPDF = async () => {
         setIsExporting(true);
         try {
+            const [{ pdf }, { ScheduleReport }] = await Promise.all([
+                import('@react-pdf/renderer'),
+                import('../shared/ScheduleReport')
+            ]);
             const filename = `tdytime-semester-report-${new Date().toISOString().split('T')[0]}.pdf`;
             const blob = await pdf(
-                <ScheduleReport
-                    mode="semester"
-                    sessions={rawSessions}
-                    teacherName={teacherName}
-                    notes={notesStore.notes}
+                <ScheduleReport 
+                    mode="semester" 
+                    sessions={rawSessions} 
+                    teacherName={teacherName} 
+                    notes={notesStore.notes} 
                     translations={reportTranslations}
                 />
             ).toBlob();
             saveAs(blob, filename);
-
-            setToastGlobal(t('common.success'));
         } catch (error) {
+            console.error('PDF generation failed:', error);
             setToastGlobal(t('common.error'));
         } finally {
             setIsExporting(false);

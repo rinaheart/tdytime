@@ -3,7 +3,7 @@
  * Daily/weekly warning and danger thresholds.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BellRing, Shield, AlertTriangle, RefreshCw, Save } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
@@ -22,8 +22,12 @@ const ThresholdsCard: React.FC<ThresholdsCardProps> = ({ onSuccess }) => {
     const setThresholds = useScheduleStore((s) => s.setThresholds);
 
     const [temp, setTemp] = useState<Thresholds>(thresholds);
+    const [prevThresholds, setPrevThresholds] = useState<Thresholds>(thresholds);
 
-    useEffect(() => { setTemp(thresholds); }, [thresholds]);
+    if (thresholds !== prevThresholds) {
+        setPrevThresholds(thresholds);
+        setTemp(thresholds);
+    }
 
     const handleReset = () => {
         setTemp(DEFAULT_THRESHOLDS);

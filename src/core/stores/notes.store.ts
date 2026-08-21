@@ -28,6 +28,7 @@ export const useNotesStore = create<NotesState>()(
       
       deleteNote: (id) => {
         set((state) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [id]: _, ...rest } = state.notes;
           return { notes: rest };
         });

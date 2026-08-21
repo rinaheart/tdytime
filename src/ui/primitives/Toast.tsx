@@ -11,6 +11,7 @@ export const Toast: React.FC = () => {
 
     useEffect(() => {
         if (message) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setDisplayMessage(message);
             setIsVisible(true);
             const timer = setTimeout(() => {

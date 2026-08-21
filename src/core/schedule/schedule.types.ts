@@ -11,7 +11,7 @@ export enum CourseType {
 /** Translation helper for dynamic i18n */
 export interface TranslationItem {
     key: string;
-    params?: Record<string, any>;
+    params?: Record<string, unknown>;
 }
 
 /** A single teaching session within a week */

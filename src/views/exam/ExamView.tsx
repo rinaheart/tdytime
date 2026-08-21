@@ -19,17 +19,18 @@ const RIGHT_COL_CLASS = "w-[60px] shrink-0 flex flex-col items-end gap-0.5";
 
 // --- Sub-components ---
 
-const ExamRow = React.memo(({ 
+const ExamRow = React.memo(function ExamRow({ 
     session, 
     viewMode, 
     isNext,
     globalIndex,
 }: { 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     session: any, 
     viewMode: string, 
     isNext: boolean, 
     globalIndex: number,
-}) => {
+}) {
     const isOngoing = session.status === 'ongoing';
     
     return (
@@ -75,7 +76,7 @@ const ExamRow = React.memo(({
                 <div className="flex-1 min-w-0 h-4 flex items-center"> {/* Fixed height for alignment consistency */}
                     {viewMode === 'table-detailed' && (
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 whitespace-nowrap overflow-hidden">
-                            <span className="font-num font-semibold">{session.duration}'</span>
+                            <span className="font-num font-semibold">{session.duration}&apos;</span>
                             <span className="text-slate-300 dark:text-slate-600">•</span>
                             <span className="normal-case lowercase">{session.role}</span>
                             <span className="text-slate-300 dark:text-slate-600">•</span>
@@ -94,7 +95,9 @@ const ExamRow = React.memo(({
     );
 });
 
-const CompletedExamRow = React.memo(({ session }: { session: any }) => (
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const CompletedExamRow = React.memo(function CompletedExamRow({ session }: { session: any }) {
+    return (
     <div className="flex items-center gap-3 py-2 text-sm opacity-60 hover:opacity-100 transition-opacity">
         <div className="w-7 text-center shrink-0 text-[11px] font-black text-slate-400 dark:text-slate-500 font-num">
             {String(session.globalIndex).padStart(2, '0')}
@@ -113,7 +116,8 @@ const CompletedExamRow = React.memo(({ session }: { session: any }) => (
             </span>
         </div>
     </div>
-));
+    );
+});
 
 const ExamView: React.FC = () => {
     const { t } = useTranslation();

@@ -12,7 +12,7 @@ export const DATE_REGEX_SINGLE = /(\d{2})\/(\d{2})\/(\d{4})/;
 export const DATE_REGEX_GLOBAL = /(\d{2})\/(\d{2})\/(\d{4})/g;
 
 /** Regex for detecting Practical (TH) courses from group code */
-export const COURSE_TYPE_TH_REGEX = /-TH\./i;
+export const COURSE_TYPE_TH_REGEX = /-TH(?:\.|\d|$)/i;
 
 /** Normalize teacher name for comparison, stripping academic titles */
 export const normalizeTeacherName = (name: string) => {

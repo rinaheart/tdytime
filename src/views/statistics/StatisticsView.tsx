@@ -110,7 +110,7 @@ const StatisticsView: React.FC = () => {
     const eveningDisplay = eveningSessions > 0 ? `${eveningSessions} ${t('common.sessions')}` : '—';
 
     const weekendWarningItem = metrics.warnings.find((w) => w.key === 'stats.warningsList.weekend');
-    const weekendSessionsCount = weekendWarningItem ? (weekendWarningItem.params?.count || 0) : 0;
+    const weekendSessionsCount = weekendWarningItem ? (Number(weekendWarningItem.params?.count) || 0) : 0;
     const weekendDisplay = weekendSessionsCount > 0 ? `${weekendSessionsCount} ${t('common.sessions')}` : '—';
 
     const avgLoadDisplay = avgLoad > 0 ? (

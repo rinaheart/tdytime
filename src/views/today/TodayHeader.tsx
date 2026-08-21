@@ -16,7 +16,7 @@ interface TodayHeaderProps {
     greeting: string;
 }
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_ARRAY = [] as never[];
 const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greeting }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();

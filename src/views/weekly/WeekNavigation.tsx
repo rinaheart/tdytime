@@ -7,8 +7,6 @@ import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Zap, Columns, LayoutTemplate, Search, Download } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
 import { isCurrentWeek, getCurrentWeekRange } from '@/core/schedule/schedule.utils';
-import { pdf } from '@react-pdf/renderer';
-import { ScheduleReport } from '../shared/ScheduleReport';
 import { useNotesStore } from '@/core/stores/notes.store';
 import type { FlatSession } from '@/core/schedule/schedule.index';
 import { saveAs } from 'file-saver';
@@ -32,7 +30,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
     const jumpToCurrentWeek = useScheduleStore((s) => s.jumpToCurrentWeek);
 
     const now = useMemo(() => new Date(), []);
-    const weeks = data?.weeks || [];
+    const weeks = useMemo(() => data?.weeks || [], [data?.weeks]);
     const week = currentWeekIndex === -1 ? undefined : weeks[currentWeekIndex];
     const isFirst = currentWeekIndex <= 0;
     const isLast = currentWeekIndex >= weeks.length - 1;
@@ -92,10 +90,18 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
         }
     }), [t]);
 
-    const handleExportPdf = async () => {
-        setIsExporting(true);
+    const handleExportPDF = async () => {
+        if (!sessions || sessions.length === 0) return;
+        
         try {
-            const filename = `lich-giang-tuan-${weekNumber}.pdf`;
+            setIsExporting(true);
+            const [{ pdf }, { ScheduleReport }] = await Promise.all([
+                import('@react-pdf/renderer'),
+                import('../shared/ScheduleReport')
+            ]);
+            
+            const filename = `TdyTime_${teacherName.replace(/\s+/g, '_')}_T${weekNumber}.pdf`;
+            
             const blob = await pdf(
                 <ScheduleReport 
                     mode="week" 
@@ -141,7 +147,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
 
             <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full md:w-auto md:self-auto">
                 <button
-                    onClick={handleExportPdf}
+                    onClick={handleExportPDF}
                     disabled={isExporting || (currentWeekIndex !== -1 && weeks.length === 0)}
                     className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm disabled:opacity-50"
                 >

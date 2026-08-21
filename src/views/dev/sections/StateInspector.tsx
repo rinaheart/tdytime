@@ -15,11 +15,19 @@ function safeStringify(obj: unknown): string {
     }, 2);
 }
 
+const StatusValue = ({ val }: { val: boolean | null | undefined }) => {
+    if (val === true) return <span className="text-green-600 font-bold">true</span>;
+    if (val === false) return <span className="text-red-500 font-bold">false</span>;
+    return <span className="text-slate-400 italic">null</span>;
+};
+
 export const StateInspector: React.FC = () => {
     const [refreshKey, setRefreshKey] = useState(0);
     const refresh = useCallback(() => setRefreshKey(k => k + 1), []);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const scheduleState = useMemo(() => useScheduleStore.getState(), [refreshKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const uiState = useMemo(() => useUIStore.getState(), [refreshKey]);
 
     useEffect(() => {
@@ -40,11 +48,7 @@ export const StateInspector: React.FC = () => {
         setTimeout(() => setCopied(null), 2000);
     };
 
-    const StatusValue = ({ val }: { val: boolean | null | undefined }) => {
-        if (val === true) return <span className="text-green-600 font-bold">true</span>;
-        if (val === false) return <span className="text-red-500 font-bold">false</span>;
-        return <span className="text-slate-400 italic">null</span>;
-    };
+
 
     return (
         <CollapsibleSection id="state-inspector" title="Trạng thái (State Inspector)" icon={<Database size={16} />}>

@@ -3,7 +3,7 @@
  * Manages short names for course subjects.
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Type, RotateCcw, Wand2, Save } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
@@ -19,14 +19,18 @@ const AbbreviationsCard: React.FC<AbbreviationsCardProps> = ({ onSuccess }) => {
     const setAbbreviations = useScheduleStore((s) => s.setAbbreviations);
 
     const [tempAbbr, setTempAbbr] = useState<Record<string, string>>(abbreviations);
+    const [prevAbbr, setPrevAbbr] = useState<Record<string, string>>(abbreviations);
+
+    if (abbreviations !== prevAbbr) {
+        setPrevAbbr(abbreviations);
+        setTempAbbr(abbreviations);
+    }
 
     const uniqueSubjects = useMemo(() => {
         const map = new Map<string, string>();
         data?.allCourses.forEach((c) => { if (!map.has(c.name)) map.set(c.name, c.name); });
         return Array.from(map.values()).sort();
     }, [data?.allCourses]);
-
-    useEffect(() => { setTempAbbr(abbreviations); }, [abbreviations]);
 
     const suggestAbbreviations = () => {
         const next = { ...tempAbbr };

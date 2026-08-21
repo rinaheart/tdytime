@@ -71,7 +71,7 @@ const SettingsView: React.FC = () => {
             {/* PWA Update Check */}
             <div className="flex justify-center -mt-4">
                 <button
-                    onClick={() => (window as any).checkPWAUpdate?.()}
+                    onClick={() => (window as unknown as { checkPWAUpdate?: () => void }).checkPWAUpdate?.()}
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-accent-50 dark:bg-accent-900/10 text-accent-600 dark:text-accent-400 rounded-xl text-[11px] font-bold hover:bg-accent-100 dark:hover:bg-accent-900/20 active:scale-95 transition-all border border-accent-100/50 dark:border-accent-900/20"
                 >
                     <RefreshCw size={12} strokeWidth={2.5} />

@@ -89,6 +89,7 @@
     "nav": {
         "today": "Today",
         "weekly": "Weekly",
+        "completed": "Completed",
         "semester": "Semester",
         "statistics": "Stats",
         "settings": "Settings",
@@ -409,6 +410,14 @@
         "updateAvailable": "Update to v1.0.1 Now",
         "changelog": "Changelog",
         "history": [
+            {
+                "version": "v1.9.4",
+                "date": "2026-08-21",
+                "changes": [
+                    "Clean Code & Tech Debt: Resolved 100% of ESLint warnings, fixed React hook anti-patterns (stale closures, set-state-in-effect).",
+                    "Project Structure: Restructured project directories, systematized Audit and Changelog documents."
+                ]
+            },
             {
                 "version": "v1.9.3",
                 "date": "2026-05-07",

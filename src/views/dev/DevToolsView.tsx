@@ -26,7 +26,7 @@ function encodeConfig(config: ScheduleBuilderConfig): string {
 function decodeConfig(cfgStr: string): ScheduleBuilderConfig | null {
     try {
         return JSON.parse(atob(cfgStr));
-    } catch (e) {
+    } catch {
         return null;
     }
 }
@@ -59,6 +59,7 @@ const DevToolsView: React.FC = () => {
         if (cfgParam) {
             const decoded = decodeConfig(cfgParam);
             if (decoded) {
+                // eslint-disable-next-line react-hooks/set-state-in-effect
                 setCustomConfig(decoded);
                 setShowForm(true);
                 // Optionally auto-generate if coming from a shared link
@@ -158,7 +159,7 @@ const DevToolsView: React.FC = () => {
                     } else {
                         throw new Error('Invalid config format');
                     }
-                } catch (err) {
+                } catch {
                     setToast(t('dev.importError'), 'error');
                 }
             };

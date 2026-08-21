@@ -37,6 +37,7 @@ const AppLayout: React.FC = () => {
     const mockState = useScheduleStore(s => s.mockState);
     const isMockEnabled = useScheduleStore(s => s.isMockEnabled);
     const toggleMockEnabled = useScheduleStore(s => s.toggleMockEnabled);
+    // eslint-disable-next-line react-hooks/purity
     const lastActiveRef = useRef<number>(Date.now());
 
     // Mock Time Clock Logic
@@ -61,6 +62,7 @@ const AppLayout: React.FC = () => {
             dateStr: `${day}, ${d}/${mo}/${y}`,
             timeStr: `${hh}:${mm}`
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const calculateOffset = useCallback((mockMs: number, localMs: number) => {
@@ -121,6 +123,7 @@ const AppLayout: React.FC = () => {
 
     useEffect(() => {
         if (!mockState) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setMockDisplayDate('');
             setMockDisplayTimeOnly('');
             setMockOffset(null);

@@ -20,6 +20,10 @@ tdytime/
 ├── DESIGN.md                           # Design system & tokens
 ├── README.md                           # Project overview
 │
+├── docs/
+│   ├── audits/                         # Báo cáo audit, patch, và roadmap
+│   └── changelogs/                     # Chi tiết cập nhật từng phase (Kỹ thuật)
+│
 ├── public/
 │   ├── favicon.svg                     # App icon (SVG)
 │   ├── pwa-192x192.png                 # PWA icon 192px
@@ -31,7 +35,7 @@ tdytime/
 │       └── scenario-2-empty.html       # Mock schedule HTML (empty case)
 │
 ├── scripts/
-│   └── desktop_audit.py                # Lighthouse desktop audit script
+
 │
 └── src/
     ├── main.tsx                         # React entry point, i18n init, router mount

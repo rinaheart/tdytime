@@ -87,7 +87,15 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         set({ historyList });
 
         const savedAbbrStr = localStorage.getItem('global_abbreviations');
-        const globalAbbr = savedAbbrStr ? JSON.parse(savedAbbrStr) : {};
+        let globalAbbr: Record<string, string> = {};
+        if (savedAbbrStr) {
+            try {
+                globalAbbr = JSON.parse(savedAbbrStr);
+            } catch {
+                // Malformed value — fall back to empty map instead of crashing app init.
+                globalAbbr = {};
+            }
+        }
 
         const saved = localStorage.getItem('last_schedule_data');
         if (saved) {

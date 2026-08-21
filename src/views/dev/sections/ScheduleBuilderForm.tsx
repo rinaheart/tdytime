@@ -121,12 +121,14 @@ const ScheduleBuilderForm: React.FC<ScheduleBuilderFormProps> = ({ initialConfig
     // Sync grid when pattern changes
     useEffect(() => {
         const newGrid = patternToGrid(pattern, seed || 'default');
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setGrid(newGrid);
     }, [pattern, seed]);
 
     // Sync from initialConfig when preset is clicked
     useEffect(() => {
         if (initialConfig) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             if (initialConfig.mockDate) setMockDate(initialConfig.mockDate);
             if (initialConfig.mockTime) setMockTime(initialConfig.mockTime);
             if (initialConfig.weekCount !== undefined) setWeekCount(initialConfig.weekCount);

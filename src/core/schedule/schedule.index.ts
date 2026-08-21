@@ -63,7 +63,7 @@ export const buildScheduleIndex = (data: ScheduleData, config: BuildIndexConfig 
             const shifts = ['morning', 'afternoon', 'evening', 'night'] as const;
             
             shifts.forEach(shiftKey => {
-                const sessions = (daySchedule as any)[shiftKey] as CourseSession[];
+                const sessions = (daySchedule as unknown as Record<string, CourseSession[]>)[shiftKey];
                 if (!sessions) return;
                 
                 sessions.forEach((s) => {
