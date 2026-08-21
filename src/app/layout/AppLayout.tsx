@@ -8,7 +8,8 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Zap, LayoutGrid, BarChart3, Settings,
-    CalendarDays, Menu, Upload, Globe, Wrench, Calendar, Clock
+    CalendarDays, Menu, Upload, Globe, Wrench, Calendar, Clock,
+    Sun, Moon
 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { useUIStore, useScheduleStore } from '@/core/stores';
@@ -32,7 +33,7 @@ const AppLayout: React.FC = () => {
     const { t, i18n } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
-    const { sidebarCollapsed, toggleSidebar } = useUIStore();
+    const { sidebarCollapsed, toggleSidebar, darkMode, toggleDarkMode } = useUIStore();
     const metadata = useScheduleStore(useShallow(s => s.data?.metadata));
     const mockState = useScheduleStore(s => s.mockState);
     const isMockEnabled = useScheduleStore(s => s.isMockEnabled);
@@ -323,7 +324,7 @@ const AppLayout: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Right: Actions */}
+                    {/* Right: Actions — Globe → ThemePicker → DarkMode → Upload */}
                     <div className="flex items-center gap-1">
                         <button
                             onClick={toggleLanguage}
@@ -334,6 +335,14 @@ const AppLayout: React.FC = () => {
                             <Globe size={18} />
                         </button>
                         <ThemePicker />
+                        <button
+                            onClick={toggleDarkMode}
+                            className="p-2 rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400 transition-colors"
+                            aria-label={darkMode ? t('common.lightMode', 'Sáng') : t('common.darkMode', 'Tối')}
+                            title={darkMode ? t('common.lightMode', 'Chế độ sáng') : t('common.darkMode', 'Chế độ tối')}
+                        >
+                            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                        </button>
                         <button
                             onClick={handleReset}
                             className="p-2 rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400"
