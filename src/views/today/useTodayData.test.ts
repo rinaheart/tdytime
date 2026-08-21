@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { useTodayData } from './useTodayData';
 import { useScheduleStore } from '@/core/stores/schedule.store';
-import type { FlatSession } from '@/core/schedule/schedule.types';
+import type { FlatSession } from '@/core/schedule/schedule.index';
 
 // Mock the Zustand store
 vi.mock('@/core/stores/schedule.store', () => ({
@@ -11,13 +11,29 @@ vi.mock('@/core/stores/schedule.store', () => ({
 
 // Mock i18next
 vi.mock('react-i18next', () => ({
-    useTranslation: () => ({ t: (key: string, vars: any) => `${key}${vars?.name ? '_' + vars.name : ''}` }),
+    useTranslation: () => ({ t: (key: string, vars: unknown) => `${key}${vars && typeof vars === 'object' && 'name' in vars ? '_' + (vars as {name: string}).name : ''}` }),
 }));
 
 // Mock useShallow to just return the selector
 vi.mock('zustand/react/shallow', () => ({
-    useShallow: (fn: any) => fn,
+    useShallow: (fn: unknown) => fn,
 }));
+
+vi.mock('@/core/schedule/schedule.utils', async (importOriginal) => {
+    const mod = await importOriginal<Record<string, unknown>>();
+    return {
+        ...mod,
+        isCurrentWeek: () => true,
+        isMainTeacher: () => true,
+    };
+});
+
+const defaultState = {
+    sessionsIndex: [{ id: 'dummy', startTs: 0, endTs: 0, weekIdx: 1, dayIdx: 0, teacher: 'John Doe', periodCount: 1 }] as FlatSession[],
+    semesterBounds: { start: new Date('2024-01-10T00:00:00Z').getTime(), end: new Date('2024-06-01T00:00:00Z').getTime() },
+    mockState: null,
+    data: { metadata: { teacher: 'John Doe' }, weeks: [] as { dateRange: string; isCurrentWeek: boolean }[] }
+};
 
 describe('useTodayData', () => {
     beforeEach(() => {
@@ -34,15 +50,8 @@ describe('useTodayData', () => {
         vi.setSystemTime(mockTime);
 
         // Mock store state
-        (useScheduleStore as any).mockImplementation((selector: any) => {
-            const state = {
-                sessionsIndex: [],
-                semesterBounds: { start: new Date('2024-01-10T00:00:00Z').getTime(), end: new Date('2024-06-01T00:00:00Z').getTime() },
-                mockState: null,
-                data: { metadata: { teacher: 'John Doe' }, weeks: [] }
-            };
-            // Evaluate selector if passed
-            return typeof selector === 'function' ? selector(state) : state;
+        (useScheduleStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector: (state: typeof defaultState) => unknown) => {
+            return typeof selector === 'function' ? selector(defaultState) : defaultState;
         });
 
         const { result } = renderHook(() => useTodayData());
@@ -55,14 +64,8 @@ describe('useTodayData', () => {
         const mockTime = new Date('2024-06-02T10:00:00Z').getTime();
         vi.setSystemTime(mockTime);
 
-        (useScheduleStore as any).mockImplementation((selector: any) => {
-            const state = {
-                sessionsIndex: [],
-                semesterBounds: { start: new Date('2024-01-10T00:00:00Z').getTime(), end: new Date('2024-06-01T00:00:00Z').getTime() },
-                mockState: null,
-                data: { metadata: { teacher: 'John Doe' }, weeks: [] }
-            };
-            return typeof selector === 'function' ? selector(state) : state;
+        (useScheduleStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector: (state: typeof defaultState) => unknown) => {
+            return typeof selector === 'function' ? selector(defaultState) : defaultState;
         });
 
         const { result } = renderHook(() => useTodayData());
@@ -77,7 +80,7 @@ describe('useTodayData', () => {
         const mockTime = new Date('2024-03-04T09:00:00+07:00').getTime(); // 9 AM
         vi.setSystemTime(mockTime);
 
-        const mockSessions: Partial<FlatSession>[] = [
+        const mockSessions = [
             {
                 id: 's1',
                 weekIdx: 1,
@@ -96,32 +99,21 @@ describe('useTodayData', () => {
                 teacher: 'John Doe',
                 periodCount: 3,
             }
-        ];
+        ] as FlatSession[];
 
-        (useScheduleStore as any).mockImplementation((selector: any) => {
+        (useScheduleStore as unknown as ReturnType<typeof vi.fn>).mockImplementation((selector: (state: typeof defaultState) => unknown) => {
             const state = {
+                ...defaultState,
                 sessionsIndex: mockSessions,
-                semesterBounds: { start: new Date('2024-01-10').getTime(), end: new Date('2024-06-01').getTime() },
-                mockState: null,
                 data: { 
                     metadata: { teacher: 'John Doe' }, 
                     weeks: [{ 
                         dateRange: '04/03/2024 - 10/03/2024',
-                        isCurrentWeek: true // Note: The hook recalculates this with isCurrentWeek() util
+                        isCurrentWeek: true
                     }] 
                 }
             };
             return typeof selector === 'function' ? selector(state) : state;
-        });
-
-        // We need to mock isCurrentWeek since it depends on actual time logic
-        vi.mock('@/core/schedule/schedule.utils', async (importOriginal) => {
-            const mod = await importOriginal<any>();
-            return {
-                ...mod,
-                isCurrentWeek: () => true,
-                isMainTeacher: () => true,
-            };
         });
 
         const { result } = renderHook(() => useTodayData());
