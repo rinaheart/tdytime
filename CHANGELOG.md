@@ -18,6 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Core Parser:** Tối ưu hóa Regex nhận diện nhóm Thực hành (TH), hỗ trợ các biến thể nâng cao như `...TH1`.
 - **History Service:** Cập nhật bộ sinh mã (ID Generator) sử dụng `crypto.randomUUID()` an toàn.
 - **Testing & CI/CD:** Di chuyển file Mock HTML về chuẩn `tests/mocks/`, viết đủ 15 unit tests cho parser và thiết lập thành công GitHub Actions Pipeline.
+- **Dependency Tracking:** Khôi phục `pnpm-lock.yaml` bị thiếu để đảm bảo deterministic build trên CI.
+- **Test Coverage & Parity:** Viết test cho `useTodayData` mock time; add test fixtures mới; tích hợp script check i18n parity vào CI.
+- **Doc-Drift:** Sửa `ARCHITECTURE.md` đồng bộ với cấu trúc folder mới.
 
 ## [1.9.3] - 2026-05-07
 

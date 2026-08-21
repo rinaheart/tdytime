@@ -178,3 +178,30 @@ describe('parseScheduleHTML — error paths', () => {
         );
     });
 });
+
+describe('parseScheduleHTML — 1_schedule_anon_full.html', () => {
+    let html: string;
+
+    beforeAll(() => {
+        html = readMock('1_schedule_anon_full.html');
+    });
+
+    it('parses correctly without throwing', () => {
+        const data = parseScheduleHTML(html);
+        expect(data).not.toBeNull();
+        expect(data?.weeks.length).toBeGreaterThan(0);
+    });
+});
+
+describe('parseScheduleHTML — 5_schedule_test_ultra_minimal.html', () => {
+    let html: string;
+
+    beforeAll(() => {
+        html = readMock('5_schedule_test_ultra_minimal.html');
+    });
+
+    it('parses correctly without throwing', () => {
+        const data = parseScheduleHTML(html);
+        expect(data).not.toBeNull();
+    });
+});

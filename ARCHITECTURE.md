@@ -28,14 +28,13 @@ tdytime/
 │   ├── favicon.svg                     # App icon (SVG)
 │   ├── pwa-192x192.png                 # PWA icon 192px
 │   ├── pwa-512x512.png                 # PWA icon 512px
-│   ├── robots.txt                      # Crawler rules
-│   └── mocks/
-│       ├── manifest.json               # Mock PWA manifest for testing
-│       ├── scenario-1-base.html        # Mock schedule HTML (base case)
-│       └── scenario-2-empty.html       # Mock schedule HTML (empty case)
+│   └── robots.txt                      # Crawler rules
 │
 ├── scripts/
-
+│   └── check-i18n-parity.mjs           # Script verify i18n parity
+│
+├── tests/
+│   └── mocks/                          # HTML fixtures cho Unit Tests (trước đây ở public/mocks)
 │
 └── src/
     ├── main.tsx                         # React entry point, i18n init, router mount

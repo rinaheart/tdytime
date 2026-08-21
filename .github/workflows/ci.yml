@@ -43,6 +43,9 @@ jobs:
     - name: Run lint
       run: pnpm run lint
 
+    - name: Check i18n parity
+      run: node scripts/check-i18n-parity.mjs
+
     - name: Run tests
       run: pnpm run test
 
