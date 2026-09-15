@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { lazy, Suspense } from 'react';
 
 const Option1A11y = lazy(() => import('../../../.uiux-audit/mockups/finding-1-upload-a11y/Option1').catch(() => ({ default: () => null })) as any);

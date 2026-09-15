@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Clock, MapPin, StickyNote } from 'lucide-react';
+import { Clock, StickyNote } from 'lucide-react';
 import Badge from '@/ui/primitives/Badge';
 import TypeBadge from '@/ui/composites/TypeBadge';
 import NoteModal from '@/ui/composites/NoteModal';
@@ -150,8 +150,8 @@ const CompletedCard: React.FC<{ session: FlatSession | CourseSession; displayNam
 };
 
 // ─── TODAY LIVE & PENDING (Option 1: Minimalist Stack) ────────────────────────
-const TodayCard: React.FC<{ session: FlatSession | CourseSession; displayName: string; isLive: boolean; showTeacher: boolean; className?: string; startTimeStr?: string; endTimeStr?: string }> = ({
-    session, displayName, isLive, showTeacher, className = '', startTimeStr, endTimeStr,
+const TodayCard: React.FC<{ session: FlatSession | CourseSession; displayName: string; isLive: boolean; className?: string; startTimeStr?: string; endTimeStr?: string }> = ({
+    session, displayName, isLive, className = '', startTimeStr, endTimeStr,
 }) => {
     const { start: startTime, end: endTime } = resolveTimes(session, { startTimeStr, endTimeStr });
     const [isNoteOpen, setIsNoteOpen] = useState(false);
@@ -218,7 +218,6 @@ const SessionCard: React.FC<SessionCardProps> = ({
             session={session}
             displayName={displayName}
             isLive={status === 'LIVE'}
-            showTeacher={showTeacher}
             className={className}
             startTimeStr={startTimeStr}
             endTimeStr={endTimeStr}

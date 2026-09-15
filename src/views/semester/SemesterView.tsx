@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Zap, LayoutTemplate, Columns, Search, ChevronDown, ChevronUp, Download } from 'lucide-react';
+import { Zap, LayoutTemplate, Columns, Search, ChevronDown, ChevronUp, FileSpreadsheet, Loader2, Printer } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores/schedule.store';
 import { useUIStore } from '@/core/stores/ui.store';
 import { FilterBar } from '@/ui';
