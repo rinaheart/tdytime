@@ -27,7 +27,7 @@ const ThemePicker: React.FC = () => {
         <div className="relative" ref={containerRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className={`flex items-center justify-center p-2 rounded-xl transition-all duration-300 border ${
+                className={`flex items-center justify-center w-11 h-11 md:w-9 md:h-9 rounded-xl transition-all duration-300 border ${
                     isOpen 
                     ? 'bg-accent-50 border-accent-200 text-accent-700 dark:bg-accent-900/30 dark:border-accent-800 dark:text-accent-400' 
                     : 'bg-transparent border-transparent text-slate-500 dark:text-slate-400 hover:bg-accent-50 dark:hover:bg-accent-950/40'

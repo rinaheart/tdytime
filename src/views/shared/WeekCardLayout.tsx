@@ -14,53 +14,46 @@ const WeekCardLayout: React.FC<WeekTableLayoutProps> = ({ grouped, weekRange, no
         return checkIsDayToday(weekRange, dayIdx, now);
     };
 
+    // The shared dense override for SessionCard
+    // - Removes min-h-[2.4em] from the title (h3)
+    // - Reduces mb-1.5 on title to mb-1
+    // - Removes mt-auto from the footer
+    const denseCardOverride = "[&_h3]:!min-h-0 [&_h3]:!mb-0.5 [&>div:last-child]:!mt-1 !mb-0 !rounded-none !border-0 !shadow-none hover:bg-slate-100/50 dark:hover:bg-slate-800";
+
     return (
-        <div id="weekly-schedule-table" className="grid grid-cols-1 gap-6 bg-slate-50/50 dark:bg-slate-900/50">
+        <div id="weekly-schedule-table" className="flex flex-col gap-5 p-4 bg-slate-50/50 dark:bg-slate-950">
             {DAYS_OF_WEEK.map((day, idx) => {
                 const dayGroup = grouped[idx];
                 if (!dayGroup) return null;
-                
                 const sessions = [...dayGroup.morning, ...dayGroup.afternoon, ...dayGroup.evening, ...dayGroup.night];
                 if (sessions.length === 0) return null;
                 
                 const isToday = isDayToday(idx);
 
                 return (
-                    <div key={`${weekRange}-${day}`} className={`bg-white dark:bg-slate-900 rounded-2xl border ${isToday ? 'border-accent-400 dark:border-accent-500 ring-4 ring-accent-100/50 dark:ring-accent-900/20' : 'border-slate-200/60 dark:border-slate-800/60'} shadow-sm flex flex-col md:flex-row transition-all hover:shadow-md relative group`}>
-                        <div className={`md:w-32 shrink-0 ${isToday ? 'bg-accent-600 text-white' : 'bg-slate-50 dark:bg-slate-800/30'} p-4 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800 transition-colors rounded-t-2xl md:rounded-t-none md:rounded-l-2xl`}>
-                            {isToday && <span className="text-[8px] font-black uppercase tracking-widest mb-1 opacity-80">{t('weekly.today')}</span>}
-                            <p className={`text-xs font-black uppercase tracking-widest ${isToday ? 'text-white' : 'text-accent-600 dark:text-accent-400'}`}>{t(`days.${idx}`)}</p>
-                            <p className={`text-sm font-black mt-1 font-num ${isToday ? 'text-white' : 'text-slate-800 dark:text-slate-100'}`}>{weekRange ? getDayDateString(weekRange, idx) : '—'}</p>
+                    <div key={`${weekRange}-${day}`} className={`rounded-2xl overflow-hidden shadow-sm border ${isToday ? 'border-accent-200 dark:border-accent-800 ring-1 ring-accent-500/10' : 'border-slate-200/80 dark:border-slate-800'}`}>
+                        {/* Header Banner */}
+                        <div className={`px-3.5 py-2 flex items-center justify-between ${isToday ? 'bg-accent-100/50 dark:bg-accent-900/40' : 'bg-slate-100 dark:bg-slate-900'}`}>
+                            <div className="flex items-baseline gap-2">
+                                <h3 className={`text-sm font-black uppercase tracking-wider ${isToday ? 'text-accent-700 dark:text-accent-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                                    {t(`days.${idx}`)}
+                                </h3>
+                                <span className={`text-xs font-medium font-num ${isToday ? 'text-accent-600 dark:text-accent-500' : 'text-slate-500'}`}>
+                                    {weekRange ? getDayDateString(weekRange, idx) : ''}
+                                </span>
+                            </div>
+                            {isToday && <div className="text-[10px] font-black text-white bg-accent-600 px-2 py-0.5 rounded-full uppercase">Today</div>}
                         </div>
-                        <div className="flex-1 min-w-0 grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 dark:divide-slate-800">
-                            {(['morning', 'afternoon', 'evening'] as const).map((shift) => {
-                                const shiftSessions = dayGroup[shift] || [];
-                                
-                                return (
-                                <div key={shift} className={`p-3 min-w-0 ${isToday ? 'bg-accent-50/10 dark:bg-accent-900/5' : ''}`}>
-                                    <div className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase mb-2 flex items-center justify-between">
-                                        <div className="flex items-center gap-1.5">
-                                            <span 
-                                                className="w-1.5 h-1.5 rounded-full" 
-                                                style={{ background: `linear-gradient(to right, var(--semantic-${shift}-from), var(--semantic-${shift}-to))` }}
-                                            />
-                                            {t(`weekly.${shift}`)}
-                                        </div>
-                                        <span className="font-num opacity-60">{shift === 'morning' ? '07:00' : shift === 'afternoon' ? '13:30' : '17:10'}</span>
-                                    </div>
-                                    {shiftSessions.length === 0 ? (
-                                        <div className="text-[10px] text-slate-300 dark:text-slate-700 italic">{t('weekly.noClasses')}</div>
-                                    ) : (
-                                        <div className="flex flex-col gap-1.5 w-full">
-                                            {shiftSessions.map((session: FlatSession) => (
-                                                <div key={session.id}>
-                                                    <SessionCard session={session} variant="weekly" abbreviations={abbreviations} showTeacher={showTeacher} className="w-full" />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
+                        {/* Sessions List - Compact Padding & Divide & Zebra */}
+                        <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-950">
+                            {sessions.map((session: FlatSession, sIdx: number) => (
+                                <div key={session.id} className={sIdx % 2 !== 0 ? 'bg-slate-50 dark:bg-slate-900/60' : 'bg-white dark:bg-slate-950'}>
+                                    <SessionCard 
+                                        session={session} variant="weekly" abbreviations={abbreviations} showTeacher={showTeacher} 
+                                        className={`${denseCardOverride} !px-3.5 !py-2.5 !bg-transparent`} 
+                                    />
                                 </div>
-                            )})}
+                            ))}
                         </div>
                     </div>
                 );

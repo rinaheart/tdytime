@@ -308,7 +308,7 @@ const AppLayout: React.FC = () => {
                     <div className="flex items-center gap-2">
                         <button
                             onClick={toggleSidebar}
-                            className="hidden lg:flex p-2 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
+                            className="hidden lg:flex w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
                             aria-label="Toggle sidebar"
                             title={sidebarCollapsed ? t('nav.expandSidebar', { defaultValue: 'Mở rộng' }) : t('nav.collapseSidebar', { defaultValue: 'Thu gọn' })}
                         >
@@ -328,7 +328,7 @@ const AppLayout: React.FC = () => {
                     <div className="flex items-center gap-1">
                         <button
                             onClick={toggleLanguage}
-                            className="p-2 rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400 transition-colors"
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400 transition-colors"
                             aria-label={t('common.switchLanguage')}
                             title={i18n.language === 'vi' ? 'English' : 'Tiếng Việt'}
                         >
@@ -337,7 +337,7 @@ const AppLayout: React.FC = () => {
                         <ThemePicker />
                         <button
                             onClick={toggleDarkMode}
-                            className="p-2 rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400 transition-colors"
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400 transition-colors"
                             aria-label={darkMode ? t('common.lightMode', 'Sáng') : t('common.darkMode', 'Tối')}
                             title={darkMode ? t('common.lightMode', 'Chế độ sáng') : t('common.darkMode', 'Chế độ tối')}
                         >
@@ -345,7 +345,7 @@ const AppLayout: React.FC = () => {
                         </button>
                         <button
                             onClick={handleReset}
-                            className="p-2 rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400"
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400"
                             aria-label={t('nav.loadData')}
                             title={t('nav.loadData')}
                         >

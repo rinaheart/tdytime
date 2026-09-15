@@ -8,10 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.9.4] - 2026-08-21
 
 ### Changed
+- **UI/UX Audit (F2):** Tăng kích thước vùng chạm (touch targets) cho các nút công cụ (ThemePicker, LanguagePicker, xóa môn thi) lên 44x44px trên mobile và 36x36px trên desktop.
+- **UI/UX Audit (F3):** Xóa bỏ các animation lặp vô hạn (như hiệu ứng ping, bounce) để tuân thủ tiêu chuẩn WCAG 2.2.2 Pause, Stop, Hide.
+- **UI/UX Audit (F4):** Tăng độ trong suốt và độ mờ của thanh tiêu đề dính (sticky header) ở trang học kỳ giúp đọc rõ chữ khi cuộn.
 - **Dependencies Upgrade:** Nâng cấp tất cả thư viện (Vite, React, Tailwind, PWA, Vitest...) lên latest LTS/Stable version qua `pnpm up --latest`.
 - **Stability Lock:** Khóa `eslint@8.57.1` và `typescript@6.0.3` để tránh các breaking changes nghiêm trọng ảnh hưởng đến hệ thống AST parser và plugin.
 
 ### Fixed
+- **UI/UX Audit (F1):** Sửa cấu trúc vùng thả file tải lên (upload dropzone) từ div thành thẻ label và đảm bảo input file hỗ trợ focus từ bàn phím.
+- **UI/UX Audit (F5):** Bổ sung text sr-only cho trạng thái "Đang thi" và "Sắp diễn ra" trong bảng danh sách môn thi để hỗ trợ trình đọc màn hình.
 - **Lint Cleanup:** Sửa lỗi React hooks triệt để (stale closures, set-state-in-effect) và xóa bỏ 100% cảnh báo ESLint.
 - **Tech Debt:** Tái cấu trúc thư mục, hệ thống hóa tài liệu Audit và Changelog để dễ theo dõi.
 - **Performance:** Áp dụng Lazy-load cho thư viện `@react-pdf/renderer` giúp loại bỏ hoàn toàn library nặng ra khỏi main bundle lúc tải trang.

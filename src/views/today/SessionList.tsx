@@ -91,7 +91,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
                                     <div className="flex-1 min-w-0">
                                         <span className="font-semibold text-slate-600 dark:text-slate-400 truncate block">{abbreviations[s.courseName] || s.courseName}</span>
                                     </div>
-                                    <div className="shrink-0 text-right ml-2 min-w-0 max-w-[120px]">
+                                    <div className="hidden md:block shrink-0 text-right ml-2 min-w-0 max-w-[120px]">
                                         <span className="text-[11px] text-slate-400 dark:text-slate-500 font-bold truncate block">
                                             {formatClassDisplay(s)}
                                         </span>

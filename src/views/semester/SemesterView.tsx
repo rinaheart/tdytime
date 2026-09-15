@@ -202,7 +202,7 @@ const SemesterView: React.FC = () => {
     return (
         <div className="pt-1 pb-6 animate-in fade-in duration-300 relative">
             {/* Sticky Header Container */}
-            <div className="sticky top-0 z-30 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md -mx-4 px-4 pt-3 pb-4 space-y-4 mb-6 border-b border-slate-100 dark:border-slate-800 transition-colors font-sans">
+            <div className="sticky top-0 z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl -mx-4 px-4 pt-3 pb-4 space-y-4 mb-6 border-b border-slate-100 dark:border-slate-800 transition-colors font-sans">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                     <div>
                         <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight uppercase leading-none mb-1">
@@ -214,21 +214,20 @@ const SemesterView: React.FC = () => {
                     <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full md:w-auto md:self-auto print:hidden">
                         <button
                             onClick={handleExportCSV}
-                            disabled={sessionsIndex.length === 0}
-                            className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm disabled:opacity-50"
+                            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                             title={t('semester.exportCSV')}
                         >
-                            <Download size={16} className="text-accent-500" />
+                            <FileSpreadsheet size={16} className="text-emerald-500" />
                             <span className="hidden sm:inline">{t('semester.exportCSV')}</span>
                         </button>
 
                         <button
                             onClick={handleExportPDF}
-                            disabled={sessionsIndex.length === 0 || isExporting}
-                            className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm disabled:opacity-50"
+                            disabled={isExporting}
+                            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
                             title={t('semester.exportPDF')}
                         >
-                            <Download size={16} className={isExporting ? "text-red-500 animate-bounce" : "text-red-500"} />
+                            {isExporting ? <Loader2 size={16} className="animate-spin text-accent-500" /> : <Printer size={16} className="text-accent-500" />}
                             <span className="hidden sm:inline">{isExporting ? t('common.loading') : t('semester.exportPDF')}</span>
                         </button>
 

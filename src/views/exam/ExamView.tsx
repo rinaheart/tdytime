@@ -47,7 +47,15 @@ const ExamRow = React.memo(function ExamRow({
                             }
                         `}>
                             {String(globalIndex).padStart(2, '0')}
-                            {isOngoing && <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-accent-500 border-2 border-white dark:border-slate-900 z-10" />}
+                            {isOngoing && (
+                                <>
+                                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-accent-500 border-2 border-white dark:border-slate-900 z-10" />
+                                    <span className="sr-only">Trạng thái: Đang thi</span>
+                                </>
+                            )}
+                            {isNext && !isOngoing && (
+                                <span className="sr-only">Trạng thái: Sắp diễn ra</span>
+                            )}
                         </span>
                     ) : (
                         <span className="text-[12px] font-black text-slate-400 dark:text-slate-600 font-num">
@@ -77,10 +85,10 @@ const ExamRow = React.memo(function ExamRow({
                     {viewMode === 'table-detailed' && (
                         <p className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1.5 whitespace-nowrap overflow-hidden">
                             <span className="font-num font-semibold">{session.duration}&apos;</span>
-                            <span className="text-slate-300 dark:text-slate-600">•</span>
-                            <span className="normal-case lowercase">{session.role}</span>
-                            <span className="text-slate-300 dark:text-slate-600">•</span>
-                            <span className="normal-case lowercase truncate" title={session.format}>{session.format}</span>
+                            <span className="hidden md:inline text-slate-300 dark:text-slate-600">•</span>
+                            <span className="hidden md:inline normal-case lowercase">{session.role}</span>
+                            <span className="hidden md:inline text-slate-300 dark:text-slate-600">•</span>
+                            <span className="hidden md:inline normal-case lowercase truncate" title={session.format}>{session.format}</span>
                         </p>
                     )}
                 </div>
@@ -417,7 +425,7 @@ const ExamHeader: React.FC<{
                         else setConfirmDelete(true);
                     }}
                     className={`
-                        p-2 rounded-md transition-all duration-300 relative overflow-hidden
+                        w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-md transition-all duration-300 relative overflow-hidden
                         ${confirmDelete 
                             ? 'text-white bg-red-500 hover:bg-red-600 shadow-md shadow-red-500/20' 
                             : 'text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10'

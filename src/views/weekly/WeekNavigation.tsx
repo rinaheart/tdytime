@@ -149,7 +149,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
                 <button
                     onClick={handleExportPDF}
                     disabled={isExporting || (currentWeekIndex !== -1 && weeks.length === 0)}
-                    className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm disabled:opacity-50"
+                    className="hidden md:flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm disabled:opacity-50"
                 >
                     <Download size={16} className={isExporting ? "animate-bounce text-accent-500" : "text-accent-500"} />
                     <span className="hidden sm:inline">{isExporting ? t('common.loading') : t('weekly.exportPDF')}</span>

@@ -147,10 +147,15 @@ export const useTodayData = () => {
     }, [sessionsIndex, currentWeekIdx, teacherName]);
 
     const nextTeaching: NextTeachingInfo | null = useMemo(() => {
-        const t = nowTs;
-        const next = sessionsIndex.find(s => s.startTs > t);
+        const todayEnd = new Date(nowTs);
+        todayEnd.setHours(23, 59, 59, 999);
+        const endOfTodayTs = todayEnd.getTime();
+
+        // Find the first session that starts strictly after today
+        const next = sessionsIndex.find(s => s.startTs > endOfTodayTs);
         if (!next) return null;
 
+        // Get all sessions for that future day
         const nextSessions = sessionsIndex.filter(s => s.weekIdx === next.weekIdx && s.dayIdx === next.dayIdx);
 
         return {

@@ -20,6 +20,7 @@ const StatisticsView = lazy(() => import('../views/statistics/StatisticsView'));
 const SettingsView = lazy(() => import('../views/settings/SettingsView'));
 const DevToolsView = lazy(() => import('../views/dev/DevToolsView'));
 const ExamView = lazy(() => import('../views/exam/ExamView'));
+const MockupGallery = lazy(() => import('../views/audit/MockupGallery'));
 
 const DevGuard = ({ children }: { children: React.ReactNode }) => {
     const allowed = import.meta.env.DEV || localStorage.getItem('devtools_enabled') === 'true';
@@ -105,6 +106,14 @@ export const router = createHashRouter([
                     <DevToolsView />
                 </Suspense>
             </DevGuard>
+        ),
+    },
+    {
+        path: '/audit-gallery',
+        element: (
+            <Suspense fallback={<LoadingFallback />}>
+                <MockupGallery />
+            </Suspense>
         ),
     },
     {

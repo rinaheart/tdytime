@@ -133,7 +133,7 @@ const CompletedCard: React.FC<{ session: FlatSession | CourseSession; displayNam
     const { start: startTime, end: endTime } = resolveTimes(session, { startTimeStr, endTimeStr });
 
     return (
-        <div className={`bg-slate-100 dark:bg-slate-800/80 rounded-2xl p-3 border border-slate-200 dark:border-slate-700 opacity-70 transition-all ${className}`}>
+        <div className={`bg-slate-100 dark:bg-slate-800/80 rounded-md p-3 border border-slate-200 dark:border-slate-700 opacity-70 transition-all ${className}`}>
             <div className="flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400">
                     < Clock size={12} strokeWidth={1.5} />
@@ -149,41 +149,86 @@ const CompletedCard: React.FC<{ session: FlatSession | CourseSession; displayNam
     );
 };
 
-// ─── TODAY LIVE & PENDING (Option 1: Minimalist Stack) ────────────────────────
+// ─── TODAY FULL CARD (LIVE / PENDING) ────────────────────────
 const TodayCard: React.FC<{ session: FlatSession | CourseSession; displayName: string; isLive: boolean; showTeacher: boolean; className?: string; startTimeStr?: string; endTimeStr?: string }> = ({
     session, displayName, isLive, showTeacher, className = '', startTimeStr, endTimeStr,
 }) => {
     const { start: startTime, end: endTime } = resolveTimes(session, { startTimeStr, endTimeStr });
     const [isNoteOpen, setIsNoteOpen] = useState(false);
+    const handleCloseNote = useCallback(() => setIsNoteOpen(false), [setIsNoteOpen]);
     const getNote = useNotesStore(s => s.getNote);
     const hasNote = !!getNote(session.id);
 
     return (
-        <div className={`p-3 bg-white dark:bg-slate-900 border ${isLive ? 'border-accent-500 shadow-md ring-1 ring-accent-500/20' : 'border-slate-200 dark:border-slate-700 shadow-sm'} rounded-2xl transition-all mb-3 ${className}`}>
-            <div className="flex justify-between items-center mb-1">
-                <div className={`text-sm font-black ${isLive ? 'text-accent-600 dark:text-accent-400' : 'text-slate-800 dark:text-slate-100'}`}>
-                    {startTime} - {endTime}
+        <div className={`relative rounded-2xl p-5 transition-all duration-200 ${isLive
+            ? 'bg-white dark:bg-slate-900 border border-accent-500 dark:border-accent-500 ring-2 ring-accent-500/20 shadow-sm hover:shadow-lg'
+            : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600'
+            } ${className}`}>
+            {/* Live Indicator */}
+            {isLive && (
+                <div className="absolute top-5 right-5">
+                    <Badge variant="live" dot>Live</Badge>
                 </div>
-                {isLive && <Badge variant="live" dot className="scale-90 origin-right">Live</Badge>}
+            )}
+
+            {/* Time — Primary Focus */}
+            <div className="flex items-center gap-2 mb-3 font-num">
+                <Clock size={16} strokeWidth={1.5} className="text-slate-400" />
+                <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">{startTime}</span>
+                <span className="text-slate-300 dark:text-slate-600">—</span>
+                <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">{endTime}</span>
             </div>
-            
-            <h3 className={`text-[14px] font-bold leading-tight mb-2 ${isLive ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-200'}`}>
+
+            {/* Subject Name */}
+            <h3 className={`text-base leading-snug mb-3 text-pretty ${
+                isLive ? 'font-bold text-slate-900 dark:text-white' : 'font-medium text-slate-600 dark:text-slate-300'
+            }`}>
                 {displayName}
             </h3>
-            
-            <div className="border-t border-slate-100 dark:border-slate-800 pt-2 mt-2 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-                <div className="flex items-center gap-2 truncate">
-                    <span className="font-semibold">{formatRoom(session.room)}</span>
-                    <span>•</span>
-                    <span className="truncate">{formatClassDisplay(session)}</span>
+
+            {/* Meta Row — Room prominent, class secondary */}
+            <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-3 overflow-hidden">
+                    <div className="flex items-center gap-1.5 shrink-0">
+                        <MapPin size={14} strokeWidth={1.5} />
+                        <span className="font-bold text-slate-700 dark:text-slate-200">{formatRoom(session.room)}</span>
+                    </div>
+                    <span className="text-slate-300 dark:text-slate-700 shrink-0">•</span>
+                    <div className="truncate font-medium text-slate-400 dark:text-slate-500 text-xs">
+                        {formatClassDisplay(session)}
+                    </div>
                 </div>
-                <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                    {hasNote && <StickyNote size={12} className="text-accent-500" fill="currentColor" />}
-                    <TypeBadge type={session.type} compact />
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={() => setIsNoteOpen(true)}
+                        className={`p-1.5 rounded-lg transition-colors ${hasNote 
+                            ? 'bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400' 
+                            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500'}`}
+                    >
+                        <StickyNote size={16} fill={hasNote ? "currentColor" : "none"} strokeWidth={hasNote ? 2.5 : 1.5} />
+                    </button>
+                    <TypeBadge type={session.type} />
                 </div>
             </div>
-            
-            <NoteModal isOpen={isNoteOpen} sessionId={session.id} sessionTitle={displayName} onClose={() => setIsNoteOpen(false)} time={`${startTime} - ${endTime}`} room={formatRoom(session.room)} className={formatClassDisplay(session)} date={'dateStr' in session ? session.dateStr : undefined} />
+
+            {/* Note Modal */}
+            <NoteModal
+                isOpen={isNoteOpen}
+                sessionId={session.id}
+                sessionTitle={displayName}
+                onClose={handleCloseNote}
+                date={'dateStr' in session ? session.dateStr : undefined}
+                room={formatRoom(session.room)}
+                className={formatClassDisplay(session)}
+                time={`${startTime} - ${endTime}`}
+            />
+
+            {/* Optional Teacher Footer Strip */}
+            {showTeacher && (
+                <div className="mt-5 -mx-5 -mb-5 px-5 py-3 bg-accent-50 dark:bg-accent-900/20 rounded-b-2xl border-t border-accent-100 dark:border-accent-800/50 text-[13px] font-black">
+                    <span className="text-slate-900 dark:text-accent-50">{session.teacher}</span>
+                </div>
+            )}
         </div>
     );
 };

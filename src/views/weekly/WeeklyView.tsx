@@ -82,12 +82,10 @@ const WeeklyView: React.FC = () => {
                 <EmptyState type="NO_SESSIONS" isWeekEmpty={true} currentWeekRange={weekRange} variant="weekly" />
             ) : (
                 <div className={`transition-all duration-300 ${viewMode === 'vertical' ? 'max-w-4xl mx-auto' : 'max-w-full'}`}>
-                    <div className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isCurrent 
-                        ? 'border-accent-500 dark:border-accent-400 ring-2 ring-accent-500/20 shadow-lg shadow-accent-500/5' 
-                        : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'}`}>
-                        
-                        {viewMode === 'horizontal' ? (
-                            /* ─── HORIZONTAL TABLE MODE ─────────────────────── */
+                    {viewMode === 'horizontal' ? (
+                        <div className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isCurrent 
+                            ? 'border-accent-500 dark:border-accent-400 ring-2 ring-accent-500/20 shadow-lg shadow-accent-500/5' 
+                            : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'}`}>
                             <WeekTableLayout 
                                 grouped={grouped}
                                 weekRange={weekRange}
@@ -97,20 +95,20 @@ const WeeklyView: React.FC = () => {
                                 isCurrent={isCurrent}
                                 fullBleed={true}
                             />
-                        ) : (
-                            /* ─── VERTICAL CARD MODE ───────────────────────── */
-                            <div className="p-6 bg-slate-50/50 dark:bg-slate-900/50">
-                                <WeekCardLayout 
-                                    grouped={grouped}
-                                    weekRange={weekRange}
-                                    now={now} 
-                                    abbreviations={abbreviations!} 
-                                    showTeacher={!filters.teacher} 
-                                    isCurrent={isCurrent}
-                                />
-                            </div>
-                        )}
-                    </div>
+                        </div>
+                    ) : (
+                        /* ─── VERTICAL CARD MODE (No Outer Border) ───────────────────────── */
+                        <div className="w-full">
+                            <WeekCardLayout 
+                                grouped={grouped}
+                                weekRange={weekRange}
+                                now={now} 
+                                abbreviations={abbreviations!} 
+                                showTeacher={!filters.teacher} 
+                                isCurrent={isCurrent}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
         </div>

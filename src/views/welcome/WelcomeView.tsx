@@ -331,21 +331,21 @@ const WelcomeView: React.FC = () => {
                         isProcessing={isProcessing}
                     />
                 ) : (
-                    <div
+                    <label
+                        htmlFor="file-input"
                         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                         onDragLeave={() => setIsDragging(false)}
                         onDrop={handleDrop}
-                        className={`w-full border-2 border-dashed rounded-2xl p-8 md:p-12 text-center transition-all duration-300 cursor-pointer ${isDragging
+                        className={`w-full border-2 border-dashed rounded-2xl p-8 md:p-12 text-center transition-all duration-300 cursor-pointer has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent-500 has-[:focus-visible]:ring-offset-2 dark:has-[:focus-visible]:ring-offset-slate-900 ${isDragging
                             ? 'border-accent-600 bg-accent-100/50 dark:bg-accent-900/20 shadow-lg shadow-accent-500/10'
                             : 'border-accent-400 dark:border-accent-500/50 bg-accent-50/10 dark:bg-accent-900/5 hover:border-accent-600 dark:hover:border-accent-400 hover:bg-accent-50/30 dark:hover:bg-accent-900/10 hover:shadow-md'
                             }`}
-                        onClick={() => document.getElementById('file-input')?.click()}
                     >
                         <Upload size={40} className="mx-auto text-accent-600 mb-4 transition-transform group-hover:scale-110" />
                         <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                             {t('app.uploadTitle')}
                         </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                        <p className="hidden md:block text-xs text-slate-500 dark:text-slate-400 mt-1">
                             {t('app.uploadDesc')}
                         </p>
                         <input
@@ -353,9 +353,9 @@ const WelcomeView: React.FC = () => {
                             type="file"
                             accept=".html,.json"
                             onChange={handleFileChange}
-                            className="hidden"
+                            className="sr-only"
                         />
-                    </div>
+                    </label>
                 )}
 
                 {/* Paste toggle */}

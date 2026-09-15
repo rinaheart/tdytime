@@ -41,7 +41,7 @@ const TodayView: React.FC = () => {
                     aria-live="polite"
                 >
                     <div className="bg-white dark:bg-slate-900 rounded-2xl p-8 text-center border-2 border-accent-600 dark:border-accent-500 shadow-xl shadow-accent-500/10 ring-1 ring-accent-500/10 flex flex-col items-center justify-center transition-all">
-                        <div className="mb-4 animate-bounce duration-[3000ms]">
+                        <div className="mb-4">
                             <PartyPopper size={48} className="text-accent-600 dark:text-accent-400" />
                         </div>
 

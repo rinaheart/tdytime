@@ -58,7 +58,7 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                             className="mt-1 px-3 py-1.5 bg-accent-50 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400 border border-accent-200 dark:border-accent-800 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/50 hover:shadow-sm transition-all active:scale-95 flex items-center gap-1.5 shrink-0"
                         >
                             <CalendarCheck size={14} strokeWidth={2} />
-                            <span className="text-xs font-bold tracking-tight">{t('exam.shortLabel', 'Coi thi')}</span>
+                            <span className="hidden md:inline text-xs font-bold tracking-tight">{t('exam.shortLabel', 'Coi thi')}</span>
                             <span className="text-[10px] font-black bg-accent-600 dark:bg-accent-500 text-white rounded-full w-5 h-5 flex items-center justify-center leading-none">
                                 {upcomingCount}
                             </span>
@@ -73,13 +73,12 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                         >
                             {/* Red pulsing dot for ongoing */}
                             {isOngoing && (
-                                <span className="relative flex h-2 w-2 shrink-0">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500" />
+                                <span className="relative flex h-3 w-3">
+                                    <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500 border border-white dark:border-slate-900" />
                                 </span>
                             )}
                             <CalendarCheck size={14} strokeWidth={2} />
-                            <span className="text-xs font-bold tracking-tight">
+                            <span className="hidden md:inline text-xs font-bold tracking-tight">
                                 {isOngoing ? t('exam.ongoingShort', 'Đang thi') : t('exam.shortLabel', 'Coi thi')}
                             </span>
                             <span className="text-[10px] font-black bg-accent-600 dark:bg-accent-500 text-white rounded-full w-5 h-5 flex items-center justify-center leading-none">
