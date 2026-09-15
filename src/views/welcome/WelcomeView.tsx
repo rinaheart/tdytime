@@ -223,26 +223,38 @@ const WelcomeView: React.FC = () => {
     const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
+        
+        if (file.size > 2 * 1024 * 1024) {
+            useUIStore.getState().setToast(t('upload.errors.fileTooLarge', 'File quá lớn. Vui lòng chọn file dưới 2MB.'), 'error');
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (event) => {
             const content = event.target?.result as string;
             if (content) processContent(content);
         };
         reader.readAsText(file);
-    }, [processContent]);
+    }, [processContent, t]);
 
     const handleDrop = useCallback((e: React.DragEvent) => {
         e.preventDefault();
         setIsDragging(false);
         const file = e.dataTransfer.files[0];
         if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+            useUIStore.getState().setToast(t('upload.errors.fileTooLarge', 'File quá lớn. Vui lòng chọn file dưới 2MB.'), 'error');
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (event) => {
             const content = event.target?.result as string;
             if (content) processContent(content);
         };
         reader.readAsText(file);
-    }, [processContent]);
+    }, [processContent, t]);
 
     const handleHistoryLoad = useCallback((item: HistoryItem) => {
         loadHistoryItem(item, t);

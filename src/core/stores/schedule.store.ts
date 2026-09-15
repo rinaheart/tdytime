@@ -46,7 +46,7 @@ interface ScheduleState {
     isMockEnabled: boolean;
 
     // Actions
-    processLoadedData: (data: ScheduleData, t: (key: string, opts?: Record<string, unknown>) => string, lang: string) => void;
+    processLoadedData: (data: ScheduleData, t: (key: string, opts?: Record<string, unknown>) => string, lang: string) => Promise<void>;
     handleFileUpload: (content: string, t: (key: string, opts?: Record<string, unknown>) => string, lang: string) => void;
     jumpToCurrentWeek: (data: ScheduleData) => void;
     setCurrentWeekIndex: (idx: number | ((prev: number) => number)) => void;
@@ -57,10 +57,10 @@ interface ScheduleState {
     setMockState: (state: { startTimeLocal: number; startTimeMock: number; multiplier: number } | null) => void;
     toggleMockEnabled: () => void;
     loadHistoryItem: (item: HistoryItem, t: (key: string, opts?: Record<string, unknown>) => string) => void;
-    deleteHistoryItem: (id: string) => void;
+    deleteHistoryItem: (id: string) => Promise<void>;
     goToUpload: () => void;
-    resetAll: () => void;
-    initFromStorage: () => void;
+    resetAll: () => Promise<void>;
+    initFromStorage: () => Promise<void>;
     setTimezone: (tz: string) => void;
 }
 
@@ -82,8 +82,9 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     mockState: null,
     isMockEnabled: false,
 
-    initFromStorage: () => {
-        const historyList = historyService.getAll();
+    initFromStorage: async () => {
+        await historyService.init();
+        const historyList = await historyService.getAll();
         set({ historyList });
 
         const savedAbbrStr = localStorage.getItem('global_abbreviations');
@@ -125,7 +126,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         }
     },
 
-    processLoadedData: (parsedData, t, lang) => {
+    processLoadedData: async (parsedData, t, lang) => {
         set({ isProcessing: true });
 
         const sanitizedData = sanitizeScheduleData(parsedData);
@@ -163,7 +164,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
 
         // Persist the newly sanitized data
         localStorage.setItem('last_schedule_data', JSON.stringify(sanitizedData));
-        historyService.save(sanitizedData);
+        await historyService.save(sanitizedData);
 
         const sessions = buildScheduleIndex(sanitizedData, { timezone: get().userTimezone });
 
@@ -179,7 +180,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
             currentWeekIndex: targetWeekIdx,
             isProcessing: false,
             isInitialized: true,
-            historyList: historyService.getAll(),
+            historyList: await historyService.getAll(),
         });
         
         useUIStore.getState().setToast(message);
@@ -318,9 +319,9 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         useUIStore.getState().setToast(t('success.loadedHistory'));
     },
 
-    deleteHistoryItem: (id) => {
-        const updated = historyService.delete(id);
-        set({ historyList: updated });
+    deleteHistoryItem: async (id) => {
+        await historyService.removeItem(id);
+        set({ historyList: await historyService.getAll() });
     },
 
     goToUpload: () => {
@@ -353,10 +354,10 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         }    
     },
 
-    resetAll: () => {
+    resetAll: async () => {
         localStorage.removeItem('last_schedule_data');
         localStorage.removeItem('language');
-        historyService.clear();
+        await historyService.clear();
         useUIStore.getState().resetAll();
         useNotesStore.getState().clearAllNotes();
 

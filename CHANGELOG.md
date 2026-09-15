@@ -10,6 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - **UI/UX Redesign (Today View):** Updated mobile-first layout with unified `rounded-2xl` corners, minimalist borders, and cleaner cards. Fixed next teaching day logic.
 - **UI/UX Redesign (Weekly View):** Completely removed horizontal table for mobile view. Implemented a flat, high-density block layout with zebra striping (`bg-slate-50`) to separate sessions seamlessly.
+- **IDB Migration:** Migrated history storage from `localStorage` to `IndexedDB` to remove the 5MB limit and auto-migrate old data, resolving synchronous rendering jank.
+- **Lazy Loading (Virtualization):** Applied `IntersectionObserver` for Semester & Exam views to eliminate jank when loading long schedules on low-end devices.
+- **Upload File Limit:** Added a `< 2MB` HTML file upload limit at the Welcome screen to prevent browser hangs or memory overload.
+- **Clean Code & Tech Debt:** Resolved all ESLint warnings and cleaned up unused imports to pass GitHub Actions CI/CD.
 
 ## [1.9.4] - 2026-08-21
 

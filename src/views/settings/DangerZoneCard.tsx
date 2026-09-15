@@ -24,11 +24,11 @@ const DangerZoneCard: React.FC = () => {
         if (notesTimeoutRef.current) clearTimeout(notesTimeoutRef.current);
     }, []);
 
-    const handleClick = () => {
+    const handleClick = async () => {
         if (isConfirming) {
-            resetAll();
+            await resetAll();
             setIsConfirming(false);
-            navigate('/');
+            navigate('/', { replace: true });
         } else {
             setIsConfirming(true);
             timeoutRef.current = setTimeout(() => setIsConfirming(false), 3000);

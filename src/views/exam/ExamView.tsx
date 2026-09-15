@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { Play, CalendarCheck, Trash2, LayoutList, TableProperties, ChevronDown } from 'lucide-react';
 import { useExamStore, useUIStore, useScheduleStore } from '@/core/stores';
 import { getExamStatus } from '@/core/exam/exam.parser';
+import { LazyRender } from '@/ui/LazyRender';
 import { useCalculatedTime } from '@/core/hooks/useCalculatedTime';
 import { EmptyState } from '@/ui';
 import ConfirmModal from '@/ui/primitives/ConfirmModal';
@@ -256,48 +257,49 @@ const ExamView: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Table Layout (Active Groups) */}
                         {tableGroups.length > 0 && (
                             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md overflow-hidden shadow-sm mx-2">
                                 {tableGroups.map((group, gIdx) => (
-                                    <div key={group.dateStr} className={gIdx > 0 ? 'border-t-2 border-slate-100 dark:border-slate-800' : ''}>
-                                        {/* Date Header */}
-                                        <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800/50">
-                                            <h3 className="text-base font-bold text-slate-900 dark:text-white leading-tight">
-                                                {group.dayName}, {group.dateStr}
-                                            </h3>
+                                    <LazyRender key={group.dateStr} placeholderHeight={100} rootMargin="1000px">
+                                        <div className={gIdx > 0 ? 'border-t-2 border-slate-100 dark:border-slate-800' : ''}>
+                                            {/* Date Header */}
+                                            <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800/50">
+                                                <h3 className="text-base font-bold text-slate-900 dark:text-white leading-tight">
+                                                    {group.dayName}, {group.dateStr}
+                                                </h3>
+                                            </div>
+
+                                            {/* Sessions (Sáng/Chiều/Tối) */}
+                                            {(['morning', 'afternoon', 'evening'] as const).map(periodKey => {
+                                                const sessionsInPeriod = group[periodKey];
+                                                if (sessionsInPeriod.length === 0) return null;
+                                                return (
+                                                    <div key={periodKey} className="px-4">
+                                                        {/* Shift Label */}
+                                                        <div className="flex items-center gap-3 pt-3 pb-1">
+                                                            <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 whitespace-nowrap">
+                                                                {t(`shifts.${periodKey}`)}
+                                                            </span>
+                                                            <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800" />
+                                                        </div>
+
+                                                        {/* Rows */}
+                                                        <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
+                                                            {sessionsInPeriod.map(s => (
+                                                                <ExamRow 
+                                                                    key={s.id}
+                                                                    session={s}
+                                                                    viewMode={viewMode}
+                                                                    isNext={s.id === nextExam?.id}
+                                                                    globalIndex={s.globalIndex}
+                                                                />
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
                                         </div>
-
-                                        {/* Sessions (Sáng/Chiều/Tối) */}
-                                        {(['morning', 'afternoon', 'evening'] as const).map(periodKey => {
-                                            const sessionsInPeriod = group[periodKey];
-                                            if (sessionsInPeriod.length === 0) return null;
-                                            return (
-                                                <div key={periodKey} className="px-4">
-                                                    {/* Shift Label */}
-                                                    <div className="flex items-center gap-3 pt-3 pb-1">
-                                                        <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 whitespace-nowrap">
-                                                            {t(`shifts.${periodKey}`)}
-                                                        </span>
-                                                        <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800" />
-                                                    </div>
-
-                                                    {/* Rows */}
-                                                    <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
-                                                        {sessionsInPeriod.map(s => (
-                                                            <ExamRow 
-                                                                key={s.id}
-                                                                session={s}
-                                                                viewMode={viewMode}
-                                                                isNext={s.id === nextExam?.id}
-                                                                globalIndex={s.globalIndex}
-                                                            />
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
+                                    </LazyRender>
                                 ))}
                             </div>
                         )}

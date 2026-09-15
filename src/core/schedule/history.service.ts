@@ -4,6 +4,7 @@
  */
 
 import { ScheduleData } from './schedule.types';
+import { get, set, remove } from '../utils/idb';
 
 const STORAGE_KEY = 'timetable_history_v1';
 const MAX_ITEMS = 10;
@@ -22,11 +23,25 @@ export interface HistoryItem extends HistoryMetadata {
 }
 
 export const historyService = {
-    /** Save schedule to history (deduplicates by teacher + semester + year) */
-    save: (data: ScheduleData): void => {
+    /** Initialize and migrate history from localStorage if present */
+    init: async (): Promise<void> => {
         try {
-            const existingJson = localStorage.getItem(STORAGE_KEY);
-            let history: HistoryItem[] = existingJson ? JSON.parse(existingJson) : [];
+            const oldData = localStorage.getItem(STORAGE_KEY);
+            if (oldData) {
+                const history: HistoryItem[] = JSON.parse(oldData);
+                await set(STORAGE_KEY, history);
+                localStorage.removeItem(STORAGE_KEY);
+                console.log('Migrated history to IndexedDB');
+            }
+        } catch (e) {
+            console.error('Migration failed', e);
+        }
+    },
+
+    /** Save schedule to history (deduplicates by teacher + semester + year) */
+    save: async (data: ScheduleData): Promise<void> => {
+        try {
+            let history: HistoryItem[] = (await get<HistoryItem[]>(STORAGE_KEY)) || [];
 
             const newItem: HistoryItem = {
                 id: crypto.randomUUID(),
@@ -50,39 +65,39 @@ export const historyService = {
             history.unshift(newItem);
             if (history.length > MAX_ITEMS) history = history.slice(0, MAX_ITEMS);
 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+            await set(STORAGE_KEY, history);
         } catch (error) {
             console.error('Failed to save history:', error);
         }
     },
 
     /** Get all history items */
-    getAll: (): HistoryItem[] => {
+    getAll: async (): Promise<HistoryItem[]> => {
         try {
-            const json = localStorage.getItem(STORAGE_KEY);
-            return json ? JSON.parse(json) : [];
+            const history = await get<HistoryItem[]>(STORAGE_KEY);
+            return history || [];
         } catch {
             return [];
         }
     },
 
-    /** Delete a history item by ID, returns updated list */
-    delete: (id: string): HistoryItem[] => {
+    /** Remove a specific item by ID */
+    removeItem: async (id: string): Promise<void> => {
         try {
-            const json = localStorage.getItem(STORAGE_KEY);
-            if (!json) return [];
-
-            let history: HistoryItem[] = JSON.parse(json);
+            let history: HistoryItem[] = (await get<HistoryItem[]>(STORAGE_KEY)) || [];
             history = history.filter((item) => item.id !== id);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-            return history;
-        } catch {
-            return [];
+            await set(STORAGE_KEY, history);
+        } catch (error) {
+            console.error('Failed to remove history item:', error);
         }
     },
 
     /** Clear all history */
-    clear: (): void => {
-        localStorage.removeItem(STORAGE_KEY);
+    clear: async (): Promise<void> => {
+        try {
+            await remove(STORAGE_KEY);
+        } catch (error) {
+            console.error('Failed to clear history:', error);
+        }
     },
 };

@@ -5,6 +5,7 @@ import { Zap, LayoutTemplate, Columns, Search, ChevronDown, ChevronUp, FileSprea
 import { useScheduleStore } from '@/core/stores/schedule.store';
 import { useUIStore } from '@/core/stores/ui.store';
 import { FilterBar } from '@/ui';
+import { LazyRender } from '@/ui/LazyRender';
 import { isCurrentWeek as checkIsCurrentWeek, getCurrentWeekRange } from '@/core/schedule/schedule.utils';
 import { useScheduleFilter } from '@/core/hooks/useScheduleFilter';
 import { useSemesterData } from './useSemesterData';
@@ -273,20 +274,22 @@ const SemesterView: React.FC = () => {
                     const isExpanded = expandedWeeks[wIdx] ?? isDefaultExpanded;
 
                     return (
-                        <div key={wIdx} className="w-full">
-                            <WeekAccordion
-                                weekSessions={weekSessions}
-                                weekIdx={wIdx}
-                                weekNumber={weekMeta.weekNumber}
-                                weekRange={weekMeta.dateRange}
-                                isExpanded={isExpanded}
-                                onToggle={() => toggleWeek(wIdx)}
-                                showTeacher={!filters.teacher}
-                                viewMode={viewMode}
-                                now={now}
-                                abbreviations={abbreviations!}
-                            />
-                        </div>
+                        <LazyRender key={wIdx} placeholderHeight={80} rootMargin="1000px">
+                            <div className="w-full">
+                                <WeekAccordion
+                                    weekSessions={weekSessions}
+                                    weekIdx={wIdx}
+                                    weekNumber={weekMeta.weekNumber}
+                                    weekRange={weekMeta.dateRange}
+                                    isExpanded={isExpanded}
+                                    onToggle={() => toggleWeek(wIdx)}
+                                    showTeacher={!filters.teacher}
+                                    viewMode={viewMode}
+                                    now={now}
+                                    abbreviations={abbreviations!}
+                                />
+                            </div>
+                        </LazyRender>
                     );
                 })}
             </div>

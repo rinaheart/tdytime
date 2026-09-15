@@ -414,7 +414,11 @@
                 "version": "v2026.09.15",
                 "date": "2026-09-15",
                 "changes": [
-                    "UI/UX Redesign: Redesigned Weekly View following mobile-first principles, removing unnecessary whitespace and optimizing display area."
+                    "UI/UX Redesign: Redesigned Weekly View following mobile-first principles, removing unnecessary whitespace and optimizing display area.",
+                    "IDB Migration: Migrated history storage from localStorage to IndexedDB to remove 5MB limit and auto-migrate old data.",
+                    "Lazy Loading: Applied Intersection Observer for Semester & Exam views to eliminate jank when loading long schedules on low-end devices.",
+                    "Upload Limit: Added < 2MB HTML file upload limit at Welcome screen to prevent browser hangs or memory overload.",
+                    "Clean Code: Resolved all ESLint warnings and cleaned up unused imports to pass GitHub Actions CI/CD."
                 ]
             },
             {

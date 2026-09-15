@@ -413,7 +413,11 @@
                 "version": "v2026.09.15",
                 "date": "2026-09-15",
                 "changes": [
-                    "UI/UX Redesign: Thiết kế lại giao diện Lịch Tuần (Weekly) theo hướng ưu tiên di động (Mobile-first), loại bỏ khoảng trống thừa và tối ưu hóa diện tích hiển thị."
+                    "UI/UX Redesign: Thiết kế lại giao diện Lịch Tuần (Weekly) theo hướng ưu tiên di động (Mobile-first), loại bỏ khoảng trống thừa và tối ưu hóa diện tích hiển thị.",
+                    "IDB Migration: Chuyển đổi dữ liệu lịch sử từ localStorage sang IndexedDB để gỡ bỏ giới hạn 5MB và tự động transfer dữ liệu cũ.",
+                    "Lazy Loading: Áp dụng Intersection Observer cho Lịch Học & Lịch Thi giúp loại bỏ hiện tượng giật lag khi tải lịch dài hạn trên máy yếu.",
+                    "Upload Limit: Bổ sung giới hạn tải lên file HTML (< 2MB) tại màn hình Welcome để ngăn chặn lỗi trình duyệt bị treo.",
+                    "Clean Code: Khắc phục triệt để các cảnh báo ESLint, dọn dẹp các import thừa để vượt qua CI/CD của GitHub Actions."
                 ]
             },
             {
