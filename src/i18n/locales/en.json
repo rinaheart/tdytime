@@ -411,6 +411,13 @@
         "changelog": "Changelog",
         "history": [
             {
+                "version": "v2026.09.15",
+                "date": "2026-09-15",
+                "changes": [
+                    "UI/UX Redesign: Redesigned Weekly View following mobile-first principles, removing unnecessary whitespace and optimizing display area."
+                ]
+            },
+            {
                 "version": "v1.9.4",
                 "date": "2026-08-21",
                 "changes": [
