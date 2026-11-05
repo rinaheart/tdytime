@@ -42,9 +42,9 @@ const ThresholdsCard: React.FC<ThresholdsCardProps> = ({ onSuccess }) => {
     return (
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col">
             <div className="p-4 md:p-6 border-b border-slate-100 dark:border-slate-800">
-                <h3 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                <h2 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                     <BellRing size={20} className="text-amber-500" /> {t('settings.thresholds.title')}
-                </h3>
+                </h2>
                 <p className="text-xs text-slate-500 mt-1">{t('settings.thresholds.description')}</p>
             </div>
 

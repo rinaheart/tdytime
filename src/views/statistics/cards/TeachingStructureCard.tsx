@@ -41,11 +41,11 @@ const TeachingStructureCard: React.FC = () => {
 
     return (
         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 flex flex-col h-full">
-            <h3 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+            <h2 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                 <PieChartIcon size={16} className="text-accent-600" /> {t('stats.structure.title')}
-            </h3>
+            </h2>
             <div className="mb-8">
-                <div className="flex justify-between text-[10px] font-bold uppercase text-slate-400 mb-2">
+                <div className="flex justify-between text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 mb-2">
                     <span>{t('stats.structure.typeLabel')}</span>
                     <span className="text-accent-600 dark:text-accent-400">{ltPercentLabel}% / {thPercentLabel}%</span>
                 </div>
@@ -55,7 +55,7 @@ const TeachingStructureCard: React.FC = () => {
                 </div>
             </div>
             <div className="flex-1 flex flex-col justify-center">
-                <p className="text-[10px] font-bold uppercase text-slate-400 mb-4 text-center">{t('stats.structure.shiftLabel')}</p>
+                <p className="text-[10px] font-bold uppercase text-slate-600 dark:text-slate-400 mb-4 text-center">{t('stats.structure.shiftLabel')}</p>
                 <div className="h-32 mb-6 flex items-center justify-center">
                     <svg viewBox="0 0 100 100" className="w-28 h-28 transform -rotate-90">
                         {(() => {

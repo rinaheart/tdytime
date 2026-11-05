@@ -76,7 +76,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
                 {completedSessions.length > 0 && (
                     <div className="bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 rounded-2xl p-5 mt-6">
                         {!isTodayFinished && (
-                            <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-4">
+                            <h3 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
                                 {t('common.completedItem')}
                             </h3>
                         )}
@@ -86,13 +86,13 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
                                     <div className="flex items-center gap-1 font-bold shrink-0 min-w-[78px] text-[12px] font-num">
                                         <span className="text-slate-500 dark:text-slate-400">{s.startTimeStr}</span>
                                         <span className="text-slate-300 dark:text-slate-700 font-light">/</span>
-                                        <span className="text-slate-400 dark:text-slate-500 font-medium">{s.endTimeStr}</span>
+                                        <span className="text-slate-600 dark:text-slate-400 font-medium">{s.endTimeStr}</span>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <span className="font-semibold text-slate-600 dark:text-slate-400 truncate block">{abbreviations[s.courseName] || s.courseName}</span>
                                     </div>
                                     <div className="hidden md:block shrink-0 text-right ml-2 min-w-0 max-w-[120px]">
-                                        <span className="text-[11px] text-slate-400 dark:text-slate-500 font-bold truncate block">
+                                        <span className="text-[11px] text-slate-600 dark:text-slate-400 font-bold truncate block">
                                             {formatClassDisplay(s)}
                                         </span>
                                     </div>

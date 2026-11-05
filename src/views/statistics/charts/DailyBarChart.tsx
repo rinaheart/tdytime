@@ -23,9 +23,9 @@ const DailyBarChart: React.FC<DailyBarChartProps> = ({ data, color }) => {
 
     return (
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col h-full">
-            <h4 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+            <h2 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                 <BarChart3 size={16} className="text-accent-600" /> {t('stats.trend.daily')}
-            </h4>
+            </h2>
             <div className="h-40 relative group">
                 <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full overflow-visible">
                     {/* Y-Axis Grid Lines */}

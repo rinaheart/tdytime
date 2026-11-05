@@ -83,10 +83,10 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
 
                     <div className={viewMode === 'horizontal' ? 'pl-4 py-3 md:py-4' : ''}>
                         <div className="flex items-center gap-2 mb-0.5">
-                            <h4 className={`font-black uppercase tracking-tight leading-none ${viewMode === 'vertical' ? 'text-base md:text-lg' : 'text-sm'} ${isCurrent ? 'text-accent-600 dark:text-accent-400' : 'text-slate-800 dark:text-slate-100'}`}>
+                            <h2 className={`font-black uppercase tracking-tight leading-none ${viewMode === 'vertical' ? 'text-base md:text-lg' : 'text-sm'} ${isCurrent ? 'text-accent-600 dark:text-accent-400' : 'text-slate-800 dark:text-slate-100'}`}>
                                 {t('weekly.week', { number: weekNumber })}
-                            </h4>
-                            {isCurrent && <span className="px-1.5 py-0.5 rounded-full bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400 text-[8px] font-black uppercase tracking-widest animate-pulse">{t('common.current')}</span>}
+                            </h2>
+                            {isCurrent && <span className="px-1.5 py-0.5 rounded-full bg-blue-700 text-white text-[8px] font-black uppercase tracking-widest">{t('common.current')}</span>}
                         </div>
                         <p className={`text-slate-500 dark:text-slate-400 font-num font-bold tracking-tight ${viewMode === 'vertical' ? 'text-[10px] md:text-xs' : 'text-[10px]'}`}>{formatDateRange(weekRange)}</p>
                     </div>

@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026.11.05] - 2026-11-05
+
+### Changed
+- **Dependencies Upgrade (LTS & Latest):** Nâng cấp toàn bộ các thư viện lên phiên bản mới nhất theo chuẩn LTS / Stable:
+  - `react` & `react-dom`: `19.2.8` ⟶ `19.3.1` (React 19 LTS)
+  - `react-router-dom`: `7.18.2` ⟶ `7.18.5`
+  - `vite`: `8.2.2` ⟶ `8.3.5`
+  - `@vitejs/plugin-react`: `6.1.0` ⟶ `6.2.1`
+  - `tailwindcss` & `@tailwindcss/postcss`: `4.3.3` ⟶ `4.3.4`
+  - `postcss`: `8.5.26` ⟶ `8.5.32`
+  - `autoprefixer`: `10.5.4` ⟶ `10.6.2`
+  - `terser`: `5.50.0` ⟶ `5.51.2`
+  - `zustand`: `5.0.15` ⟶ `5.0.16`
+  - `i18next`: `26.3.6` ⟶ `26.7.1`
+  - `react-i18next`: `17.0.11` ⟶ `17.1.12`
+  - `lucide-react`: `1.33.0` ⟶ `1.67.0`
+  - `pako`: `3.0.1` ⟶ `3.0.3`
+  - `@tanstack/react-virtual`: `3.14.10` ⟶ `3.14.26`
+  - `@react-pdf/renderer`: `4.6.1` ⟶ `4.9.0`
+  - `@types/node`: `26.2.0` ⟶ `26.6.6`
+  - `@types/react` & `@types/react-dom`: `19.2.18` ⟶ `19.3.0`
+  - `@typescript-eslint/eslint-plugin` & `parser`: `8.67.0` ⟶ `8.72.1`
+  - `@testing-library/dom` (`10.4.2`) & `@testing-library/react` (`16.3.3`)
+  - `jsdom`: `30.0.1` ⟶ `30.1.3`
+- **Environment & Engine Standards:**
+  - Bổ sung khai báo `"engines": { "node": ">=22.0.0", "pnpm": ">=9.0.0" }` trong `package.json`.
+  - Cập nhật CI Workflow (`.github/workflows/ci.yml`) lên Node.js 24 (Active LTS) với `cache: 'pnpm'` và `pnpm/action-setup@v4` (version 11).
+- **Stability Locks (Preserved):** Khóa `eslint@8.57.1`, `typescript@6.0.3`, `vitest@4.1.11` và `vite-plugin-pwa@1.3.0` để bảo đảm tương thích hệ thống AST linter và PWA build.
+
+### Fixed
+- **Tổng kiểm toán Accessibility & UI/UX (WCAG 2.2 Level AA Clean):**
+  - Đạt **0 vi phạm Axe-Core** trên toàn bộ 6 view (`Welcome`, `Today`, `Week`, `Semester`, `Stats`, `Settings`) qua 3 viewports (Desktop 1440px, Tablet 768px, Mobile 375px).
+  - Khắc phục lỗi Critical `button-name`: Bổ sung `aria-label` cho nút ghi chú trên `SessionCard`, nút xuất PDF, nút chuyển đổi view mode và các nút toggle.
+  - Khắc phục lỗi Serious `color-contrast`: Nâng cấp các sublabel màu xám mờ (`text-slate-400` ~2.6:1) lên `text-slate-600 dark:text-slate-400` (> 4.5:1). Thay thế badge "Tuần hiện tại" dùng `animate-pulse` mờ chữ bằng badge cố định `bg-blue-700 text-white font-black` (8.6:1).
+  - Khắc phục lỗi Moderate `heading-order`: Chuẩn hóa cây tiêu đề phân cấp mạch lạc `h1` (Trang/Giảng viên) ⟶ `h2` (Card/Ngày) ⟶ `h3` (Môn học/Tiết học) trên toàn ứng dụng.
+  - Khắc phục lỗi Moderate `landmark-no-duplicate-main`: Thay thế thẻ `<main>` lồng bên trong `TodayView.tsx` bằng `<section aria-label="Lịch hôm nay">`.
+  - Khắc phục lỗi Serious `scrollable-region-focusable`: Bổ sung `tabIndex={0}`, `role="region"` và `aria-label` cho các vùng cuộn ngang/dọc (`HeatmapChart`, `CoTeachersTable`, bảng phím tắt, bảng hình thức học).
+- **Test Environment Polyfill:**
+  - Thiết lập storage mock an toàn trong `src/setupTests.ts` xử lý cơ chế experimental `localStorage` trên Node 22/24/26.
+  - Sửa `src/core/stores/schedule.store.initFromStorage.test.ts` để đồng bộ `await` hàm khởi tạo IndexedDB async. Toàn bộ 48 unit tests vượt qua 100%.
+
 ## [2026.09.15] - 2026-09-15
 
 ### Changed

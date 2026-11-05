@@ -73,7 +73,7 @@ const WeeklyCard: React.FC<{ session: FlatSession | CourseSession; displayName: 
                 <div className="flex items-center font-bold shrink-0">
                     <span className="text-slate-700 dark:text-slate-200">{startTime}</span>
                     <span className="text-slate-300 dark:text-slate-600 font-light mx-px">-</span>
-                    <span className="text-slate-400 dark:text-slate-500 font-medium">{endTime}</span>
+                    <span className="text-slate-600 dark:text-slate-300 font-medium">{endTime}</span>
                 </div>
                 <span className="text-slate-500 dark:text-slate-400 font-black truncate ml-2 text-right flex-1 min-w-0" title={session.room}>
                     {session.room}
@@ -96,9 +96,10 @@ const WeeklyCard: React.FC<{ session: FlatSession | CourseSession; displayName: 
                             e.stopPropagation();
                             setIsNoteOpen(true);
                         }}
+                        aria-label={hasNote ? "Ghi chú (đã có)" : "Thêm ghi chú"}
                         className={`p-1 rounded transition-colors ${hasNote 
                             ? 'bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400' 
-                            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500'}`}
+                            : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'}`}
                     >
                         <StickyNote size={12} fill={hasNote ? "currentColor" : "none"} strokeWidth={hasNote ? 2.5 : 1.5} />
                     </button>

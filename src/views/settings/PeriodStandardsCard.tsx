@@ -12,9 +12,9 @@ const PeriodStandardsCard: React.FC = () => {
 
     return (
         <div className="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <h3 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+            <h2 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
                 <Clock size={16} className="text-accent-500" /> {t('about.periodStandards')}
-            </h3>
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {([
                     { key: 'morning', color: 'blue', periods: [[1, '07:00 - 07:45'], [2, '07:55 - 08:40'], [3, '08:50 - 09:35'], [4, '09:45 - 10:30']] },
@@ -22,7 +22,7 @@ const PeriodStandardsCard: React.FC = () => {
                     { key: 'evening', color: 'indigo', periods: [[11, '17:10 - 17:55'], [12, '18:00 - 18:45'], [13, '18:50 - 19:35']] },
                 ] as const).map(({ key, color, periods }) => (
                     <div key={key} className="space-y-3 bg-slate-50 dark:bg-slate-800 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
-                        <h4 className={`text-[10px] font-black text-${color}-700 uppercase tracking-widest border-l-2 border-${color}-600 pl-2`}>{t(`about.${key}`)}</h4>
+                        <h3 className={`text-[10px] font-black text-${color}-700 uppercase tracking-widest border-l-2 border-${color}-600 pl-2`}>{t(`about.${key}`)}</h3>
                         <ul className="text-[11px] space-y-1.5 text-slate-600 dark:text-slate-400 font-semibold">
                             {periods.map(([num, time]) => (
                                 <li key={num} className="flex justify-between">

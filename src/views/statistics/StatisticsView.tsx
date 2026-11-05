@@ -116,7 +116,7 @@ const StatisticsView: React.FC = () => {
     const avgLoadDisplay = avgLoad > 0 ? (
         <span>
             {avgLoad.toFixed(1)}
-            <span className="text-[8px] md:text-[9px] opacity-60 ml-0.5 lowercase font-medium">{t('common.periods')}</span>
+            <span className="text-[8px] md:text-[9px] font-semibold text-slate-600 dark:text-slate-400 ml-0.5 lowercase">{t('common.periods')}</span>
         </span>
     ) : '—';
 
@@ -147,9 +147,9 @@ const StatisticsView: React.FC = () => {
                     {/* 3. Key distributions */}
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
                         <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 flex flex-col h-full min-h-[340px]">
-                            <h3 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                            <h2 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                                 <LayoutGrid size={16} className="text-accent-600" /> {t('stats.heatmapTitle')}
-                            </h3>
+                            </h2>
                             <div className="flex-1 flex items-center justify-center w-full overflow-hidden">
                                 <HeatmapChart data={metrics.heatmapData} />
                             </div>
@@ -167,15 +167,15 @@ const StatisticsView: React.FC = () => {
                     {/* 5. Infrastructure insights */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm relative overflow-hidden group transition-all hover:shadow-md flex flex-col h-full">
-                            <h3 className="relative z-10 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                            <h2 className="relative z-10 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                                 <Users size={14} className="text-accent-500" /> {t('stats.topClasses')}
-                            </h3>
+                            </h2>
                             <div className="relative z-10 grid grid-cols-2 gap-4">
                                 {metrics.classDistribution.slice(0, 6).map((c, i) => (
                                     <div key={`${c.className}-${i}`} className="px-3 py-2 bg-slate-50 dark:bg-slate-800/40 rounded-sm border border-slate-100/60 dark:border-slate-800/60 flex flex-col justify-center">
                                         <div className="flex justify-between items-center mb-1.5">
                                             <span className="text-[10px] font-bold text-slate-700 dark:text-slate-200 truncate pr-2">{c.className}</span>
-                                            <span className="text-[9px] font-black text-accent-600 dark:text-accent-400">{c.periods}</span>
+                                            <span className="text-[9px] font-black text-accent-700 dark:text-accent-300 font-bold">{c.periods}</span>
                                         </div>
                                         <div className="h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-sm overflow-hidden">
                                             <div className="h-full bg-accent-500 rounded-sm" style={{ width: `${Math.min(100, (c.periods / metrics.totalHours) * 350)}%` }} />
@@ -185,15 +185,15 @@ const StatisticsView: React.FC = () => {
                             </div>
                         </div>
                         <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm relative overflow-hidden group transition-all hover:shadow-md flex flex-col h-full">
-                            <h3 className="relative z-10 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+                            <h2 className="relative z-10 text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                                 <MapPin size={14} className="text-accent-400" /> {t('stats.topClassrooms')}
-                            </h3>
+                            </h2>
                             <div className="relative z-10 grid grid-cols-2 gap-4">
                                 {metrics.topRooms.slice(0, 6).map((r, i) => (
                                     <div key={`${r.room}-${i}`} className="px-3 py-2 bg-slate-50 dark:bg-slate-800/40 rounded-sm border border-slate-100/60 dark:border-slate-800/60 flex flex-col justify-center">
                                         <div className="flex justify-between items-center mb-1.5">
                                             <span className="text-[10px] font-bold text-slate-700 dark:text-slate-200 truncate pr-2">{r.room}</span>
-                                            <span className="text-[9px] font-black text-accent-500 dark:text-accent-400">{r.periods}</span>
+                                            <span className="text-[9px] font-black text-accent-700 dark:text-accent-300 font-bold">{r.periods}</span>
                                         </div>
                                         <div className="h-1 w-full bg-slate-200 dark:bg-slate-700 rounded-sm overflow-hidden">
                                             <div className="h-full bg-accent-400 rounded-sm" style={{ width: `${Math.min(100, (r.periods / metrics.totalHours) * 350)}%` }} />

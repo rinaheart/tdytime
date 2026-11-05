@@ -55,7 +55,7 @@ const WeekTableLayout: React.FC<WeekTableLayoutProps> = ({
                     <table className="w-full border-collapse border-hidden table-fixed">
                         <thead>
                             <tr className="bg-slate-50/50 dark:bg-slate-800/50">
-                                <th className="w-12 p-2 border-b border-r border-slate-100 dark:border-slate-800 text-[10px] font-black text-slate-400 uppercase tracking-widest bg-white dark:bg-slate-900 sticky left-0 z-20" />
+                                <th className="w-12 p-2 border-b border-r border-slate-100 dark:border-slate-800 text-[10px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest bg-white dark:bg-slate-900 sticky left-0 z-20"><span className="sr-only">Buổi</span></th>
                                 {DAYS_OF_WEEK.map((day, idx) => {
                                     const isToday = isDayToday(idx);
                                     const colStyle = getColStyle(idx);
@@ -67,8 +67,8 @@ const WeekTableLayout: React.FC<WeekTableLayoutProps> = ({
                                             className={`p-3 border border-slate-100 dark:border-slate-800 text-center transition-all ${isToday ? 'bg-accent-600 dark:bg-accent-600 z-10 relative ring-2 ring-accent-400 dark:ring-accent-500 shadow-[0_0_15px_rgba(37,99,235,0.3)]' : ''}`}
                                         >
                                             <div className="flex flex-col items-center gap-0.5">
-                                                {isToday && <span className="text-[8px] font-black text-white/80 uppercase tracking-widest mb-0.5">{t('weekly.today')}</span>}
-                                                <p className={`text-[11px] font-black uppercase tracking-widest ${isToday ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`}>{t(`days.${idx}`)}</p>
+                                                {isToday && <span className="text-[8px] font-black text-white uppercase tracking-widest mb-0.5">{t('weekly.today')}</span>}
+                                                <h2 className={`text-[11px] font-black uppercase tracking-widest ${isToday ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`}>{t(`days.${idx}`)}</h2>
                                                 <p className={`text-xs font-num font-bold ${isToday ? 'text-white' : 'text-slate-600 dark:text-slate-400'}`}>{weekRange ? getDayDateString(weekRange, idx) : '—'}</p>
                                             </div>
                                         </th>

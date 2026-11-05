@@ -46,9 +46,9 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({ isCollapsed = false, onToggle
                         {metadata.teacher.trim().split(' ').pop()?.charAt(0) || '?'}
                     </div>
                     <div className="min-w-0 flex-1">
-                        <h2 className="text-lg lg:text-xl font-black font-sans text-slate-800 dark:text-slate-100 uppercase tracking-normal line-clamp-2 white-space-normal leading-relaxed">
+                        <h1 className="text-lg lg:text-xl font-black font-sans text-slate-800 dark:text-slate-100 uppercase tracking-normal line-clamp-2 white-space-normal leading-relaxed">
                             {metadata.teacher}
-                        </h2>
+                        </h1>
                         <p className="text-xs font-bold text-slate-500 dark:text-slate-400 font-num mt-1 truncate">
                             {formatSemester(metadata.semester)} • {metadata.academicYear}
                         </p>
@@ -57,6 +57,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({ isCollapsed = false, onToggle
                     {/* Expand/Collapse Toggle (Always visible for Privacy/Sharing) */}
                     <button
                         onClick={onToggle}
+                        aria-label={isCollapsed ? t('common.expandAll') : t('common.collapseAll')}
                         className={`absolute top-4 right-4 p-1.5 rounded-full transition-all duration-300 flex items-center justify-center
                             ${!isCollapsed ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 rotate-180' : 'bg-accent-50 dark:bg-accent-900/40 text-accent-600'}`}
                     >
@@ -88,7 +89,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({ isCollapsed = false, onToggle
                             <span className={`text-[9px] md:text-[10px] font-bold uppercase tracking-widest mt-1.5
                                 ${'isAlert' in kpi
                                     ? 'text-red-500 dark:text-red-400'
-                                    : 'text-slate-400 dark:text-slate-500'
+                                    : 'text-slate-600 dark:text-slate-400 font-bold'
                                 }`}
                             >
                                 {kpi.label}

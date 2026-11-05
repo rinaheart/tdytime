@@ -47,7 +47,7 @@ const SettingsView: React.FC = () => {
                 <img src="/favicon.svg" alt="App Logo" className="w-16 h-16 mb-4 drop-shadow-sm" />
 
                 <h1 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-baseline gap-1.5">
-                    TdyTime <span className="text-slate-400 font-num text-[10px] font-medium">v{APP_VERSION}</span>
+                    TdyTime <span className="text-slate-600 dark:text-slate-400 font-num text-[10px] font-bold">v{APP_VERSION}</span>
                 </h1>
                 <p className="text-xs text-accent-600 dark:text-accent-400 mt-0.5 font-medium tracking-wide">
                     {t('app.tagline')}
@@ -93,10 +93,10 @@ const SettingsView: React.FC = () => {
                             <Settings2 size={20} />
                         </div>
                         <div className="text-left">
-                            <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm">
+                            <h2 className="font-bold text-slate-700 dark:text-slate-200 text-sm">
                                 {t('settings.advanced.title')}
-                            </h4>
-                            <p className="text-[10px] text-slate-400 font-medium">
+                            </h2>
+                            <p className="text-[10px] text-slate-600 dark:text-slate-400 font-medium">
                                 {t('settings.advanced.description')}
                             </p>
                         </div>
@@ -122,7 +122,7 @@ const SettingsView: React.FC = () => {
             <PeriodStandardsCard />
             <AboutCard />
 
-            <div className="text-center text-slate-400 text-[10px] mt-8">
+            <div className="text-center text-slate-500 dark:text-slate-400 text-[10px] mt-8">
                 {t('common.copyright')}
             </div>
         </div>

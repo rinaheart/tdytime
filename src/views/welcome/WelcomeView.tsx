@@ -317,7 +317,7 @@ const WelcomeView: React.FC = () => {
                         TdyTime 
                         <span 
                             onClick={handleVersionClick}
-                            className="text-slate-400 font-num text-[10px] font-medium cursor-pointer select-none"
+                            className="text-slate-500 dark:text-slate-400 font-num text-[10px] font-medium cursor-pointer select-none"
                             title="Tap 5 times for Developer Demo Mode"
                         >
                             v{APP_VERSION}
@@ -374,7 +374,7 @@ const WelcomeView: React.FC = () => {
                 {!showPaste && (
                     <button
                         onClick={() => setShowPaste(true)}
-                        className="mt-3 text-xs text-accent-500 hover:text-accent-600 flex items-center gap-1 font-medium transition-colors"
+                        className="mt-3 text-xs text-accent-600 dark:text-accent-400 hover:text-accent-700 dark:hover:text-accent-300 flex items-center gap-1 font-semibold transition-colors"
                     >
                         <FileText size={12} /> {t('app.pasteTitle')}
                     </button>
@@ -405,7 +405,7 @@ const WelcomeView: React.FC = () => {
                 )}
 
                 {/* Footer */}
-                <div className="pt-8 pb-4 text-center text-slate-400 text-[10px]">
+                <div className="pt-8 pb-4 text-center text-slate-500 dark:text-slate-400 text-[10px]">
                     {t('common.copyright')}
                 </div>
             </div>

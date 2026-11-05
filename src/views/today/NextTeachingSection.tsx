@@ -106,7 +106,7 @@ const NextTeachingSection: React.FC<NextTeachingSectionProps> = ({ nextTeaching,
                         <div className="flex items-center gap-1.5 text-xs font-medium mt-1.5">
                             <span className={`truncate ${showHighlight ? 'font-bold text-slate-700 dark:text-slate-200' : 'font-bold text-slate-500 dark:text-slate-400'}`}>{formatRoom(nextTeaching.sessions[0].room)}</span>
                             <span className="opacity-40 shrink-0">•</span>
-                            <span className="truncate text-slate-400 dark:text-slate-500">{formatClassDisplay(nextTeaching.sessions[0])}</span>
+                            <span className="truncate text-slate-600 dark:text-slate-400 font-medium">{formatClassDisplay(nextTeaching.sessions[0])}</span>
                         </div>
                     </div>
                 </div>

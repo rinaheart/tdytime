@@ -17,14 +17,14 @@ const TopSubjectsCard: React.FC = () => {
 
     return (
         <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col h-full">
-            <h3 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
+            <h2 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-2">
                 <Layers size={16} className="text-accent-600" /> {t('stats.topSubjects')}
-            </h3>
+            </h2>
             <div className="flex-1 flex flex-col justify-between gap-4">
                 {subjects.slice(0, 5).map((s, i) => {
                     const maxVal = subjects[0]?.value || 1;
                     const percent = (s.value / maxVal) * 100;
-                    const rankColor = i === 0 ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/50 dark:text-accent-300' : i === 1 ? 'bg-accent-50 text-accent-600 dark:bg-accent-900/30 dark:text-accent-400' : i === 2 ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400' : 'bg-transparent text-slate-400';
+                    const rankColor = i === 0 ? 'bg-accent-100 text-accent-700 dark:bg-accent-900/50 dark:text-accent-300' : i === 1 ? 'bg-accent-50 text-accent-700 dark:bg-accent-900/30 dark:text-accent-300' : i === 2 ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' : 'bg-transparent text-slate-600 dark:text-slate-400 font-bold';
                     const barColor = i === 0 ? 'bg-accent-600' : i === 1 ? 'bg-accent-500' : i === 2 ? 'bg-accent-400' : 'bg-slate-300 dark:bg-slate-700';
 
                     return (

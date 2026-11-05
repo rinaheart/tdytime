@@ -18,39 +18,39 @@ describe('schedule.store — initFromStorage — global_abbreviations safety', (
         });
     });
 
-    it('initializes with empty abbreviations when key is absent', () => {
-        expect(() => useScheduleStore.getState().initFromStorage()).not.toThrow();
+    it('initializes with empty abbreviations when key is absent', async () => {
+        await expect(useScheduleStore.getState().initFromStorage()).resolves.not.toThrow();
 
         const state = useScheduleStore.getState();
         expect(state.isInitialized).toBe(true);
         expect(state.abbreviations).toEqual({});
     });
 
-    it('initializes with parsed abbreviations when JSON is valid', () => {
+    it('initializes with parsed abbreviations when JSON is valid', async () => {
         localStorage.setItem('global_abbreviations', JSON.stringify({ 'Giải phẫu học': 'GPH' }));
 
-        expect(() => useScheduleStore.getState().initFromStorage()).not.toThrow();
+        await expect(useScheduleStore.getState().initFromStorage()).resolves.not.toThrow();
 
         const state = useScheduleStore.getState();
         expect(state.isInitialized).toBe(true);
         expect(state.abbreviations).toEqual({ 'Giải phẫu học': 'GPH' });
     });
 
-    it('does not crash and falls back to {} when JSON is malformed', () => {
+    it('does not crash and falls back to {} when JSON is malformed', async () => {
         localStorage.setItem('global_abbreviations', '{not valid json');
 
-        expect(() => useScheduleStore.getState().initFromStorage()).not.toThrow();
+        await expect(useScheduleStore.getState().initFromStorage()).resolves.not.toThrow();
 
         const state = useScheduleStore.getState();
         expect(state.isInitialized).toBe(true);
         expect(state.abbreviations).toEqual({});
     });
 
-    it('still initializes correctly even if last_schedule_data is also malformed', () => {
+    it('still initializes correctly even if last_schedule_data is also malformed', async () => {
         localStorage.setItem('global_abbreviations', '{not valid json');
         localStorage.setItem('last_schedule_data', '{also not valid');
 
-        expect(() => useScheduleStore.getState().initFromStorage()).not.toThrow();
+        await expect(useScheduleStore.getState().initFromStorage()).resolves.not.toThrow();
 
         const state = useScheduleStore.getState();
         expect(state.isInitialized).toBe(true);

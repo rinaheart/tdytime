@@ -32,9 +32,9 @@ const CoTeachersTable: React.FC = () => {
     return (
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
             <div className="p-4 md:p-6 border-b border-slate-100 dark:border-slate-800">
-                <h3 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                <h2 className="text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2">
                     <Users size={16} className="text-accent-500" /> {t('stats.coTeachers.title')}
-                </h3>
+                </h2>
             </div>
 
             {/* Mobile View */}
@@ -75,14 +75,14 @@ const CoTeachersTable: React.FC = () => {
             </div>
 
             {/* Desktop View */}
-            <div className="hidden md:block overflow-x-auto">
+            <div className="hidden md:block overflow-x-auto" tabIndex={0} role="region" aria-label={t('stats.coTeachers.title')}>
                 <table className="w-full text-left text-sm border-collapse">
                     <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
                         <tr>
-                            <th className="pl-6 pr-2 py-3 font-bold text-[10px] uppercase text-slate-400 tracking-wider w-10 text-center">#</th>
-                            <th className="px-4 py-3 font-bold text-[10px] uppercase text-slate-400 tracking-wider">{t('stats.coTeachers.teacher')}</th>
-                            <th className="px-4 py-3 font-bold text-[10px] uppercase text-slate-400 tracking-wider">{t('stats.coTeachers.classDetail')}</th>
-                            <th className="pl-4 pr-6 py-3 font-bold text-[10px] uppercase text-slate-400 tracking-wider text-right w-16">{t('stats.coTeachers.total')}</th>
+                            <th className="pl-6 pr-2 py-3 font-bold text-[10px] uppercase text-slate-600 dark:text-slate-400 tracking-wider w-10 text-center">#</th>
+                            <th className="px-4 py-3 font-bold text-[10px] uppercase text-slate-600 dark:text-slate-400 tracking-wider">{t('stats.coTeachers.teacher')}</th>
+                            <th className="px-4 py-3 font-bold text-[10px] uppercase text-slate-600 dark:text-slate-400 tracking-wider">{t('stats.coTeachers.classDetail')}</th>
+                            <th className="pl-4 pr-6 py-3 font-bold text-[10px] uppercase text-slate-600 dark:text-slate-400 tracking-wider text-right w-16">{t('stats.coTeachers.total')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">

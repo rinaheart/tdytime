@@ -15,10 +15,10 @@ const AboutCard: React.FC = () => {
         <div className="space-y-6">
             {/* Changelog */}
             <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 md:p-6">
-                <h3 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+                <h2 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
                     <ClipboardList size={16} className="text-accent-500" /> {t('about.changelog')}
-                </h3>
-                <div className="space-y-6 max-h-[400px] overflow-y-auto custom-scrollbar pr-4">
+                </h2>
+                <div className="space-y-6 max-h-[400px] overflow-y-auto custom-scrollbar pr-4" tabIndex={0} role="region" aria-label={t('settings.about.title')}>
                     {Array.isArray(changeLog) && changeLog.map((log) => (
                         <div key={log.version} className="relative pl-6 border-l border-slate-200 dark:border-slate-800">
                             <div className="absolute -left-[4.5px] top-0 w-2 h-2 rounded-full bg-accent-500 shadow-sm" />

@@ -28,7 +28,7 @@ const TodayView: React.FC = () => {
         <div className="max-w-3xl mx-auto pb-6 animate-in fade-in duration-300">
             <TodayHeader dayOfWeekIdx={dayOfWeekIdx} dateInfo={dateInfo} greeting={greeting} />
 
-            <main className="mt-0">
+            <section aria-label="Lịch hôm nay" className="mt-0">
                 {/* Semester Completion Banner (Unified Style) */}
                 <div 
                     className={`
@@ -45,9 +45,9 @@ const TodayView: React.FC = () => {
                             <PartyPopper size={48} className="text-accent-600 dark:text-accent-400" />
                         </div>
 
-                        <h3 className="text-base font-bold mb-1 text-slate-800 dark:text-slate-200">
+                        <h2 className="text-base font-bold mb-1 text-slate-800 dark:text-slate-200">
                             {t('stats.today.emptyStates.afterSemester')}
-                        </h3>
+                        </h2>
 
                         <div className="mb-4 text-slate-500 dark:text-slate-400 text-sm max-w-xs mx-auto">
                             {t('stats.today.emptyStates.afterSemesterHint')}
@@ -71,7 +71,7 @@ const TodayView: React.FC = () => {
                 {nextTeaching && displayState !== 'AFTER_SEMESTER' && (
                     <NextTeachingSection nextTeaching={nextTeaching} displayState={displayState} isTodayFinished={isFinished} isWeekEmpty={isWeekEmpty} now={now} />
                 )}
-            </main>
+            </section>
         </div>
     );
 };

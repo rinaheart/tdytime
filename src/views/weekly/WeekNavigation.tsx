@@ -133,11 +133,11 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pt-1">
             <div>
                 <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight uppercase">
+                    <h1 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight uppercase">
                         {weekLabel}
-                    </h3>
+                    </h1>
                     {isCurrent && (
-                        <span className="px-2 py-0.5 rounded-full bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400 text-[8px] font-black uppercase tracking-widest animate-pulse">
+                        <span className="px-2 py-0.5 rounded-full bg-blue-700 text-white text-[8px] font-black uppercase tracking-widest">
                             {t('weekly.currentWeek')}
                         </span>
                     )}
@@ -149,6 +149,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
                 <button
                     onClick={handleExportPDF}
                     disabled={isExporting || (currentWeekIndex !== -1 && weeks.length === 0)}
+                    aria-label={isExporting ? t('common.loading') : t('weekly.exportPDF')}
                     className="hidden md:flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm disabled:opacity-50"
                 >
                     <Download size={16} className={isExporting ? "animate-bounce text-accent-500" : "text-accent-500"} />
@@ -157,8 +158,9 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
 
                 <button
                     onClick={() => data && jumpToCurrentWeek(data)}
+                    aria-label={t('common.current')}
                     className={`flex items-center gap-2 h-11 px-4 rounded-xl text-xs font-bold transition-all shadow-sm ${isCurrent
-                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-default'
+                        ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold cursor-default'
                         : 'bg-accent-600 dark:bg-accent-500 text-white hover:bg-accent-700 active:scale-95 shadow-accent-500/20'
                         }`}
                 >
@@ -168,6 +170,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
 
                 <button
                     onClick={onToggleViewMode}
+                    aria-label={viewMode === 'vertical' ? t('common.verticalList') : t('common.horizontalList')}
                     className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm"
                 >
                     {viewMode === 'vertical' ? <Columns size={16} className="text-accent-500" /> : <LayoutTemplate size={16} className="text-accent-500" />}
@@ -176,6 +179,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
 
                 <button
                     onClick={onToggleFilter}
+                    aria-label={t('common.filter')}
                     className={`flex items-center gap-2 h-11 px-4 border rounded-xl text-xs font-bold transition-all shadow-sm relative ${isFilterOpen ? 'bg-accent-600 border-accent-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'}`}
                 >
                     <Search size={16} className={isFilterOpen ? 'text-white' : 'text-accent-500'} />

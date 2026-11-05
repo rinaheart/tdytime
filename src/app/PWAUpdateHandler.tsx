@@ -210,11 +210,11 @@ export const PWAUpdateHandler: React.FC = () => {
 
             {/* Update / Offline Notification (Top Right) */}
             {(offlineReady || (needUpdate && (updateBypassed || localStorage.getItem(PWA_DISMISS_KEY) !== new Date().toISOString().split('T')[0]))) && (
-                <div className="fixed top-20 right-4 z-[110] animate-in slide-in-from-right-10 fade-in duration-300">
+                <aside role="region" aria-label={needUpdate ? t('pwa.updateReady') : t('pwa.offlineReady')} className="fixed top-20 right-4 z-[110] animate-in slide-in-from-right-10 fade-in duration-300">
                     <div className="bg-slate-800 dark:bg-white text-white dark:text-slate-900 p-4 rounded-2xl shadow-2xl min-w-[280px]">
                         <div className="flex flex-col items-center text-center">
                             <div className="flex justify-center items-center w-full mb-2 relative">
-                                <h4 className="text-xs font-bold text-accent-500 dark:text-accent-600">
+                                <h4 className="text-xs font-bold text-accent-400 dark:text-accent-700">
                                     {needUpdate ? t('pwa.updateReady') : t('pwa.offlineReady')}
                                 </h4>
                                 <button onClick={close} className="absolute -top-1 -right-1 p-1 hover:bg-white/10 dark:hover:bg-slate-100 rounded-xl" aria-label={t('common.close', 'Đóng')}>
@@ -235,7 +235,7 @@ export const PWAUpdateHandler: React.FC = () => {
                             </button>
                         )}
                     </div>
-                </div>
+                </aside>
             )}
 
             {/* Global Check for Update Toast */}

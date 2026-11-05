@@ -23,7 +23,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
     };
 
     return (
-        <div className="overflow-x-auto pb-4 custom-scrollbar w-full flex justify-center">
+        <div tabIndex={0} role="region" aria-label={t('stats.heatmap', { defaultValue: 'Biểu đồ phân bố giờ giảng' })} className="overflow-x-auto pb-4 custom-scrollbar w-full flex justify-center">
             <div className="min-w-max mx-auto px-2">
                 <div className="flex">
                     {/* Day Labels Column */}
@@ -40,7 +40,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
                         {/* Week Labels Row */}
                         <div className="flex gap-[2px] lg:gap-[3px] h-5 mb-1">
                             {Array.from({ length: weekCount }).map((_, i) => (
-                                <div key={i} className="w-3 lg:w-4 text-[8px] lg:text-[9px] text-slate-400 dark:text-slate-500 text-center flex-shrink-0">
+                                <div key={i} className="w-3 lg:w-4 text-[8px] lg:text-[9px] text-slate-600 dark:text-slate-400 font-bold text-center flex-shrink-0">
                                     {(i + 1) % 5 === 0 || i === 0 ? i + 1 : ''}
                                 </div>
                             ))}

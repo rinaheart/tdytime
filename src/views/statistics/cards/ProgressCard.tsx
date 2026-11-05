@@ -31,9 +31,9 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ progress, currentDate }) =>
             <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 text-accent-600 dark:text-accent-400">
                     <TrendingUp size={14} className="shrink-0" />
-                    <h3 className="text-[10px] font-black uppercase tracking-widest">{t('stats.today.progress')}</h3>
+                    <h2 className="text-[10px] font-black uppercase tracking-widest">{t('stats.today.progress')}</h2>
                 </div>
-                <span className="text-[9px] font-bold text-slate-400 dark:text-slate-500 tracking-tighter">{currentDate}</span>
+                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-400 tracking-tighter">{currentDate}</span>
             </div>
             <div className="space-y-4 flex-1 flex flex-col justify-around">
                 {stats.map((p, i) => {
@@ -41,9 +41,9 @@ const ProgressCard: React.FC<ProgressCardProps> = ({ progress, currentDate }) =>
                     return (
                         <div key={i} className="space-y-1.5">
                             <div className="flex justify-between items-end">
-                                <span className={`text-[9px] font-bold uppercase tracking-wider ${hasSchedule ? 'text-slate-500 dark:text-slate-400' : 'text-slate-300 dark:text-slate-600'}`}>{p.label}</span>
+                                <span className={`text-[9px] font-bold uppercase tracking-wider ${hasSchedule ? 'text-slate-600 dark:text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>{p.label}</span>
                                 <span className={`text-xs font-black ${hasSchedule ? 'text-slate-800 dark:text-slate-100' : 'text-slate-300 dark:text-slate-600'}`}>
-                                    {hasSchedule ? <>{p.val.percent}%<span className="text-[9px] opacity-40 ml-1.5">({p.val.done}/{p.val.total})</span></> : '—'}
+                                    {hasSchedule ? <>{p.val.percent}%<span className="text-[9px] text-slate-500 dark:text-slate-400 font-semibold ml-1.5">({p.val.done}/{p.val.total})</span></> : '—'}
                                 </span>
                             </div>
                             <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">

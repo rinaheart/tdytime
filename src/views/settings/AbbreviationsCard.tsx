@@ -59,9 +59,9 @@ const AbbreviationsCard: React.FC<AbbreviationsCardProps> = ({ onSuccess }) => {
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
             <div className="p-4 md:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h3 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                    <h2 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         <Type size={20} className="text-accent-600" /> {t('settings.abbreviations.title')}
-                    </h3>
+                    </h2>
                     <p className="text-xs text-slate-500 mt-1">{t('settings.abbreviations.description')}</p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -74,13 +74,13 @@ const AbbreviationsCard: React.FC<AbbreviationsCardProps> = ({ onSuccess }) => {
                 </div>
             </div>
 
-            <div className="overflow-x-auto custom-scrollbar max-h-[300px]">
+            <div className="overflow-x-auto custom-scrollbar max-h-[300px]" tabIndex={0} role="region" aria-label={t('settings.abbreviations.title')}>
                 <table className="w-full text-left text-xs border-collapse">
                     <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10">
                         <tr>
                             <th className="px-4 py-3 font-bold text-slate-400 uppercase w-10 text-center">#</th>
-                            <th className="px-4 py-3 font-bold text-slate-400 uppercase text-[10px] tracking-wider">{t('settings.abbreviations.originalName')}</th>
-                            <th className="px-4 py-3 font-bold text-slate-400 uppercase text-[10px] tracking-wider w-1/3 min-w-[120px]">{t('settings.abbreviations.shortName')}</th>
+                            <th className="px-4 py-3 font-bold text-slate-600 dark:text-slate-400 uppercase text-[10px] tracking-wider font-bold">{t('settings.abbreviations.originalName')}</th>
+                            <th className="px-4 py-3 font-bold text-slate-600 dark:text-slate-400 uppercase text-[10px] tracking-wider font-bold w-1/3 min-w-[120px]">{t('settings.abbreviations.shortName')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">

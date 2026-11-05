@@ -23,12 +23,14 @@ export const Toast: React.FC = () => {
         }
     }, [message, clearToast]);
 
-    if (!isVisible && !displayMessage) return null;
+    if (!isVisible) return null;
 
     const isError = type === 'error';
 
     return (
         <div
+            role="status"
+            aria-live="polite"
             className={`fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900 dark:bg-slate-800 text-white shadow-xl border border-slate-700/50 transition-all duration-300 ${isVisible ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-4 opacity-0 scale-95 pointer-events-none'
                 }`}
         >

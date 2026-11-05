@@ -32,9 +32,9 @@ const InsightCard: React.FC<InsightCardProps> = ({ icon: Icon, title, value, isA
             </div>
 
             {/* Row 2: Title */}
-            <h4 className="text-[9px] md:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider leading-tight w-full break-words">
+            <p className="text-[9px] md:text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider leading-tight w-full break-words">
                 {title}
-            </h4>
+            </p>
 
             {/* Row 3: Value */}
             <p className={`text-[10px] md:text-xs font-black tracking-tight leading-tight w-full

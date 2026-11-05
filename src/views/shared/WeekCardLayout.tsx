@@ -35,9 +35,9 @@ const WeekCardLayout: React.FC<WeekTableLayoutProps> = ({ grouped, weekRange, no
                         {/* Header Banner */}
                         <div className={`px-3.5 py-2 flex items-center justify-between ${isToday ? 'bg-accent-100/50 dark:bg-accent-900/40' : 'bg-slate-100 dark:bg-slate-900'}`}>
                             <div className="flex items-baseline gap-2">
-                                <h3 className={`text-sm font-black uppercase tracking-wider ${isToday ? 'text-accent-700 dark:text-accent-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                                <h2 className={`text-sm font-black uppercase tracking-wider ${isToday ? 'text-accent-700 dark:text-accent-400' : 'text-slate-700 dark:text-slate-300'}`}>
                                     {t(`days.${idx}`)}
-                                </h3>
+                                </h2>
                                 <span className={`text-xs font-medium font-num ${isToday ? 'text-accent-600 dark:text-accent-500' : 'text-slate-500'}`}>
                                     {weekRange ? getDayDateString(weekRange, idx) : ''}
                                 </span>

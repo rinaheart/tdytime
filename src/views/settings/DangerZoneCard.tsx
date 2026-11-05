@@ -48,9 +48,9 @@ const DangerZoneCard: React.FC = () => {
     return (
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-red-200 dark:border-red-900/50 shadow-sm flex flex-col">
             <div className="p-4 md:p-6 border-b border-red-50 dark:border-red-900/30">
-                <h3 className="font-bold text-red-600 dark:text-red-400 flex items-center gap-2">
+                <h2 className="font-bold text-red-600 dark:text-red-400 flex items-center gap-2">
                     <AlertTriangle size={20} /> {t('settings.dangerZone.title')}
-                </h3>
+                </h2>
                 <p className="text-xs text-slate-500 mt-1">{t('settings.dangerZone.description')}</p>
             </div>
             <div className="p-4 md:p-6 flex flex-col gap-3 flex-1 justify-center">

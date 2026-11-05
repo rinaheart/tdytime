@@ -206,15 +206,16 @@ const SemesterView: React.FC = () => {
             <div className="sticky top-0 z-30 bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl -mx-4 px-4 pt-3 pb-4 space-y-4 mb-6 border-b border-slate-100 dark:border-slate-800 transition-colors font-sans">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                     <div>
-                        <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight uppercase leading-none mb-1">
+                        <h1 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight uppercase leading-none mb-1">
                             {t('nav.semester')} {data?.metadata?.semester}
-                        </h3>
+                        </h1>
                         <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 font-num uppercase tracking-widest">{data?.metadata?.academicYear}</p>
                     </div>
 
                     <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full md:w-auto md:self-auto print:hidden">
                         <button
                             onClick={handleExportCSV}
+                            aria-label={t('semester.exportCSV')}
                             className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                             title={t('semester.exportCSV')}
                         >
@@ -225,6 +226,7 @@ const SemesterView: React.FC = () => {
                         <button
                             onClick={handleExportPDF}
                             disabled={isExporting}
+                            aria-label={isExporting ? t('common.loading') : t('semester.exportPDF')}
                             className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
                             title={t('semester.exportPDF')}
                         >
@@ -232,20 +234,20 @@ const SemesterView: React.FC = () => {
                             <span className="hidden sm:inline">{isExporting ? t('common.loading') : t('semester.exportPDF')}</span>
                         </button>
 
-                        <button onClick={scrollToCurrentWeek} className="flex items-center gap-2 h-11 px-4 bg-accent-600 dark:bg-accent-500 text-white rounded-xl text-xs font-bold transition-all hover:bg-accent-700 dark:hover:bg-accent-600 shadow-sm shadow-accent-500/20 active:scale-95">
+                        <button onClick={scrollToCurrentWeek} aria-label={t('common.current')} className="flex items-center gap-2 h-11 px-4 bg-accent-600 dark:bg-accent-500 text-white rounded-xl text-xs font-bold transition-all hover:bg-accent-700 dark:hover:bg-accent-600 shadow-sm shadow-accent-500/20 active:scale-95">
                             <Zap size={16} className="fill-current" />
                             <span className="hidden sm:inline">{t('common.current')}</span>
                         </button>
-                        <button onClick={() => setViewMode(v => v === 'vertical' ? 'horizontal' : 'vertical')} className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm">
+                        <button onClick={() => setViewMode(v => v === 'vertical' ? 'horizontal' : 'vertical')} aria-label={viewMode === 'vertical' ? t('common.verticalList') : t('common.horizontalList')} className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm">
                             {viewMode === 'vertical' ? <Columns size={16} className="text-accent-500" /> : <LayoutTemplate size={16} className="text-accent-500" />}
                             <span className="hidden sm:inline">{viewMode === 'vertical' ? t('common.verticalList') : t('common.horizontalList')}</span>
                         </button>
-                        <button onClick={toggleFilter} className={`flex items-center gap-2 h-11 px-4 border rounded-xl text-xs font-bold transition-all shadow-sm relative ${isFilterOpen ? 'bg-accent-600 border-accent-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40'}`}>
+                        <button onClick={toggleFilter} aria-label={t('common.filter')} className={`flex items-center gap-2 h-11 px-4 border rounded-xl text-xs font-bold transition-all shadow-sm relative ${isFilterOpen ? 'bg-accent-600 border-accent-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40'}`}>
                             <Search size={16} className={isFilterOpen ? 'text-white' : 'text-accent-500'} />
                             <span className="hidden sm:inline">{t('common.filter')}</span>
                             {hasActiveFilters && !isFilterOpen && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-accent-500 border-2 border-white dark:border-slate-900 rounded-full" />}
                         </button>
-                        <button onClick={toggleAllWeeks} className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95 transition-all shadow-sm">
+                        <button onClick={toggleAllWeeks} aria-label={isAllExpanded ? t('common.collapseAll') : t('common.expandAll')} className="flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 active:scale-95 transition-all shadow-sm">
                             {isAllExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                             <span className="hidden sm:inline">{isAllExpanded ? t('common.collapseAll') : t('common.expandAll')}</span>
                         </button>
