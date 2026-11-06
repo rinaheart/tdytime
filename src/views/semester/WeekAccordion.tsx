@@ -27,8 +27,8 @@ const formatDateRange = (range: string) => {
     return range;
 };
 
-const WeekAccordion: React.FC<WeekAccordionProps> = ({ 
-    weekSessions, weekIdx, weekNumber, weekRange, isExpanded, onToggle, showTeacher, viewMode, now, abbreviations 
+const WeekAccordion: React.FC<WeekAccordionProps> = ({
+    weekSessions, weekIdx, weekNumber, weekRange, isExpanded, onToggle, showTeacher, viewMode, now, abbreviations
 }) => {
     const { t } = useTranslation();
 
@@ -47,12 +47,14 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
         }, {} as Record<number, Record<ShiftType, FlatSession[]>>);
     }, [weekSessions]);
 
+    const panelId = `week-accordion-panel-${weekIdx}`;
+
     return (
         <div
             id={`week-card-${weekIdx}`}
-            className={`relative z-10 bg-white dark:bg-slate-900 rounded-2xl border transition-all duration-300 overflow-hidden ${isCurrent 
-                ? 'border-accent-500 dark:border-accent-400 ring-2 ring-accent-500/20 shadow-lg shadow-accent-500/5' 
-                : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'}`}
+            className={`relative z-10 bg-white dark:bg-slate-900 rounded-2xl border transition-all duration-300 overflow-hidden ${isCurrent
+                ? 'border-accent-500 dark:border-accent-400 ring-2 ring-accent-500/20 shadow-sm'
+                : 'border-slate-200/80 dark:border-slate-800/80 shadow-sm'}`}
         >
             {/* Timeline dot (Vertical only) */}
             {viewMode === 'vertical' && (
@@ -60,15 +62,18 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
             )}
 
             {/* Header (Unified for both modes) */}
-            <button 
-                onClick={onToggle} 
-                className={`w-full flex items-center text-left transition-all ${isExpanded ? 'bg-slate-50/50 dark:bg-slate-800/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800/20'} ${viewMode === 'vertical' ? 'p-3 md:p-4' : 'pr-3 md:pr-4'}`}
+            <button
+                type="button"
+                onClick={onToggle}
+                aria-expanded={isExpanded}
+                aria-controls={isExpanded ? panelId : undefined}
+                className={`w-full flex items-center text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500 ${isExpanded ? 'bg-slate-50/50 dark:bg-slate-800/20' : 'hover:bg-slate-50 dark:hover:bg-slate-800/20'} ${viewMode === 'vertical' ? 'p-3 md:p-4' : 'pr-3 md:pr-4'}`}
             >
                 <div className={`flex items-center w-full ${viewMode === 'vertical' ? 'gap-4 pl-6 md:pl-8' : ''}`}>
                     {/* Grid-aligned Icon Container (Horizontal only) */}
                     {viewMode === 'horizontal' && (
                         <div className="w-12 flex-shrink-0 flex items-center justify-center">
-                            <div className={`rounded-full flex items-center justify-center font-black transition-all shrink-0 w-8 h-8 text-sm ${isCurrent ? 'bg-accent-600 text-white shadow-md shadow-accent-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
+                            <div className={`rounded-full flex items-center justify-center font-black transition-all shrink-0 w-8 h-8 text-sm ${isCurrent ? 'bg-accent-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
                                 {weekNumber}
                             </div>
                         </div>
@@ -76,7 +81,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
 
                     {/* Original Vertical Icon */}
                     {viewMode === 'vertical' && (
-                        <div className={`rounded-full flex items-center justify-center font-black transition-all shrink-0 w-10 h-10 md:w-12 md:h-12 text-lg md:text-xl ${isCurrent ? 'bg-accent-600 text-white shadow-md shadow-accent-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'}`}>
+                        <div className={`rounded-full flex items-center justify-center font-black transition-all shrink-0 w-10 h-10 md:w-12 md:h-12 text-lg md:text-xl ${isCurrent ? 'bg-accent-600 text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'}`}>
                             {weekNumber}
                         </div>
                     )}
@@ -86,37 +91,37 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
                             <h2 className={`font-black uppercase tracking-tight leading-none ${viewMode === 'vertical' ? 'text-base md:text-lg' : 'text-sm'} ${isCurrent ? 'text-accent-600 dark:text-accent-400' : 'text-slate-800 dark:text-slate-100'}`}>
                                 {t('weekly.week', { number: weekNumber })}
                             </h2>
-                            {isCurrent && <span className="px-1.5 py-0.5 rounded-full bg-blue-700 text-white text-[8px] font-black uppercase tracking-widest">{t('common.current')}</span>}
+                            {isCurrent && <span className="px-1.5 py-0.5 rounded-full bg-blue-700 text-white text-[9px] font-black uppercase tracking-widest">{t('common.current')}</span>}
                         </div>
-                        <p className={`text-slate-500 dark:text-slate-400 font-num font-bold tracking-tight ${viewMode === 'vertical' ? 'text-[10px] md:text-xs' : 'text-[10px]'}`}>{formatDateRange(weekRange)}</p>
+                        <p className="text-slate-600 dark:text-slate-400 font-num font-bold tracking-tight text-xs">{formatDateRange(weekRange)}</p>
                     </div>
                 </div>
                 <div className={`ml-auto transition-transform duration-300 pr-2 ${isExpanded ? 'rotate-180' : ''}`}>
-                    <ChevronDown size={viewMode === 'vertical' ? 20 : 18} className="text-slate-300 dark:text-slate-600" />
+                    <ChevronDown size={viewMode === 'vertical' ? 20 : 18} className="text-slate-400 dark:text-slate-500" />
                 </div>
             </button>
 
             {/* Expanded content */}
             {isExpanded && (
-                <div className="animate-in fade-in zoom-in-95 duration-300 border-t border-slate-100 dark:border-slate-800/60">
+                <div id={panelId} className="animate-in fade-in zoom-in-95 duration-300 border-t border-slate-100 dark:border-slate-800/60">
                     {viewMode === 'vertical' ? (
                         <div className="p-4 md:p-6 bg-slate-50/50 dark:bg-slate-900/50">
-                            <WeekCardLayout 
-                                grouped={grouped} 
+                            <WeekCardLayout
+                                grouped={grouped}
                                 weekRange={weekRange}
-                                now={now} 
-                                abbreviations={abbreviations} 
-                                showTeacher={showTeacher} 
+                                now={now}
+                                abbreviations={abbreviations}
+                                showTeacher={showTeacher}
                                 isCurrent={isCurrent}
                             />
                         </div>
                     ) : (
-                        <WeekTableLayout 
-                            grouped={grouped} 
+                        <WeekTableLayout
+                            grouped={grouped}
                             weekRange={weekRange}
-                            now={now} 
-                            abbreviations={abbreviations} 
-                            showTeacher={showTeacher} 
+                            now={now}
+                            abbreviations={abbreviations}
+                            showTeacher={showTeacher}
                             isCurrent={isCurrent}
                             fullBleed={true}
                         />

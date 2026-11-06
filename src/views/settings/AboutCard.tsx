@@ -24,12 +24,12 @@ const AboutCard: React.FC = () => {
                             <div className="absolute -left-[4.5px] top-0 w-2 h-2 rounded-full bg-accent-500 shadow-sm" />
                             <div className="mb-2 flex items-center gap-2">
                                 <span className="font-bold text-xs text-slate-800 dark:text-white">{log.version}</span>
-                                <span className="text-[9px] text-slate-500 font-bold uppercase">{log.date}</span>
+                                <span className="text-xs text-slate-600 dark:text-slate-400 font-bold uppercase">{log.date}</span>
                             </div>
                             <ul className="space-y-1">
                                 {Array.isArray(log.changes) && log.changes.map((change, i) => (
-                                    <li key={i} className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed flex items-start gap-2">
-                                        <span className="w-1 h-1 rounded-full bg-accent-500/30 mt-1.5 shrink-0" />
+                                    <li key={i} className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed flex items-start gap-2">
+                                        <span className="w-1 h-1 rounded-full bg-accent-500/40 mt-2 shrink-0" />
                                         {change}
                                     </li>
                                 ))}

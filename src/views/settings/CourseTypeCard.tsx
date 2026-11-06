@@ -79,40 +79,40 @@ const CourseTypeCard: React.FC<CourseTypeCardProps> = ({ onSuccess }) => {
                     <h2 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         <ListChecks size={20} className="text-accent-600" /> {t('settings.courseType.title')}
                     </h2>
-                    <p className="text-xs text-slate-500 mt-1">{t('settings.courseType.description')}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{t('settings.courseType.description')}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={() => { setTempOverrides({}); onSuccess(t('settings.toast.thresholdsReset')); }} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                    <button type="button" onClick={() => { setTempOverrides({}); onSuccess(t('settings.toast.thresholdsReset')); }} className="px-3 py-1.5 min-h-[36px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-center gap-2">
                         <RotateCcw size={14} /> {t('settings.courseType.reset')}
                     </button>
-                    <button onClick={() => handleSetAll(CourseType.LT)} className="px-3 py-1.5 bg-accent-50 dark:bg-accent-900/20 text-accent-700 dark:text-accent-400 text-[10px] font-bold rounded-xl border border-accent-200 dark:border-accent-800 hover:bg-accent-100 transition-colors cursor-pointer flex items-center gap-2">
+                    <button type="button" onClick={() => handleSetAll(CourseType.LT)} className="px-3 py-1.5 min-h-[36px] bg-accent-50 dark:bg-accent-900/20 text-accent-700 dark:text-accent-400 text-xs font-bold rounded-xl border border-accent-200 dark:border-accent-800 hover:bg-accent-100 transition-colors cursor-pointer flex items-center gap-2">
                         <ListChecks size={14} /> {t('settings.courseType.setAllLT')}
                     </button>
-                    <button onClick={() => handleSetAll(CourseType.TH)} className="px-3 py-1.5 bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-400 text-[10px] font-bold rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer flex items-center gap-2">
+                    <button type="button" onClick={() => handleSetAll(CourseType.TH)} className="px-3 py-1.5 min-h-[36px] bg-slate-50 dark:bg-slate-800/40 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer flex items-center gap-2">
                         <ListChecks size={14} /> {t('settings.courseType.setAllTH')}
                     </button>
                 </div>
             </div>
 
-            <div className="overflow-x-auto custom-scrollbar max-h-[400px]" tabIndex={0} role="region" aria-label={t('settings.courseTypes.title')}>
+            <div className="overflow-x-auto custom-scrollbar max-h-[400px]" tabIndex={0} role="region" aria-label={t('settings.courseType.title')}>
                 <table className="w-full text-left text-xs border-collapse">
                     <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10">
                         <tr>
-                            <th className="px-4 py-3 font-bold text-slate-400 uppercase w-10 text-center">#</th>
+                            <th className="px-4 py-3 font-bold text-slate-500 dark:text-slate-400 uppercase w-10 text-center">#</th>
                             {([
                                 { id: 'code', label: t('settings.courseType.code') },
                                 { id: 'name', label: t('settings.courseType.course') },
                                 { id: 'classes', label: t('settings.courseType.class') },
                                 { id: 'groups', label: t('settings.courseType.group') },
                             ] as const).map((col) => (
-                                <th key={col.id} onClick={() => handleSort(col.id)} className="px-4 py-3 font-bold text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                                <th key={col.id} onClick={() => handleSort(col.id)} className="px-4 py-3 font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                                     <div className="flex items-center gap-2">{col.label} {renderSortIcon(col.id)}</div>
                                 </th>
                             ))}
-                            <th onClick={() => handleSort('type')} className="px-4 py-3 font-bold text-slate-400 uppercase text-center w-20 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                            <th onClick={() => handleSort('type')} className="px-4 py-3 font-bold text-slate-600 dark:text-slate-400 uppercase text-center w-20 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                                 <div className="flex items-center justify-center gap-1">LT {renderSortIcon('type')}</div>
                             </th>
-                            <th onClick={() => handleSort('type')} className="px-4 py-3 font-bold text-slate-400 uppercase text-center w-20 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                            <th onClick={() => handleSort('type')} className="px-4 py-3 font-bold text-slate-600 dark:text-slate-400 uppercase text-center w-20 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
                                 <div className="flex items-center justify-center gap-1">TH {renderSortIcon('type')}</div>
                             </th>
                         </tr>
@@ -123,18 +123,30 @@ const CourseTypeCard: React.FC<CourseTypeCardProps> = ({ onSuccess }) => {
                             const isLT = currentType === CourseType.LT;
                             return (
                                 <tr key={c.code} className={`transition-colors duration-150 ${isLT ? 'bg-accent-50/40 dark:bg-accent-900/10' : 'bg-slate-50/60 dark:bg-slate-800/20'}`}>
-                                    <td className="px-4 py-3 text-center text-slate-400 font-medium">{idx + 1}</td>
-                                    <td className="px-2 py-3 font-num font-bold text-accent-600 dark:text-accent-400 text-[10px]">{c.code}</td>
+                                    <td className="px-4 py-3 text-center text-slate-500 dark:text-slate-400 font-medium">{idx + 1}</td>
+                                    <td className="px-2 py-3 font-num font-bold text-accent-600 dark:text-accent-400 text-xs">{c.code}</td>
                                     <td className="px-4 py-3 font-semibold text-slate-700 dark:text-slate-200">{c.name}</td>
-                                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{c.classes.join(', ')}</td>
-                                    <td className="px-4 py-3 text-slate-500 whitespace-nowrap">{c.groups.join(', ')}</td>
+                                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">{c.classes.join(', ')}</td>
+                                    <td className="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">{c.groups.join(', ')}</td>
                                     <td className="px-4 py-3 text-center">
-                                        <button onClick={() => setTempOverrides({ ...tempOverrides, [c.code]: CourseType.LT })} className={`w-8 h-8 rounded-full border-2 flex items-center justify-center mx-auto ${isLT ? 'bg-accent-600 border-accent-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}>
+                                        <button
+                                            type="button"
+                                            aria-label={`Chọn Lý thuyết (LT) cho ${c.name} (${c.code})`}
+                                            aria-pressed={isLT}
+                                            onClick={() => setTempOverrides({ ...tempOverrides, [c.code]: CourseType.LT })}
+                                            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center mx-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${isLT ? 'bg-accent-600 border-accent-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
+                                        >
                                             {isLT && <Check size={16} />}
                                         </button>
                                     </td>
                                     <td className="px-4 py-3 text-center">
-                                        <button onClick={() => setTempOverrides({ ...tempOverrides, [c.code]: CourseType.TH })} className={`w-8 h-8 rounded-full border-2 flex items-center justify-center mx-auto ${!isLT ? 'bg-slate-600 border-slate-600 text-white shadow-md' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}>
+                                        <button
+                                            type="button"
+                                            aria-label={`Chọn Thực hành (TH) cho ${c.name} (${c.code})`}
+                                            aria-pressed={!isLT}
+                                            onClick={() => setTempOverrides({ ...tempOverrides, [c.code]: CourseType.TH })}
+                                            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center mx-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${!isLT ? 'bg-slate-600 border-slate-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
+                                        >
                                             {!isLT && <Check size={16} />}
                                         </button>
                                     </td>
@@ -146,7 +158,7 @@ const CourseTypeCard: React.FC<CourseTypeCardProps> = ({ onSuccess }) => {
             </div>
 
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 flex justify-end border-t border-slate-100 dark:border-slate-800">
-                <button onClick={handleSave} className="px-6 h-11 bg-accent-600 text-white text-sm font-bold rounded-xl shadow-lg hover:bg-accent-700 active:scale-95 transition-all flex items-center gap-2">
+                <button type="button" onClick={handleSave} className="px-6 h-11 bg-accent-600 text-white text-sm font-bold rounded-xl shadow-sm hover:bg-accent-700 active:scale-95 transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
                     <Save size={18} /> {t('common.save')}
                 </button>
             </div>

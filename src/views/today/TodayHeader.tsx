@@ -32,7 +32,7 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                 <h1 className="text-[22px] md:text-2xl font-semibold text-slate-800 dark:text-slate-100 tracking-tight">
                     {t(`days.${dayOfWeekIdx}`)}, {dateInfo.day}/{dateInfo.month}/{dateInfo.year}
                 </h1>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400 tracking-tight text-balance">
+                <p className="text-sm font-medium text-slate-600 dark:text-slate-400 tracking-tight text-balance">
                     {greeting}
                 </p>
             </div>
@@ -43,8 +43,10 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                     {/* === DISTANT: Accent Circle (A2) — compact icon only === */}
                     {proximity === 'distant' && (
                         <button
+                            type="button"
                             onClick={() => navigate('/exam')}
-                            className="p-2 mt-1 bg-accent-600 dark:bg-accent-500 text-white rounded-full shadow-md shadow-accent-500/25 hover:bg-accent-700 dark:hover:bg-accent-600 hover:shadow-lg transition-all active:scale-95 flex items-center justify-center shrink-0"
+                            aria-label={t('exam.viewAction', 'Xem lịch coi thi')}
+                            className="w-10 h-10 mt-1 bg-accent-600 dark:bg-accent-500 text-white rounded-full shadow-sm hover:bg-accent-700 dark:hover:bg-accent-600 transition-all active:scale-95 flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
                             title={t('exam.viewAction', 'Xem lịch coi thi')}
                         >
                             <CalendarCheck size={16} strokeWidth={2} />
@@ -54,8 +56,10 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                     {/* === UPCOMING: Pill Badge (A1) — icon + text + count === */}
                     {proximity === 'upcoming' && (
                         <button
+                            type="button"
                             onClick={() => navigate('/exam')}
-                            className="mt-1 px-3 py-1.5 bg-accent-50 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400 border border-accent-200 dark:border-accent-800 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/50 hover:shadow-sm transition-all active:scale-95 flex items-center gap-1.5 shrink-0"
+                            aria-label={`${t('exam.viewAction', 'Xem lịch coi thi')}: ${upcomingCount}`}
+                            className="mt-1 px-3 min-h-[36px] py-1.5 bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 border border-accent-200 dark:border-accent-800 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/50 hover:shadow-sm transition-all active:scale-95 flex items-center gap-1.5 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
                         >
                             <CalendarCheck size={14} strokeWidth={2} />
                             <span className="hidden md:inline text-xs font-bold tracking-tight">{t('exam.shortLabel', 'Coi thi')}</span>
@@ -68,8 +72,10 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                     {/* === TODAY: Pill Badge + animation (A1 enhanced) === */}
                     {proximity === 'today' && (
                         <button
+                            type="button"
                             onClick={() => navigate('/exam')}
-                            className="mt-1 px-3 py-1.5 bg-accent-50 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400 border border-accent-300 dark:border-accent-700 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/50 hover:shadow-sm transition-all active:scale-95 flex items-center gap-1.5 shrink-0 ring-1 ring-accent-500/20"
+                            aria-label={`${t('exam.viewAction', 'Xem lịch coi thi')}: ${upcomingCount || 1}`}
+                            className="mt-1 px-3 min-h-[36px] py-1.5 bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 border border-accent-300 dark:border-accent-700 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/50 hover:shadow-sm transition-all active:scale-95 flex items-center gap-1.5 shrink-0 ring-1 ring-accent-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
                         >
                             {/* Red pulsing dot for ongoing */}
                             {isOngoing && (

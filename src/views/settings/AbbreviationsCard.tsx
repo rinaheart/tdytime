@@ -62,13 +62,13 @@ const AbbreviationsCard: React.FC<AbbreviationsCardProps> = ({ onSuccess }) => {
                     <h2 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                         <Type size={20} className="text-accent-600" /> {t('settings.abbreviations.title')}
                     </h2>
-                    <p className="text-xs text-slate-500 mt-1">{t('settings.abbreviations.description')}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{t('settings.abbreviations.description')}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button onClick={() => { setTempAbbr({}); onSuccess(t('settings.toast.abbreviationsReset')); }} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-bold rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center gap-2">
+                    <button type="button" onClick={() => { setTempAbbr({}); onSuccess(t('settings.toast.abbreviationsReset')); }} className="px-3 min-h-[36px] py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
                         <RotateCcw size={14} /> {t('settings.abbreviations.reset')}
                     </button>
-                    <button onClick={suggestAbbreviations} className="px-3 py-1.5 bg-accent-50 dark:bg-accent-900/20 text-accent-700 dark:text-accent-400 text-[10px] font-bold rounded-xl border border-accent-200 dark:border-accent-800 hover:bg-accent-100 transition-colors flex items-center gap-2">
+                    <button type="button" onClick={suggestAbbreviations} className="px-3 min-h-[36px] py-1.5 bg-accent-50 dark:bg-accent-900/20 text-accent-700 dark:text-accent-400 text-xs font-bold rounded-xl border border-accent-200 dark:border-accent-800 hover:bg-accent-100 transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
                         <Wand2 size={14} /> {t('settings.abbreviations.suggest')}
                     </button>
                 </div>
@@ -78,15 +78,15 @@ const AbbreviationsCard: React.FC<AbbreviationsCardProps> = ({ onSuccess }) => {
                 <table className="w-full text-left text-xs border-collapse">
                     <thead className="bg-slate-50 dark:bg-slate-800 sticky top-0 z-10">
                         <tr>
-                            <th className="px-4 py-3 font-bold text-slate-400 uppercase w-10 text-center">#</th>
-                            <th className="px-4 py-3 font-bold text-slate-600 dark:text-slate-400 uppercase text-[10px] tracking-wider font-bold">{t('settings.abbreviations.originalName')}</th>
-                            <th className="px-4 py-3 font-bold text-slate-600 dark:text-slate-400 uppercase text-[10px] tracking-wider font-bold w-1/3 min-w-[120px]">{t('settings.abbreviations.shortName')}</th>
+                            <th className="px-4 py-3 font-bold text-slate-500 dark:text-slate-400 uppercase w-10 text-center">#</th>
+                            <th className="px-4 py-3 font-bold text-slate-600 dark:text-slate-400 uppercase text-xs tracking-wider">{t('settings.abbreviations.originalName')}</th>
+                            <th className="px-4 py-3 font-bold text-slate-600 dark:text-slate-400 uppercase text-xs tracking-wider w-1/3 min-w-[120px]">{t('settings.abbreviations.shortName')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                         {uniqueSubjects.map((name, idx) => (
                             <tr key={name} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                <td className="px-4 py-3 text-center text-slate-400 font-medium">{idx + 1}</td>
+                                <td className="px-4 py-3 text-center text-slate-500 dark:text-slate-400 font-medium">{idx + 1}</td>
                                 <td className="px-4 py-3 font-bold text-slate-700 dark:text-slate-300">{name}</td>
                                 <td className="px-4 py-3">
                                     <input
@@ -105,7 +105,7 @@ const AbbreviationsCard: React.FC<AbbreviationsCardProps> = ({ onSuccess }) => {
             </div>
 
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 flex justify-end border-t border-slate-100 dark:border-slate-800">
-                <button onClick={handleSave} className="px-6 h-11 bg-accent-600 text-white text-sm font-bold rounded-xl shadow-lg hover:bg-accent-700 active:scale-95 transition-all flex items-center gap-2">
+                <button type="button" onClick={handleSave} className="px-6 h-11 bg-accent-600 text-white text-sm font-bold rounded-xl shadow-sm hover:bg-accent-700 active:scale-95 transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
                     <Save size={18} /> {t('settings.abbreviations.save')}
                 </button>
             </div>

@@ -3,7 +3,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Register accent CSS variables as Tailwind theme colors */
+/* Register accent CSS variables and TdyTripZ border-radius scale as Tailwind theme tokens */
 @theme {
   --color-accent-50: rgb(var(--accent-50));
   --color-accent-100: rgb(var(--accent-100));
@@ -15,6 +15,13 @@
   --color-accent-700: rgb(var(--accent-700));
   --color-accent-800: rgb(var(--accent-800));
   --color-accent-900: rgb(var(--accent-900));
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+  --radius-2xl: 10px;
+  --radius-3xl: 12px;
 }
 
 /* Design Typography Optimization (Vietnamese-Native + Montserrat Headings) */
@@ -88,6 +95,41 @@ h4,
 @media (max-width: 768px) {
     .custom-scrollbar::-webkit-scrollbar {
         display: none;
+    }
+}
+
+/* Explicitly visible scrollbar for wide data charts & tables on mobile */
+.scrollbar-mobile-visible {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(203 213 225 / 0.8) transparent;
+}
+
+.dark .scrollbar-mobile-visible {
+    scrollbar-color: rgb(71 85 105 / 0.8) transparent;
+}
+
+@media (max-width: 768px) {
+    .scrollbar-mobile-visible::-webkit-scrollbar {
+        display: block !important;
+        height: 5px;
+    }
+
+    .scrollbar-mobile-visible::-webkit-scrollbar-track {
+        background: rgb(241 245 249 / 0.8);
+        border-radius: 9999px;
+    }
+
+    .scrollbar-mobile-visible::-webkit-scrollbar-thumb {
+        background-color: rgb(148 163 184 / 0.7);
+        border-radius: 9999px;
+    }
+
+    .dark .scrollbar-mobile-visible::-webkit-scrollbar-track {
+        background: rgb(30 41 59 / 0.8);
+    }
+
+    .dark .scrollbar-mobile-visible::-webkit-scrollbar-thumb {
+        background-color: rgb(100 116 139 / 0.7);
     }
 }
 

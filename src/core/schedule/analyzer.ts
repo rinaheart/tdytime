@@ -131,11 +131,13 @@ export const calculateMetrics = (data: ScheduleData): Metrics => {
                     }
 
                     // Main teacher stats
+                    const effectiveType = data.overrides?.[s.courseCode] || s.type;
+                    const roomName = s.room?.trim() || CHUA_RO;
                     shiftStats[shift].sessions += 1;
                     shiftStats[shift].hours += s.periodCount;
                     totalSessions += 1;
-                    typeDistribution[s.type] += s.periodCount;
-                    roomMetrics[s.room] = (roomMetrics[s.room] || 0) + s.periodCount;
+                    typeDistribution[effectiveType] = (typeDistribution[effectiveType] || 0) + s.periodCount;
+                    roomMetrics[roomName] = (roomMetrics[roomName] || 0) + s.periodCount;
                     if (s.className) classMetrics[s.className] = (classMetrics[s.className] || 0) + s.periodCount;
                     subjectMetrics[s.courseName] = (subjectMetrics[s.courseName] || 0) + s.periodCount;
                     totalHours += s.periodCount;

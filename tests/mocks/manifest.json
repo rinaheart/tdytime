@@ -1,73 +1,26 @@
-{
-  "scenarios": [
-    {
-      "id": "mock-realtime",
-      "type": "native",
-      "title": "Bình thường (Realtime)",
-      "description": "Quay về thời gian thực của máy tính. Không giả lập.",
-      "file": null,
-      "timeStrategy": "realtime",
-      "multiplier": 1
-    },
-    {
-      "id": "dynamic-full-day",
-      "type": "dynamic",
-      "title": "Ngày mật độ cao (Full Day)",
-      "description": "Test UI 'Today' với quá khứ, đang diễn ra và 2 slot sắp tới. Giả lập lúc 16:00 (đang trong Slot 4).",
-      "timeStrategy": "align-current-day",
-      "scenarioType": "dense-day",
-      "mockTimeOffset": "16:00:00",
-      "multiplier": 1
-    },
-    {
-      "id": "dynamic-full-week",
-      "type": "dynamic",
-      "title": "Tuần mật độ cao (Full Week)",
-      "description": "Lịch học liên tục 6 ngày, random số slot để test biểu đồ. Giả lập lúc 16:00.",
-      "timeStrategy": "align-current-day",
-      "scenarioType": "dense-week",
-      "mockTimeOffset": "16:00:00",
-      "multiplier": 1
-    },
-    {
-      "id": "dynamic-overlap",
-      "type": "dynamic",
-      "title": "Lỗi trùng lịch (Overlap)",
-      "description": "Test UI khi 2 slot học đè lên nhau (ví dụ 13:30-16:05 và 14:25-17:00).",
-      "timeStrategy": "align-current-day",
-      "scenarioType": "overlap",
-      "mockTimeOffset": "14:45:00",
-      "multiplier": 1
-    },
-    {
-      "id": "dynamic-semi-empty",
-      "type": "dynamic",
-      "title": "Tuần thưa thớt (Semi-Empty)",
-      "description": "Test UI tuần thưa thớt, dễ bị gãy layout (chỉ có lịch vào chiều T4).",
-      "timeStrategy": "align-current-day",
-      "scenarioType": "semi-empty",
-      "mockTimeOffset": "08:00:00",
-      "multiplier": 1
-    },
-    {
-      "id": "dynamic-empty-week",
-      "type": "dynamic",
-      "title": "Tuần nghỉ (Empty Week)",
-      "description": "Test giao diện trống (Empty states) khi nghỉ nguyên tuần.",
-      "timeStrategy": "align-current-day",
-      "scenarioType": "empty",
-      "mockTimeOffset": "08:00:00",
-      "multiplier": 1
-    },
-    {
-      "id": "dynamic-fastforward",
-      "type": "dynamic",
-      "title": "Tua nhanh (Boundary/Transition)",
-      "description": "Bắt đầu 1 phút trước Slot 1 (06:59). Chạy x60 để test quá trình chuyển từ Sắp diễn ra sang Đang dạy.",
-      "timeStrategy": "align-current-day",
-      "scenarioType": "fastforward",
-      "mockTimeOffset": "06:59:00",
-      "multiplier": 60
-    }
-  ]
-}
+[
+  {
+    "id": "anon-full-2026-q4",
+    "name": "Lịch học kỳ đầy đủ (09/2026 – 12/2026)",
+    "file": "1_schedule_anon_full.html",
+    "description": "10 tuần (14/09/2026 - 13/12/2026), bao gồm tuần hiện tại 02/11/2026 - 08/11/2026 với đầy đủ LT, TH và giảng viên dạy cùng."
+  },
+  {
+    "id": "ultra-minimal-2026-q4",
+    "name": "Lịch siêu tối giản (11/2026)",
+    "file": "5_schedule_test_ultra_minimal.html",
+    "description": "2 tuần (02/11/2026 - 15/11/2026), 1 nhóm học phần duy nhất."
+  },
+  {
+    "id": "base-schedule",
+    "name": "Lịch cơ bản (1 tuần 11/2026)",
+    "file": "scenario-1-base.html",
+    "description": "Gồm cả Lý thuyết và Thực hành (gộp tiết 1-3, 4-5) trong tuần 02/11/2026 - 08/11/2026."
+  },
+  {
+    "id": "empty-weeks",
+    "name": "Lịch có tuần trống (11/2026)",
+    "file": "scenario-2-empty.html",
+    "description": "Tuần 1 (02/11/2026 - 08/11/2026) trống hoàn toàn, dùng để test tính năng nhảy qua tuần trống."
+  }
+]

@@ -7,7 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2026.11.05] - 2026-11-05
 
+### Added
+- **Cơ chế Lưu nháp Tự động Buổi học (`Auto-Draft Persistence`):**
+  - Xây dựng `draftService` (`src/core/notes/draft.service.ts`) lưu trữ bản nháp ghi chú tạm thời vào `sessionStorage` với cơ chế debounce 300ms, cô lập hoàn toàn giữa các tab trình duyệt.
+  - Tự động khôi phục văn bản nháp chưa lưu khi mở lại `NoteModal`, hiển thị huy hiệu thông báo khôi phục nháp trực quan.
+  - Tự động dọn dẹp nháp khi người dùng bấm Lưu chính thức hoặc xác nhận Bỏ thay đổi.
+  - Cơ chế **Synchronous Flush**: kích hoạt flush đồng bộ toàn bộ draft vào storage ngay trước khi Service Worker kích hoạt reload trang, triệt tiêu rủi ro mất nội dung soạn thảo khi cập nhật PWA đa tab.
+- **Tính năng Sao lưu & Khôi phục Toàn bộ Dữ liệu (`Full Backup & Atomic Restore`):**
+  - Xây dựng `backupService` (`src/core/backup/backup.service.ts`) xuất toàn bộ 5 nhóm dữ liệu người dùng (`activeSchedule`, `timetable_history`, `tdy_session_notes`, `global_abbreviations`, `preferences`) thành tệp tin duy nhất `tdytime-backup-YYYY-MM-DD.json`.
+  - Quy trình khôi phục dữ liệu nguyên tử (Atomic Restore) có snapshot dự phòng rollback tức thì nếu có lỗi trong quá trình ghi storage.
+  - Hỗ trợ tương thích ngược (Backward Compatibility) với các tệp JSON `ScheduleData` đơn lẻ.
+  - Bổ sung giao diện Sao lưu & Khôi phục tại `SettingsView` (`src/views/settings/BackupRestoreCard.tsx`) với modal tóm tắt nội dung file sao lưu trước khi xác nhận ghi đè.
+- **Tiến độ theo Nhóm/Lớp (`GroupProgressCard`):**
+  - Bổ sung thẻ thống kê "Tiến độ theo Nhóm/Lớp" ngay sau thẻ "Tiến độ" chung tại `StatisticsView`, giúp theo dõi chi tiết số tiết đã hoàn thành trên tổng số tiết của từng nhóm học phần (`done/total` tiết và `%`).
+  - Mặc định ở trạng thái thu gọn (collapsed) kèm cơ chế Lazy-Mount phần thân bảng để không làm tăng mật độ DOM khi mới mở trang.
+  - Bố cục tiêu đề 2 dòng chuẩn Mobile-First (tên thẻ ở dòng trên, badge tổng kết `x/x nhóm hoàn thành` ở dòng dưới) tránh tràn chữ trên màn hình nhỏ (`320px–390px`).
+- **Bộ sinh Lịch giảng HTML chuẩn UMS (`serializeScheduleToUMSHTML` & `generateMockScheduleHTML`):**
+  - Bổ sung hàm kết xuất ngược từ cấu trúc `ScheduleData` sang tài liệu HTML chuẩn UMS (`.hitec-information`, `.hitec-year`, `table.table-bordered`, `.hitec-td-tkbTuan`, `.hitec-td-tkbSang/Chieu/Toi`) trong `src/utils/mockGenerator.ts`.
+  - Tích hợp nút **Load HTML** (nạp trực tiếp qua `parseScheduleHTML`) và **Export .HTML** (tải file `.html` thực tế) cùng tùy chọn sinh lịch 10–15 tuần trong `ScheduleBuilderForm` (`DevToolsView`).
+  - Bổ sung bộ unit test kiểm thử tạo & đọc lịch HTML thực tế tại `tests/mocks/htmlScheduleBuilder.test.ts` và kiểm toán hiệu năng/dữ liệu tại `tests/ui-audit/stats-performance.test.ts`.
+
 ### Changed
+- **UI/UX Redesign — StatisticsView (Kiến trúc "Segmented Focus" Mobile-First):**
+  - Thiết kế lại bố cục trang Thống kê theo kiến trúc phân tầng **Segmented Focus** gồm 3 tab chuyên biệt (`Tổng quan`, `Xu hướng`, `Lớp & Phòng`) với cơ chế Lazy-Mount chỉ render tab đang chọn, giúp giảm **42%–68% tổng số DOM nodes** và giảm **80%–83% SVG nodes** trên mỗi khung nhìn.
+  - Di chuyển thẻ **Bản đồ phân bổ giảng dạy (`HeatmapChart`)** từ tab `Tổng quan` sang tab `Xu hướng` (cùng `WeeklyTrendChart` và `DailyBarChart`), giúp tab `Tổng quan` tinh gọn tối đa (chỉ gồm `TeachingStructureCard` và cụm 4 chỉ số phẳng `InsightCard`).
+  - Gom 4 `InsightCard` rời rạc thành cụm chỉ số phẳng (Flat Metric Group `2×2` trên Mobile, `1×4` trên Desktop) dùng đường kẻ phân tách mảnh `divide-slate-100 dark:divide-slate-800`.
+  - Chuẩn hóa Segmented Control đạt vùng chạm tối thiểu `44×44px` (`min-h-[44px]`), hỗ trợ điều hướng bàn phím chuẩn WAI-ARIA (`ArrowLeft`, `ArrowRight`, `Home`, `End`) và loại bỏ toàn bộ chữ phụ dưới `12px` (`text-xs` trở lên).
+- **Tối ưu hiệu năng tính toán Thống kê ($O(N)$ Single-Pass):**
+  - Tách biệt logic tính tiến độ sang pure function `calculateProgressFromIndex` (`src/views/statistics/stats.utils.ts`) duyệt 1 vòng duy nhất qua `sessionsIndex` đã tiền xử lý thay vì duyệt lồng 4 tầng và parse chuỗi ngày liên tục mỗi nhịp render, giúp tăng tốc độ tính toán CPU gấp **~5.4×** (Median `52.01 µs/call` so với `281.47 µs/call` của thuật toán Legacy).
+- **Hệ thống Độ bo cong chuẩn TdyTripZ (`Border-Radius Token System`):**
+  - Áp dụng hệ thống biến CSS độ bo cong sắc nét, hiện đại từ dự án **TdyTripZ** vào `src/index.css`: `--radius-sm: 6px`, `--radius-md: 8px`, `--radius-lg: 8px`, `--radius-xl: 8px`, `--radius-2xl: 10px` (card chính, giảm từ `16px`), `--radius-3xl: 12px` (modal/panel lớn, giảm từ `24px`).
+- **Đồng bộ Dữ liệu Mock HTML sang Học kỳ Hiện tại (`09/2026 – 12/2026`):**
+  - Cập nhật toàn bộ các file lịch giảng mẫu trong `tests/mocks/` (`1_schedule_anon_full.html`, `5_schedule_test_ultra_minimal.html`, `scenario-1-base.html`, `scenario-2-empty.html`) sang khung thời gian học kỳ hiện tại từ **tháng 09/2026 đến tháng 12/2026** (tuần lễ hiện tại `02/11/2026 – 08/11/2026` nằm giữa học kỳ), đảm bảo khi tải file mẫu sẽ hiển thị đầy đủ tiến độ Ngày, Tuần, Tháng và Học kỳ theo thời gian thực.
 - **Dependencies Upgrade (LTS & Latest):** Nâng cấp toàn bộ các thư viện lên phiên bản mới nhất theo chuẩn LTS / Stable:
   - `react` & `react-dom`: `19.2.8` ⟶ `19.3.1` (React 19 LTS)
   - `react-router-dom`: `7.18.2` ⟶ `7.18.5`
@@ -35,8 +66,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Stability Locks (Preserved):** Khóa `eslint@8.57.1`, `typescript@6.0.3`, `vitest@4.1.11` và `vite-plugin-pwa@1.3.0` để bảo đảm tương thích hệ thống AST linter và PWA build.
 
 ### Fixed
+- **Tổng thẩm định Phát hành, Toàn vẹn Dữ liệu & Bảo mật Nhập liệu (Prompt 6 - Release Validation):**
+  - Thực hiện kiểm toán toàn diện 7 giai đoạn (Deployment, Data Integrity, Import Security, PWA Lifecycle, Performance, Regression, Rollback).
+  - Xác nhận tính an toàn tuyệt đối của bộ phân tích HTML UMS (`parseScheduleHTML`): 6/6 kịch bản injection mã độc (XSS, `onerror`, `onload`, `javascript:`) bị vô hiệu hóa hoàn toàn nhờ cơ chế DOM inert parsing và `.textContent`.
+  - Xác minh bảo toàn dữ liệu ngoại tuyến (Offline Resilience): Lịch giảng, ghi chú và từ điển viết tắt không bị mất hoặc ghi đè sau reload và ngắt kết nối mạng.
+  - Thiết lập bộ tài liệu thẩm định phát hành hoàn chỉnh tại `tests/release-validation/` gồm 6 báo cáo JSON, Bảng kiểm phát hành (`release-checklist.md`) và Kế hoạch hoàn nguyên (`rollback-plan.md`).
+  - Đồng bộ lịch sử cập nhật phiên bản `v2026.11.05` vào giao diện Thông tin ứng dụng (`AboutCard.tsx` / `about.history`).
+- **Tinh chỉnh giao diện Tab Thống kê (`GroupProgressCard`, `StatisticsView`, `HeatmapChart`):**
+  - Đồng nhất kiểu tiêu đề ở thẻ "Tiến độ theo nhóm lớp" (`text-xs font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest`) chuẩn theo hệ thống card trong view. Chuyển dòng thông tin phụ `"x/y nhóm hoàn thành"` sang màu theme blue nhạt (`text-accent-600 dark:text-accent-400`) và bỏ in đậm (`font-normal`), tạo phân cấp thị giác tinh tế và chuẩn WCAG AA.
+  - Cập nhật nút thu gọn ở header thống kê: khi kích hoạt thu gọn (`isCollapsed = true`), giữ lại cả thẻ "Tiến độ (tổng quan)" và "Tiến độ theo nhóm lớp", chỉ ẩn thanh Segmented Tabs, các Tab Panels và Banner lịch thi.
+  - Tối ưu thanh cuộn ngang cho thẻ Heatmap: chuyển sang căn lề trái trên thiết bị di động (`justify-start sm:justify-center`) tránh lỗi cắt cụt tuần đầu/thứ, đồng thời bổ sung lớp `scrollbar-mobile-visible` hiển thị thanh cuộn rõ ràng và cuộn ngang mượt mà kể cả khi học kỳ kéo dài 15–20 tuần.
+- **Tính toàn vẹn Dữ liệu Lịch & Thống kê (`schedule.index.ts` & `analyzer.ts`):**
+  - Đồng bộ `data.overrides` (chuyển đổi loại học phần LT/TH thủ công) vào `buildScheduleIndex` và `calculateMetrics` để biểu đồ Cấu trúc giảng dạy và bảng Tiến độ theo Nhóm/Lớp phản ánh tức thì khi người dùng đổi loại học phần.
+  - Bổ sung bộ lọc loại bỏ các buổi học bị hủy (`isCancelled`, `cancelled`, `status: 'cancelled'`), khử trùng lặp buổi học có cùng khóa định danh trong cùng ca/ngày, và kiểm tra tính hợp lệ của tiết kết thúc (`hasValidEndTime`).
+  - Chuẩn hóa tên phòng học rỗng (`""`) về hằng số `CHUA_RO` ("Chưa rõ") trong `analyzer.ts` và `StatisticsView.tsx`, khắc phục lỗi dòng trống không nhãn trong thẻ Top Phòng học.
+- **Tương thích Vite Runtime & Preview Environment:**
+  - Cấu hình `server.hmr = false` khi `DISABLE_HMR=true` và chuyển `@vitejs/plugin-react` sang import tĩnh trong `vite.config.ts`, xử lý triệt để lỗi mất preamble React và lỗi WebSocket `Cannot read properties of undefined (reading 'send')`.
 - **Tổng kiểm toán Accessibility & UI/UX (WCAG 2.2 Level AA Clean):**
-  - Đạt **0 vi phạm Axe-Core** trên toàn bộ 6 view (`Welcome`, `Today`, `Week`, `Semester`, `Stats`, `Settings`) qua 3 viewports (Desktop 1440px, Tablet 768px, Mobile 375px).
+  - Đạt **0 vi phạm Axe-Core** trên toàn bộ 6 view (`Welcome`, `Today`, `Week`, `Semester`, `Stats`, `Settings`) và kiểm thử đa thiết bị qua 6 viewports (`320×568`, `360×800`, `390×844`, `430×932`, `768×1024`, `1024×768`) với `horizontalOverflowPx = 0`.
   - Khắc phục lỗi Critical `button-name`: Bổ sung `aria-label` cho nút ghi chú trên `SessionCard`, nút xuất PDF, nút chuyển đổi view mode và các nút toggle.
   - Khắc phục lỗi Serious `color-contrast`: Nâng cấp các sublabel màu xám mờ (`text-slate-400` ~2.6:1) lên `text-slate-600 dark:text-slate-400` (> 4.5:1). Thay thế badge "Tuần hiện tại" dùng `animate-pulse` mờ chữ bằng badge cố định `bg-blue-700 text-white font-black` (8.6:1).
   - Khắc phục lỗi Moderate `heading-order`: Chuẩn hóa cây tiêu đề phân cấp mạch lạc `h1` (Trang/Giảng viên) ⟶ `h2` (Card/Ngày) ⟶ `h3` (Môn học/Tiết học) trên toàn ứng dụng.
@@ -44,7 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Khắc phục lỗi Serious `scrollable-region-focusable`: Bổ sung `tabIndex={0}`, `role="region"` và `aria-label` cho các vùng cuộn ngang/dọc (`HeatmapChart`, `CoTeachersTable`, bảng phím tắt, bảng hình thức học).
 - **Test Environment Polyfill:**
   - Thiết lập storage mock an toàn trong `src/setupTests.ts` xử lý cơ chế experimental `localStorage` trên Node 22/24/26.
-  - Sửa `src/core/stores/schedule.store.initFromStorage.test.ts` để đồng bộ `await` hàm khởi tạo IndexedDB async. Toàn bộ 48 unit tests vượt qua 100%.
+  - Sửa `src/core/stores/schedule.store.initFromStorage.test.ts` để đồng bộ `await` hàm khởi tạo IndexedDB async. Toàn bộ 9 bộ unit tests (63 tests) vượt qua 100%.
 
 ## [2026.09.15] - 2026-09-15
 

@@ -1,0 +1,6 @@
+{
+  "name": "TdyTime - Your Today, Your Time",
+  "description": "Phân tích và Quản lý Lịch giảng thông minh - Your Today, Your Time",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

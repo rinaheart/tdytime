@@ -301,6 +301,19 @@
             "classDetail": "Lớp học phần",
             "total": "Tiết"
         },
+        "groupProgress": {
+            "title": "Tiến độ theo Nhóm/Lớp",
+            "course": "Học phần",
+            "classGroup": "Lớp / Nhóm",
+            "progress": "Tiến độ",
+            "hours": "Đã dạy / Tổng",
+            "completedGroups": "{{done}}/{{total}} nhóm hoàn thành"
+        },
+        "tabs": {
+            "overview": "Tổng quan",
+            "trends": "Xu hướng",
+            "details": "Lớp & Phòng"
+        },
         "conclusions": "Nhận định & Đề xuất Tối ưu",
         "intensity": "Cường độ",
         "eveningTeaching": "Buổi tối",
@@ -348,6 +361,30 @@
             "warning": "Cảnh báo",
             "danger": "Nguy hiểm",
             "save": "Lưu"
+        },
+        "backup": {
+            "title": "Sao lưu & Khôi phục dữ liệu",
+            "description": "Xuất toàn bộ lịch giảng, lịch sử, ghi chú và từ điển viết tắt ra file JSON an toàn.",
+            "exportBtn": "Sao lưu dữ liệu (Tải file .json)",
+            "restoreBtn": "Khôi phục dữ liệu (Chọn file .json)",
+            "lastBackup": "Lần sao lưu gần nhất: {{date}}",
+            "noBackupYet": "Chưa có lần sao lưu nào trên trình duyệt này",
+            "guidance": "Khuyến nghị lưu file này vào Google Drive, USB hoặc gửi email để bảo vệ dữ liệu khi đổi thiết bị hoặc xóa cache trình duyệt.",
+            "confirmRestoreTitle": "Xác nhận khôi phục dữ liệu",
+            "confirmRestoreDesc": "Hành động này sẽ ghi đè lịch giảng, lịch sử và ghi chú hiện tại bằng nội dung từ file sao lưu.",
+            "summaryTitle": "Nội dung tìm thấy trong file sao lưu:",
+            "activeSchedule": "Lịch đang hoạt động: {{teacher}} (Học kỳ {{semester}} - {{year}})",
+            "noActiveSchedule": "Không có lịch học đang mở",
+            "historyCount": "Số lịch trong lịch sử: {{count}}",
+            "notesCount": "Số ghi chú buổi học: {{count}}",
+            "abbreviationsCount": "Số từ viết tắt môn học: {{count}}",
+            "exportedAt": "Thời điểm sao lưu: {{date}}",
+            "confirmBtn": "Xác nhận khôi phục",
+            "cancelBtn": "Hủy bỏ",
+            "exportSuccess": "Đã xuất file sao lưu thành công!",
+            "restoreSuccess": "Khôi phục dữ liệu thành công!",
+            "restoreError": "Khôi phục thất bại: {{error}}",
+            "invalidFile": "File sao lưu không hợp lệ hoặc bị lỗi định dạng."
         },
         "export": {
             "title": "Quản lý & Xuất file",
@@ -409,6 +446,17 @@
         "updateAvailable": "Cập nhật ngay v1.0.1",
         "changelog": "Changelog",
         "history": [
+            {
+                "version": "v2026.11.05",
+                "date": "2026-11-05",
+                "changes": [
+                    "Segmented Focus: Thiết kế lại toàn bộ Thống kê thành 3 tab phân tầng (Tổng quan, Xu hướng, Lớp & Phòng) với cơ chế Lazy-Mount, giảm 55% DOM nodes.",
+                    "Tiến độ theo Nhóm/Lớp: Bổ sung thẻ thống kê tiến độ từng nhóm học phần (GroupProgressCard) với tiêu đề chuẩn hóa và dòng tiến độ màu theme nhạt.",
+                    "Bo cong TdyTripZ: Chuẩn hóa hệ thống border-radius theo ngôn ngữ TdyTripZ (card 10px, modal 12px, badge 6-8px).",
+                    "Heatmap cuộn ngang: Tối ưu thanh cuộn ngang hiển thị rõ ràng trên thiết bị di động, chống cắt mép trái tuần học.",
+                    "Hiệu năng & Bảo mật: Tối ưu thuật toán O(N) single-pass tính tiến độ, đạt chuẩn WCAG 2.2 AA và 0 lỗ hổng bảo mật."
+                ]
+            },
             {
                 "version": "v2026.09.15",
                 "date": "2026-09-15",
@@ -813,7 +861,8 @@
         "confirmDelete": "Xóa ghi chú này?",
         "charCount": "{{count}} ký tự",
         "clear": "Xóa ghi chú",
-        "noNotes": "Chưa có ghi chú nào."
+        "noNotes": "Chưa có ghi chú nào.",
+        "draftRestored": "Đã khôi phục bản nháp chưa lưu"
     },
     "report": {
         "university": "Trường Đại học Y - Dược, Đại học Huế",

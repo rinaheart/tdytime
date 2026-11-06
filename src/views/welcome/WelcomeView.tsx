@@ -7,7 +7,7 @@ import React, { useState, useMemo, useCallback } from 'react';
 import { formatSemester } from '@/core/schedule';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Upload, FileText, History, Trash2, ArrowRight, ArrowLeft, Globe, Check, X } from 'lucide-react';
+import { Upload, FileText, History, Trash2, ArrowRight, ArrowLeft, Globe, Check, X, Sun, Moon } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
 import type { HistoryItem } from '@/core/schedule';
 import { APP_VERSION } from '@/core/constants';
@@ -177,6 +177,8 @@ const WelcomeView: React.FC = () => {
     const loadHistoryItem = useScheduleStore((s) => s.loadHistoryItem);
     const deleteHistoryItem = useScheduleStore((s) => s.deleteHistoryItem);
     const setExamData = useExamStore((s) => s.setExamData);
+    const darkMode = useUIStore((s) => s.darkMode);
+    const toggleDarkMode = useUIStore((s) => s.toggleDarkMode);
 
     const [isDragging, setIsDragging] = useState(false);
     const [showPaste, setShowPaste] = useState(false);
@@ -293,17 +295,25 @@ const WelcomeView: React.FC = () => {
                         )}
                     </div>
 
-                    {/* Right: Actions */}
+                    {/* Right: Actions — Globe → ThemePicker → DarkMode */}
                     <div className="flex items-center gap-1">
                         <button
                             onClick={toggleLanguage}
-                            className="p-2 rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors"
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400 transition-colors"
                             aria-label={t('common.switchLanguage')}
                             title={i18n.language === 'vi' ? 'English' : 'Tiếng Việt'}
                         >
                             <Globe size={18} />
                         </button>
                         <ThemePicker />
+                        <button
+                            onClick={toggleDarkMode}
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400 transition-colors"
+                            aria-label={darkMode ? t('common.lightMode', 'Sáng') : t('common.darkMode', 'Tối')}
+                            title={darkMode ? t('common.lightMode', 'Chế độ sáng') : t('common.darkMode', 'Chế độ tối')}
+                        >
+                            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                        </button>
                     </div>
                 </div>
             </header>

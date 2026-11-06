@@ -64,13 +64,13 @@ export function cloneGrid(grid: Record<DayKey, ShiftCount> = DEFAULT_GRID): Reco
 }
 
 const MOCK_COURSES = [
-    { code: 'PRJ301', name: 'Java Web Application Development', room: 'AL-301' },
-    { code: 'SWP391', name: 'Application Development Project', room: 'BE-402' },
-    { code: 'DBI202', name: 'Introduction to Databases', room: 'DE-205' },
-    { code: 'MAD101', name: 'Discrete mathematics', room: 'AL-209' },
-    { code: 'PRN211', name: 'C# Programming', room: 'AL-304' },
-    { code: 'MAS291', name: 'Statistics and Probability', room: 'DE-401' },
-    { code: 'MKT201', name: 'Marketing Principles', room: 'DE-202' },
+    { code: 'PRJ301-LT.001', name: 'Java Web Application Development', room: 'AL-301', group: 'Nhóm 1', className: 'SE1601', type: CourseType.LT },
+    { code: 'SWP391-TH.002', name: 'Application Development Project', room: 'BE-402', group: 'Nhóm 2', className: 'SE1602', type: CourseType.TH },
+    { code: 'DBI202-LT.001', name: 'Introduction to Databases', room: 'DE-205', group: 'Nhóm 1', className: 'SE1601', type: CourseType.LT },
+    { code: 'MAD101-LT.003', name: 'Discrete mathematics', room: 'AL-209', group: 'Nhóm 3', className: 'AI1701', type: CourseType.LT },
+    { code: 'PRN211-TH.001', name: 'C# Programming Lab', room: 'AL-304', group: 'Nhóm 1', className: 'SE1603', type: CourseType.TH },
+    { code: 'MAS291-LT.002', name: 'Statistics and Probability', room: 'DE-401', group: 'Nhóm 2', className: 'IA1601', type: CourseType.LT },
+    { code: 'MKT201-LT.004', name: 'Marketing Principles', room: 'DE-202', group: 'Nhóm 4', className: 'MC1702', type: CourseType.LT },
 ];
 
 const FULL_DAY_NAMES: Record<DayKey, string> = {
@@ -163,7 +163,7 @@ export function patternToGrid(pattern: PatternMode, seedStr: string): Record<Day
                 grid[d] = {
                     morning: Math.floor(random() * 3), // 0-2
                     afternoon: Math.floor(random() * 3), // 0-2
-                    evening: Math.random() > 0.7 ? 1 : 0 // 30% chance for 1 evening session
+                    evening: random() > 0.7 ? 1 : 0 // 30% chance for 1 evening session
                 };
             }
             break;
@@ -196,13 +196,13 @@ function createSession(
         id: `${course.code}-${dayName}-${timeSlot}-${Math.floor(random() * 100000)}`,
         courseCode: course.code,
         courseName: course.name,
-        group: 'SE1601',
-        className: 'SE1601',
+        group: course.group,
+        className: course.className,
         timeSlot,
         periodCount,
         room: random() > 0.95 ? '' : course.room, // Edge case: 5% chance missing room
         teacher: teacherName,
-        type: CourseType.LT,
+        type: course.type,
         dayOfWeek: dayName,
         sessionTime: shift
     };
@@ -239,8 +239,8 @@ export function generateFromBuilder(config: ScheduleBuilderConfig): { data: Sche
         return weekIdxOffset < 0 ? config.pastWeekFactor : config.futureWeekFactor;
     };
 
-    const startOffset = config.weekCount === 3 ? -1 : 0;
-    const endOffset = config.weekCount === 3 ? 1 : 0;
+    const startOffset = config.weekCount <= 1 ? 0 : -Math.floor((config.weekCount - 1) / 2);
+    const endOffset = startOffset + Math.max(1, config.weekCount) - 1;
 
     for (let w = startOffset; w <= endOffset; w++) {
         const weekMon = new Date(currentMonday);
@@ -252,7 +252,7 @@ export function generateFromBuilder(config: ScheduleBuilderConfig): { data: Sche
         const factor = calculateFactor(w);
         
         const singleWeek: WeekSchedule = {
-            weekNumber: w + 20, // arbitrary
+            weekNumber: w - startOffset + 1,
             dateRange,
             days: {
                 Monday: { morning: [], afternoon: [], evening: [] },
@@ -318,7 +318,8 @@ export function generateFromBuilder(config: ScheduleBuilderConfig): { data: Sche
     // Inject Overlaps based on mode
     if (config.overlapMode !== 'none' && weeks.length > 0) {
         // Find 'current week' to inject overlap
-        const targetWeek = config.weekCount === 3 ? weeks[1] : weeks[0];
+        const currentWeekIdx = Math.min(weeks.length - 1, Math.max(0, -startOffset));
+        const targetWeek = weeks[currentWeekIdx];
         
         let overlapCount = 0;
         if (config.overlapMode === 'single') overlapCount = 1;
@@ -357,9 +358,11 @@ export function generateFromBuilder(config: ScheduleBuilderConfig): { data: Sche
         }
     }
 
+    const semesterDigits = (config.semester || '1').match(/\d+/)?.[0] || '1';
+
     const metadata: Metadata = {
         teacher: config.teacherName || 'Trần Văn Demo',
-        semester: config.semester || 'Spring',
+        semester: semesterDigits,
         academicYear: `${config.academicYear.start}-${config.academicYear.end}`,
         extractedDate: new Date().toISOString(), // Use real system time for metadata
     };
@@ -373,3 +376,142 @@ export function generateFromBuilder(config: ScheduleBuilderConfig): { data: Sche
         mockTime: mockRefDate
     };
 }
+
+// --- UMS HTML Serializer & Builder for Real File Load Testing ---
+
+const ORDERED_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as const;
+
+const SHIFT_CSS_CLASS: Record<'morning' | 'afternoon' | 'evening', string> = {
+    morning: 'hitec-td-tkbSang',
+    afternoon: 'hitec-td-tkbChieu',
+    evening: 'hitec-td-tkbToi',
+};
+
+function escapeHtml(raw: string): string {
+    return raw
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function formatWeekHeaderText(dateRange: string): string {
+    const matches = dateRange.match(/(\d{2}\/\d{2}\/\d{4})/g);
+    if (matches && matches.length >= 2) {
+        return `Từ ngày: ${matches[0]} đến ngày ${matches[1]}`;
+    }
+    return dateRange;
+}
+
+function renderSessionHtml(session: CourseSession): string {
+    const [startStr, endStr] = session.timeSlot.split('-');
+    const startPeriod = parseInt(startStr, 10) || 1;
+    const endPeriod = parseInt(endStr, 10) || startPeriod + session.periodCount - 1;
+    const groupText = session.group?.toLowerCase().includes('nhóm')
+        ? session.group
+        : `Nhóm ${session.group || '1'}`;
+    const classText = session.className || 'CTK45';
+    const fullTitle = `${session.courseName} - ${groupText} - ${classText}`;
+    const roomFormatted = session.room ? `.${session.room.replace(/^\.+/, '')}` : '';
+    const dataContent = `Phòng học: ${roomFormatted}<br />Tiết: ${startPeriod} - ${endPeriod} (Thực dạy <b>${session.periodCount}</b> tiết)<br />Giáo viên: ${session.teacher}`;
+
+    return `<p>
+                                        <a href="/giangvien/Course/Details/${escapeHtml(session.courseCode)}/"
+                                           title="${escapeHtml(fullTitle)}"
+                                           data-toggle="popover"
+                                           data-trigger="hover"
+                                           data-placement="bottom"
+                                           data-html="true"
+                                           data-content="${escapeHtml(dataContent)}">
+                                            <strong>${escapeHtml(session.courseCode)}</strong>
+                                            <br />
+                                            ${startPeriod} - ${endPeriod} [${escapeHtml(roomFormatted)}]
+                                        </a>
+                                    </p>`;
+}
+
+/**
+ * Serializes structured ScheduleData into a full UMS-compatible HTML document
+ * that can be parsed directly by `parseScheduleHTML` or uploaded as a `.html` file.
+ */
+export function serializeScheduleToUMSHTML(data: ScheduleData): string {
+    const teacher = data.metadata.teacher || 'Giảng Viên A';
+    const semesterMatch = String(data.metadata.semester || '1').match(/\d+/);
+    const semesterNum = semesterMatch ? semesterMatch[0] : '1';
+    const academicYear = data.metadata.academicYear || '2026-2027';
+
+    const weeksHtml = data.weeks
+        .map((week) => {
+            const weekHeader = formatWeekHeaderText(week.dateRange);
+            const shifts: ('morning' | 'afternoon' | 'evening')[] = ['morning', 'afternoon', 'evening'];
+
+            const shiftRowsHtml = shifts
+                .map((shift) => {
+                    const cssClass = SHIFT_CSS_CLASS[shift];
+                    const cellsHtml = ORDERED_DAYS.map((dayName) => {
+                        const sessions = week.days[dayName]?.[shift] || [];
+                        const links = sessions.map(renderSessionHtml).join('\n');
+                        return `                            <td class="${cssClass} ">\n${links}\n                            </td>`;
+                    }).join('\n');
+
+                    return `                    <tr>\n${cellsHtml}\n                    </tr>`;
+                })
+                .join('\n');
+
+            return `                    <tr>
+                        <td colspan="7" class="hitec-td-tkbTuan">
+                            ${escapeHtml(weekHeader)}
+                        </td>
+                    </tr>
+${shiftRowsHtml}`;
+        })
+        .join('\n');
+
+    return `<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Lịch trình giảng dạy - ${escapeHtml(teacher)}</title>
+</head>
+<body>
+    <div class="hitec-information">
+        <h5>${escapeHtml(teacher)}</h5>
+    </div>
+    <div style="text-align: right; margin-bottom: 10px;">
+        <span class="hitec-year">Học kỳ: ${escapeHtml(semesterNum)}, năm học: ${escapeHtml(academicYear)}</span>
+    </div>
+    <div class="container-fluid">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th style="width:14%" class="text-center">Thứ 2</th>
+                    <th style="width:14%" class="text-center">Thứ 3</th>
+                    <th style="width:14%" class="text-center">Thứ 4</th>
+                    <th style="width:14%" class="text-center">Thứ 5</th>
+                    <th style="width:14%" class="text-center">Thứ 6</th>
+                    <th style="width:14%" class="text-center">Thứ 7</th>
+                    <th style="width:auto" class="text-center">Chủ nhật</th>
+                </tr>
+            </thead>
+            <tbody>
+${weeksHtml}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>`;
+}
+
+/**
+ * Generates both ScheduleData and a ready-to-parse UMS HTML string from ScheduleBuilderConfig.
+ */
+export function generateMockScheduleHTML(config: ScheduleBuilderConfig): {
+    html: string;
+    data: ScheduleData;
+    mockTime: Date;
+} {
+    const { data, mockTime } = generateFromBuilder(config);
+    const html = serializeScheduleToUMSHTML(data);
+    return { html, data, mockTime };
+}
+

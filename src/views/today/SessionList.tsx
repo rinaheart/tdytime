@@ -45,8 +45,8 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
             {/* Section Header */}
             <div className="flex flex-wrap items-center justify-between gap-y-1 mb-3">
                 <div className="flex items-center gap-2">
-                    <Play size={12} fill="currentColor" className={!isTodayFinished ? 'text-accent-600 dark:text-accent-500' : 'text-slate-400'} />
-                    <h2 className={`text-[12px] font-black uppercase tracking-wider ${!isTodayFinished ? 'text-accent-600 dark:text-accent-500' : 'text-slate-700 dark:text-slate-300'}`}>
+                    <Play size={12} fill="currentColor" className={!isTodayFinished ? 'text-accent-600 dark:text-accent-500' : 'text-slate-500'} />
+                    <h2 className={`text-xs font-black uppercase tracking-wider ${!isTodayFinished ? 'text-accent-600 dark:text-accent-400' : 'text-slate-700 dark:text-slate-300'}`}>
                         {isTodayFinished
                             ? t('stats.today.summaryCompleted', { sessions: sessions.length, periods: totalPeriods })
                             : t('stats.today.summaryTotal', { sessions: sessions.length, periods: totalPeriods })
@@ -55,7 +55,7 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
                 </div>
                 {!isTodayFinished && pendingCount > 0 && (
                     <div className="flex items-center gap-2 text-xs ml-auto">
-                        <span className="text-slate-400 font-medium whitespace-nowrap">{t('stats.today.upcomingCount', { count: pendingCount })}</span>
+                        <span className="text-slate-600 dark:text-slate-400 font-medium whitespace-nowrap">{t('stats.today.upcomingCount', { count: pendingCount })}</span>
                     </div>
                 )}
             </div>
@@ -63,11 +63,11 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
             {/* Cards */}
             <div className="space-y-3">
                 {activeSessions.map((session, idx) => (
-                    <SessionCard 
-                        key={`${session.courseCode}-${idx}`} 
-                        session={session} 
-                        status={session.status} 
-                        abbreviations={abbreviations} 
+                    <SessionCard
+                        key={`${session.courseCode}-${idx}`}
+                        session={session}
+                        status={session.status}
+                        abbreviations={abbreviations}
                         startTimeStr={session.startTimeStr}
                         endTimeStr={session.endTimeStr}
                     />
@@ -76,23 +76,23 @@ const SessionList: React.FC<SessionListProps> = ({ sessions }) => {
                 {completedSessions.length > 0 && (
                     <div className="bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 rounded-2xl p-5 mt-6">
                         {!isTodayFinished && (
-                            <h3 className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
+                            <h3 className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest mb-4">
                                 {t('common.completedItem')}
                             </h3>
                         )}
                         <div className="space-y-4">
                             {completedSessions.map((s, idx) => (
                                 <div key={idx} className="flex items-center gap-2 text-sm">
-                                    <div className="flex items-center gap-1 font-bold shrink-0 min-w-[78px] text-[12px] font-num">
-                                        <span className="text-slate-500 dark:text-slate-400">{s.startTimeStr}</span>
-                                        <span className="text-slate-300 dark:text-slate-700 font-light">/</span>
+                                    <div className="flex items-center gap-1 font-bold shrink-0 min-w-[78px] text-xs font-num">
+                                        <span className="text-slate-600 dark:text-slate-400">{s.startTimeStr}</span>
+                                        <span className="text-slate-400 dark:text-slate-600 font-light">/</span>
                                         <span className="text-slate-600 dark:text-slate-400 font-medium">{s.endTimeStr}</span>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <span className="font-semibold text-slate-600 dark:text-slate-400 truncate block">{abbreviations[s.courseName] || s.courseName}</span>
+                                        <span className="font-semibold text-slate-700 dark:text-slate-300 truncate block">{abbreviations[s.courseName] || s.courseName}</span>
                                     </div>
                                     <div className="hidden md:block shrink-0 text-right ml-2 min-w-0 max-w-[120px]">
-                                        <span className="text-[11px] text-slate-600 dark:text-slate-400 font-bold truncate block">
+                                        <span className="text-xs text-slate-600 dark:text-slate-400 font-bold truncate block">
                                             {formatClassDisplay(s)}
                                         </span>
                                     </div>

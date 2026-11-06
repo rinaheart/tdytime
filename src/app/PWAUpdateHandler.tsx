@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Download, Check, X } from 'lucide-react';
+import { draftService } from '@/core/notes/draft.service';
 
 const INSTALL_PROMPT_DISMISS_KEY = 'tdytime_install_prompt_dismissed';
 const PWA_DISMISS_KEY = 'tdytime_pwa_dismiss_date';
@@ -108,6 +109,8 @@ export const PWAUpdateHandler: React.FC = () => {
     };
 
     const handleUpdate = () => {
+        // Synchronously flush active drafts in current tab before service worker update reload
+        draftService.flushAll();
         updateServiceWorker(true);
     };
 

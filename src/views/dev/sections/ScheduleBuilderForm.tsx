@@ -7,7 +7,7 @@
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, Eye, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
+import { Play, Eye, ChevronDown, ChevronUp, AlertTriangle, FileCode, Download } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
 import {
     type ScheduleBuilderConfig,
@@ -20,6 +20,7 @@ import {
     DEFAULT_GRID,
     patternToGrid,
     generateFromBuilder,
+    generateMockScheduleHTML,
     cloneGrid,
 } from '@/utils/mockGenerator';
 
@@ -203,12 +204,42 @@ const ScheduleBuilderForm: React.FC<ScheduleBuilderFormProps> = ({ initialConfig
         if (andPreview) {
             navigate('/today');
         } else {
-            const stats = `✓ Đã sinh: ${data.weeks.length} tuần, ${data.weeks.reduce((acc, w) => acc + Object.values(w.days).reduce((dAcc, d) => dAcc + d.morning.length + d.afternoon.length + d.evening.length, 0), 0)} tiết.`;
+            const stats = `✓ Đã sinh (JSON): ${data.weeks.length} tuần, ${data.weeks.reduce((acc, w) => acc + Object.values(w.days).reduce((dAcc, d) => dAcc + d.morning.length + d.afternoon.length + d.evening.length, 0), 0)} buổi.`;
             setGenFeedback(stats);
             setTimeout(() => setGenFeedback(null), 5000);
             onGenerated?.();
         }
     }, [buildConfig, handleFileUpload, t, i18n.language, setMockState, navigate, onGenerated]);
+
+    const doGenerateHTML = useCallback((downloadFile: boolean) => {
+        const config = buildConfig();
+        const { html, data, mockTime: mt } = generateMockScheduleHTML(config);
+
+        if (downloadFile) {
+            const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tdytime-mock-${config.mockDate}-${config.weekCount}w.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            setGenFeedback(`✓ Đã xuất file HTML chuẩn UMS (${data.weeks.length} tuần).`);
+            setTimeout(() => setGenFeedback(null), 5000);
+            return;
+        }
+
+        handleFileUpload(html, t, i18n.language);
+        setMockState({
+            startTimeLocal: Date.now(),
+            startTimeMock: mt.getTime(),
+            multiplier: config.speedMultiplier,
+        });
+        setGenFeedback(`✓ Đã nạp qua bộ phân tích HTML thực tế (parseScheduleHTML): ${data.weeks.length} tuần.`);
+        setTimeout(() => setGenFeedback(null), 5000);
+        onGenerated?.();
+    }, [buildConfig, handleFileUpload, t, i18n.language, setMockState, onGenerated]);
 
     // Shared input class
     const inputCls = 'w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-none px-2.5 py-1.5 text-sm text-slate-900 dark:text-slate-200 focus:border-sky-500 focus:outline-none font-mono';
@@ -235,9 +266,11 @@ const ScheduleBuilderForm: React.FC<ScheduleBuilderFormProps> = ({ initialConfig
                 </div>
                 <div>
                     <label className={labelCls}>Weeks <span className={subCls}>Số tuần sinh</span></label>
-                    <select value={weekCount} onChange={e => setWeekCount(+e.target.value as 1 | 3)} className={inputCls}>
+                    <select value={weekCount} onChange={e => setWeekCount(+e.target.value)} className={inputCls}>
                         <option value={1}>1 tuần</option>
                         <option value={3}>3 tuần</option>
+                        <option value={10}>10 tuần (09–12/2026)</option>
+                        <option value={15}>15 tuần (Full HK)</option>
                     </select>
                 </div>
                 <div>
@@ -409,20 +442,36 @@ const ScheduleBuilderForm: React.FC<ScheduleBuilderFormProps> = ({ initialConfig
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-2 pt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
                 <button
                     onClick={() => doGenerate(false)}
                     disabled={!canGenerate}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-none text-sm font-bold transition-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-none text-xs font-bold transition-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                    <Play size={14} /> Generate
+                    <Play size={14} /> Generate JSON
+                </button>
+                <button
+                    onClick={() => doGenerateHTML(false)}
+                    disabled={!canGenerate}
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-none text-xs font-bold transition-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="Sinh mã HTML chuẩn UMS và nạp qua parseScheduleHTML"
+                >
+                    <FileCode size={14} /> Load HTML
+                </button>
+                <button
+                    onClick={() => doGenerateHTML(true)}
+                    disabled={!canGenerate}
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-2 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-none text-xs font-bold transition-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    title="Tải xuống file .html chuẩn UMS để test upload thực tế"
+                >
+                    <Download size={14} /> Export .HTML
                 </button>
                 <button
                     onClick={() => doGenerate(true)}
                     disabled={!canGenerate}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-sky-600 hover:bg-sky-500 text-white rounded-none text-sm font-bold transition-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center gap-1.5 py-2.5 px-2 bg-sky-600 hover:bg-sky-500 text-white rounded-none text-xs font-bold transition-none cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                    <Eye size={14} /> Generate & Preview →
+                    <Eye size={14} /> Preview →
                 </button>
             </div>
         </div>

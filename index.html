@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="description" content="TdyTime - Your Today, Your Time" />
+    <meta name="description" content="Phân tích và Quản lý Lịch giảng thông minh - Your Today, Your Time" />
+    <meta property="og:title" content="TdyTime - Your Today, Your Time" />
+    <meta property="og:description" content="Phân tích và Quản lý Lịch giảng thông minh - Your Today, Your Time" />
+    <meta property="og:type" content="website" />
     <meta name="theme-color" content="#ffffff" />
     <!-- Critical CSS — app shell only (avoid render-blocking wait for full CSS) -->
     <style>
@@ -16,13 +19,54 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-    <!-- Async font loading — non-render-blocking -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&family=Montserrat:wght@600;800&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <!-- Async font loading — non-render-blocking & CSP-compliant (no inline event handlers) -->
+    <link id="google-fonts-css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&family=Montserrat:wght@600;800&display=swap" media="print">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&family=Montserrat:wght@600;800&display=swap"></noscript>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/pwa-192x192.png" />
     <title>TdyTime - Your Today, Your Time</title>
     <script>
+      // Activate non-render-blocking Google Fonts stylesheet without inline onload attribute
+      (function () {
+        var fontLink = document.getElementById('google-fonts-css');
+        if (fontLink) {
+          if (fontLink.sheet) {
+            fontLink.media = 'all';
+          } else {
+            fontLink.addEventListener('load', function () { fontLink.media = 'all'; });
+          }
+        }
+      })();
+
+      // Ensure React Fast Refresh preamble stubs exist even when HMR is disabled or SW serves cached modules
+      window.$RefreshReg$ = window.$RefreshReg$ || function () {};
+      window.$RefreshSig$ = window.$RefreshSig$ || function () { return function (type) { return type; }; };
+      window.__vite_plugin_react_preamble_installed__ = true;
+
+      // Clean up any stale dev-sw.js CacheFirst caches that intercept Vite dev modules
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+          var devRegs = regs.filter(function (r) {
+            var url = (r.active && r.active.scriptURL) || (r.waiting && r.waiting.scriptURL) || (r.installing && r.installing.scriptURL) || '';
+            return url.indexOf('dev-sw.js') !== -1;
+          });
+          if (devRegs.length > 0) {
+            Promise.all(devRegs.map(function (r) { return r.unregister(); }))
+              .then(function () {
+                return 'caches' in window
+                  ? caches.keys().then(function (keys) { return Promise.all(keys.map(function (k) { return caches.delete(k); })); })
+                  : Promise.resolve();
+              })
+              .then(function () {
+                if (!sessionStorage.getItem('__tdy_dev_sw_cleared__')) {
+                  sessionStorage.setItem('__tdy_dev_sw_cleared__', '1');
+                  window.location.reload();
+                }
+              });
+          }
+        });
+      }
+
       // On page load or when changing themes, best to add inline in `head` to avoid FOUC
       if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
           document.documentElement.classList.add('dark');

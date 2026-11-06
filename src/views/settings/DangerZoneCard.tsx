@@ -19,8 +19,8 @@ const DangerZoneCard: React.FC = () => {
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const notesTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    useEffect(() => () => { 
-        if (timeoutRef.current) clearTimeout(timeoutRef.current); 
+    useEffect(() => () => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
         if (notesTimeoutRef.current) clearTimeout(notesTimeoutRef.current);
     }, []);
 
@@ -51,13 +51,14 @@ const DangerZoneCard: React.FC = () => {
                 <h2 className="font-bold text-red-600 dark:text-red-400 flex items-center gap-2">
                     <AlertTriangle size={20} /> {t('settings.dangerZone.title')}
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">{t('settings.dangerZone.description')}</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{t('settings.dangerZone.description')}</p>
             </div>
             <div className="p-4 md:p-6 flex flex-col gap-3 flex-1 justify-center">
                 <button
+                    type="button"
                     onClick={handleClearNotes}
-                    className={`w-full h-12 border rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2 ${isConfirmingNotes
-                        ? 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-500/30'
+                    className={`w-full h-12 border rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 ${isConfirmingNotes
+                        ? 'bg-amber-600 text-white border-amber-600 hover:bg-amber-700 shadow-sm'
                         : 'bg-amber-50 dark:bg-amber-900/10 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/20'
                         }`}
                 >
@@ -69,9 +70,10 @@ const DangerZoneCard: React.FC = () => {
                 </button>
 
                 <button
+                    type="button"
                     onClick={handleClick}
-                    className={`w-full h-12 border rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2 ${isConfirming
-                        ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 shadow-lg shadow-red-500/30 scale-105'
+                    className={`w-full h-12 border rounded-xl text-sm font-black transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 ${isConfirming
+                        ? 'bg-red-600 text-white border-red-600 hover:bg-red-700 shadow-sm'
                         : 'bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/20'
                         }`}
                 >

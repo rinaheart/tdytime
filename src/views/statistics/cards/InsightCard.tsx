@@ -1,6 +1,6 @@
 /**
- * InsightCard — Compact alert card showing a single insight metric.
- * Consistent with app's white-card design system.
+ * InsightCard — Flat metric cell designed for grouped analytical insight strips.
+ * Prioritizes >=12px secondary label readability and zero border clutter on mobile.
  */
 
 import React from 'react';
@@ -15,41 +15,39 @@ interface InsightCardProps {
 
 const InsightCard: React.FC<InsightCardProps> = ({ icon: Icon, title, value, isAlert = false }) => {
     return (
-        <div className={`bg-white dark:bg-slate-900 p-2 md:p-3 rounded-2xl border transition-all duration-300
-            ${isAlert
-                ? 'border-accent-400 dark:border-accent-500/60 ring-1 ring-accent-500/20 shadow-accent-500/10'
-                : 'border-slate-200 dark:border-slate-800/60'
-            } shadow-sm relative overflow-hidden group hover:shadow-md flex flex-col items-center justify-center text-center h-full min-w-[75px] md:min-w-[95px] space-y-1.5`}
+        <div
+            className={`p-3.5 md:p-4 flex items-center gap-3 min-w-0 transition-colors relative ${
+                isAlert
+                    ? 'bg-accent-50/50 dark:bg-slate-900'
+                    : 'bg-white dark:bg-slate-900'
+            }`}
         >
-            {/* Row 1: Icon */}
-            <div className={`w-6 h-6 md:w-8 md:h-8 rounded-xl flex items-center justify-center shrink-0
-                ${isAlert
-                    ? 'bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400'
-                    : 'bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400'
+            {/* Icon Badge */}
+            <div
+                className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
+                    isAlert
+                        ? 'bg-accent-100 dark:bg-accent-900/40 text-accent-700 dark:text-accent-400'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                 }`}
             >
-                <Icon className="w-3.5 h-3.5 md:w-4 md:h-4" strokeWidth={2.5} />
+                <Icon className="w-4 h-4" strokeWidth={2.25} />
             </div>
 
-            {/* Row 2: Title */}
-            <p className="text-[9px] md:text-[10px] font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider leading-tight w-full break-words">
-                {title}
-            </p>
-
-            {/* Row 3: Value */}
-            <p className={`text-[10px] md:text-xs font-black tracking-tight leading-tight w-full
-                ${isAlert
-                    ? 'text-accent-600 dark:text-accent-400'
-                    : 'text-slate-800 dark:text-slate-100'
-                }`}
-            >
-                {value}
-            </p>
-
-            {/* Subtle accent line */}
-            {isAlert && (
-                <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-accent-400 to-accent-600 opacity-60" />
-            )}
+            {/* Label & Value */}
+            <div className="min-w-0 flex-1">
+                <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 leading-snug truncate" title={title}>
+                    {title}
+                </p>
+                <p
+                    className={`text-sm font-black font-num tracking-tight leading-tight mt-0.5 truncate ${
+                        isAlert
+                            ? 'text-accent-700 dark:text-accent-400'
+                            : 'text-slate-800 dark:text-slate-100'
+                    }`}
+                >
+                    {value}
+                </p>
+            </div>
         </div>
     );
 };

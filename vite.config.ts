@@ -3,6 +3,12 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
+const isAIStudio = Boolean(
+    process.env.APPLET_ID ||
+    process.env.K_SERVICE ||
+    process.env.DISABLE_HMR === 'true'
+);
+
 export default defineConfig({
     optimizeDeps: {
         include: ['react', 'react-dom', '@react-pdf/renderer'],
@@ -17,7 +23,10 @@ export default defineConfig({
     server: {
         port: 3000,
         host: '0.0.0.0',
-        forwardConsole: true,
+        allowedHosts: true,
+        forwardConsole: false,
+        hmr: !isAIStudio,
+        watch: isAIStudio ? null : {},
     },
 
     preview: {
@@ -172,10 +181,63 @@ export default defineConfig({
             },
 
             devOptions: {
-                enabled: true,
+                enabled: false,
                 type: 'module',
             },
         }),
+        {
+            name: 'dev-sw-cleanup',
+            configureServer(server) {
+                server.middlewares.use((req, res, next) => {
+                    if (req.url && (req.url.startsWith('/dev-sw.js') || req.url.startsWith('/sw.js'))) {
+                        res.setHeader('Content-Type', 'application/javascript');
+                        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+                        res.end(`
+self.addEventListener('install', () => {
+    self.skipWaiting();
+});
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys()
+            .then((keys) => Promise.all(keys.map((k) => caches.delete(k))))
+            .then(() => self.registration.unregister())
+            .then(() => self.clients.matchAll({ type: 'window' }))
+            .then((clients) => {
+                clients.forEach((client) => {
+                    if ('navigate' in client) client.navigate(client.url);
+                });
+            })
+    );
+});
+`);
+                        return;
+                    }
+                    next();
+                });
+            },
+            transform(code, id) {
+                if (id.includes('vite/dist/client/client.mjs')) {
+                    let patched = code
+                        .replace('ws.send(JSON.stringify(data))', 'ws?.send(JSON.stringify(data))')
+                        .replace('if (!options.enabled) return;', 'return;');
+                    if (isAIStudio) {
+                        patched = patched
+                            .replace(
+                                'transport.connect(createHMRHandler(handleMessage));',
+                                '// HMR WebSocket disabled in AI Studio preview'
+                            )
+                            .replace(
+                                'else throw new SendBeforeConnectError("send was called before connect");',
+                                'else return;'
+                            );
+                    }
+                    return {
+                        code: patched,
+                        map: null,
+                    };
+                }
+            },
+        },
     ],
 
     build: {
@@ -228,7 +290,7 @@ export default defineConfig({
 
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, './src'),
+            '@': path.resolve(import.meta.dirname, './src'),
         },
     },
 

@@ -6,7 +6,7 @@
   <p>Phân tích và Quản lý Lịch giảng thông minh.</p>
 
   <div>
-    <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Frinaheart%2Ftdytime%2Fmain%2Fpackage.json&query=%24.version&label=Version&color=blue&style=flat-square" alt="Version">
+    <img src="https://img.shields.io/github/package-json/v/rinaheart/tdytime" alt="Version">
 	<img src="https://img.shields.io/badge/license-MIT-green.svg?style=flat-square" alt="License">
 	<img src="https://img.shields.io/badge/PWA-Ready-blue?style=flat-square&logo=pwa&logoColor=white" alt="PWA">
   </div>

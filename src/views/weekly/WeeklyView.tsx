@@ -15,7 +15,7 @@ const WeeklyView: React.FC = () => {
     const currentWeekIndex = useScheduleStore((s) => s.currentWeekIndex);
     const abbreviations = useScheduleStore((s) => s.abbreviations);
     const teacherName = useScheduleStore((s) => s.data?.metadata?.teacher || '');
-    
+
     const {
         filters, setFilters,
         isFilterOpen, toggleFilter,
@@ -25,11 +25,8 @@ const WeeklyView: React.FC = () => {
 
     const maxWeekIdx = useScheduleStore((s) => s.maxWeekIdx);
 
-    // Optimized Data Logic for Weekly View
-    // targetWeekIdx is currentWeekIndex + 1 (1-based)
-    // We cast filterFn to accept FlatSession since createSessionFilter is compatible with CourseSession base
     const { grouped, rawSessions, hasSessions, weekRange } = useWeeklyData(
-        currentWeekIndex + 1, 
+        currentWeekIndex + 1,
         filterFn as (s: FlatSession) => boolean
     );
 
@@ -40,13 +37,11 @@ const WeeklyView: React.FC = () => {
         return isCurrentWeek(weekRange, now);
     }, [weekRange, now]);
 
-    // Check if the week itself has any teaching sessions for this teacher (not filter dependent)
-    // This is used for the NO_SESSIONS vs EmptyState distinction
     const { total: totalUnfiltered } = useWeeklyData(currentWeekIndex + 1);
     const isWeekEmpty = totalUnfiltered === 0;
 
     if (currentWeekIndex === -1 && !hasSessions) {
-        return <div className="p-8 text-center text-slate-400">{t('weekly.noData')}</div>;
+        return <h1 className="p-8 text-center text-base font-bold text-slate-600 dark:text-slate-400">{t('weekly.noData')}</h1>;
     }
 
     return (
@@ -63,12 +58,12 @@ const WeeklyView: React.FC = () => {
 
             {isFilterOpen && (
                 <div className="mb-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                    <FilterBar 
-                        filters={filters} 
-                        onChange={setFilters} 
-                        uniqueRooms={uniqueData.rooms} 
-                        uniqueTeachers={uniqueData.teachers} 
-                        uniqueClasses={uniqueData.classes} 
+                    <FilterBar
+                        filters={filters}
+                        onChange={setFilters}
+                        uniqueRooms={uniqueData.rooms}
+                        uniqueTeachers={uniqueData.teachers}
+                        uniqueClasses={uniqueData.classes}
                     />
                 </div>
             )}
@@ -83,15 +78,15 @@ const WeeklyView: React.FC = () => {
             ) : (
                 <div className={`transition-all duration-300 ${viewMode === 'vertical' ? 'max-w-4xl mx-auto' : 'max-w-full'}`}>
                     {viewMode === 'horizontal' ? (
-                        <div className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isCurrent 
-                            ? 'border-accent-500 dark:border-accent-400 ring-2 ring-accent-500/20 shadow-lg shadow-accent-500/5' 
-                            : 'border-slate-200/60 dark:border-slate-800/60 shadow-sm'}`}>
-                            <WeekTableLayout 
+                        <div className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isCurrent
+                            ? 'border-accent-500 dark:border-accent-400 ring-2 ring-accent-500/20 shadow-sm'
+                            : 'border-slate-200/80 dark:border-slate-800/80 shadow-sm'}`}>
+                            <WeekTableLayout
                                 grouped={grouped}
                                 weekRange={weekRange}
-                                now={now} 
-                                abbreviations={abbreviations!} 
-                                showTeacher={!filters.teacher} 
+                                now={now}
+                                abbreviations={abbreviations!}
+                                showTeacher={!filters.teacher}
                                 isCurrent={isCurrent}
                                 fullBleed={true}
                             />
@@ -99,12 +94,12 @@ const WeeklyView: React.FC = () => {
                     ) : (
                         /* ─── VERTICAL CARD MODE (No Outer Border) ───────────────────────── */
                         <div className="w-full">
-                            <WeekCardLayout 
+                            <WeekCardLayout
                                 grouped={grouped}
                                 weekRange={weekRange}
-                                now={now} 
-                                abbreviations={abbreviations!} 
-                                showTeacher={!filters.teacher} 
+                                now={now}
+                                abbreviations={abbreviations!}
+                                showTeacher={!filters.teacher}
                                 isCurrent={isCurrent}
                             />
                         </div>

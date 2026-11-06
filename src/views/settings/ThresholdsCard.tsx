@@ -14,7 +14,7 @@ interface ThresholdsCardProps {
     onSuccess: (msg: string) => void;
 }
 
-const inputClass = 'w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none font-bold text-sm';
+const inputClass = 'w-full px-3 py-2 min-h-[40px] bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-accent-500 font-bold text-sm text-slate-800 dark:text-slate-100';
 
 const ThresholdsCard: React.FC<ThresholdsCardProps> = ({ onSuccess }) => {
     const { t } = useTranslation();
@@ -45,7 +45,7 @@ const ThresholdsCard: React.FC<ThresholdsCardProps> = ({ onSuccess }) => {
                 <h2 className="font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                     <BellRing size={20} className="text-amber-500" /> {t('settings.thresholds.title')}
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">{t('settings.thresholds.description')}</p>
+                <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">{t('settings.thresholds.description')}</p>
             </div>
 
             <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-8 flex-1">
@@ -56,11 +56,11 @@ const ThresholdsCard: React.FC<ThresholdsCardProps> = ({ onSuccess }) => {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label htmlFor="daily-warning" className="block text-[9px] text-slate-500 uppercase font-bold mb-1">{t('settings.thresholds.warning')}</label>
+                            <label htmlFor="daily-warning" className="block text-xs text-slate-600 dark:text-slate-400 uppercase font-bold mb-1">{t('settings.thresholds.warning')}</label>
                             <input id="daily-warning" type="number" value={temp.daily.warning} onChange={(e) => setTemp({ ...temp, daily: { ...temp.daily, warning: Number(e.target.value) } })} className={inputClass} />
                         </div>
                         <div>
-                            <label htmlFor="daily-danger" className="block text-[9px] text-slate-500 uppercase font-bold mb-1">{t('settings.thresholds.danger')}</label>
+                            <label htmlFor="daily-danger" className="block text-xs text-slate-600 dark:text-slate-400 uppercase font-bold mb-1">{t('settings.thresholds.danger')}</label>
                             <input id="daily-danger" type="number" value={temp.daily.danger} onChange={(e) => setTemp({ ...temp, daily: { ...temp.daily, danger: Number(e.target.value) } })} className={inputClass} />
                         </div>
                     </div>
@@ -72,11 +72,11 @@ const ThresholdsCard: React.FC<ThresholdsCardProps> = ({ onSuccess }) => {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label htmlFor="weekly-warning" className="block text-[9px] text-slate-500 uppercase font-bold mb-1">{t('settings.thresholds.warning')}</label>
+                            <label htmlFor="weekly-warning" className="block text-xs text-slate-600 dark:text-slate-400 uppercase font-bold mb-1">{t('settings.thresholds.warning')}</label>
                             <input id="weekly-warning" type="number" value={temp.weekly.warning} onChange={(e) => setTemp({ ...temp, weekly: { ...temp.weekly, warning: Number(e.target.value) } })} className={inputClass} />
                         </div>
                         <div>
-                            <label htmlFor="weekly-danger" className="block text-[9px] text-slate-500 uppercase font-bold mb-1">{t('settings.thresholds.danger')}</label>
+                            <label htmlFor="weekly-danger" className="block text-xs text-slate-600 dark:text-slate-400 uppercase font-bold mb-1">{t('settings.thresholds.danger')}</label>
                             <input id="weekly-danger" type="number" value={temp.weekly.danger} onChange={(e) => setTemp({ ...temp, weekly: { ...temp.weekly, danger: Number(e.target.value) } })} className={inputClass} />
                         </div>
                     </div>
@@ -84,10 +84,10 @@ const ThresholdsCard: React.FC<ThresholdsCardProps> = ({ onSuccess }) => {
             </div>
 
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 flex justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
-                <button onClick={handleReset} className="px-4 py-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 text-xs font-bold rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition-colors flex items-center gap-2">
+                <button type="button" onClick={handleReset} className="px-4 min-h-[40px] py-2 text-slate-600 dark:text-slate-300 hover:text-slate-800 dark:hover:text-slate-100 text-xs font-bold rounded-xl border border-transparent hover:border-slate-200 dark:hover:border-slate-700 transition-colors flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
                     <RefreshCw size={14} /> {t('settings.abbreviations.reset')}
                 </button>
-                <button onClick={handleSave} className="px-6 py-2 bg-slate-900 dark:bg-white dark:text-slate-900 text-white text-xs font-bold rounded-xl shadow hover:shadow-lg active:scale-95 transition-all flex items-center gap-2">
+                <button type="button" onClick={handleSave} className="px-6 min-h-[40px] py-2 bg-slate-900 dark:bg-white dark:text-slate-900 text-white text-xs font-bold rounded-xl shadow-sm active:scale-95 transition-all flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
                     <Save size={14} /> {t('settings.thresholds.save')}
                 </button>
             </div>

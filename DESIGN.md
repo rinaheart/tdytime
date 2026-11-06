@@ -69,11 +69,13 @@ TdyTime v2 sử dụng hệ màu **Ngữ nghĩa thích ứng**, tự động đi
 ## 📐 Khoảng cách & Bo góc (Spacing & Radii)
 
 - **Base Unit**: `4px` (Tailwind standard)
-- **Border Radius**:
-  - `sm`: 8px (Buttons nhỏ)
-  - `md`: 12px (Cards trung bình)
-  - `lg`: 16px (Main cards)
-  - `xl`: 24px (Modals/Overlays)
+- **Border Radius (Đồng bộ theo chuẩn TdyTripZ — Compact Flat Architecture)**:
+  - `sm` (`--radius-sm`): `6px` (Buttons nhỏ, badges, tags)
+  - `md` (`--radius-md`): `8px` (Inputs, segmented buttons, thành phần nội bộ)
+  - `lg` (`--radius-lg`): `8px` (Sub-cards, khối tương tác)
+  - `xl` (`--radius-xl`): `8px` (Buttons chính, khối điều hướng)
+  - `2xl` (`--radius-2xl`): `10px` (Main cards — độ bo cong chuẩn cho toàn bộ Card chính)
+  - `3xl` (`--radius-3xl`): `12px` (Modals / Bottom Sheets / Overlays)
 - **Shadows**:
   - Sử dụng shadow nhẹ để tạo chiều sâu mà không gây rối (Soft elevation).
 

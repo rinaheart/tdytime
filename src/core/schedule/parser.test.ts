@@ -28,7 +28,7 @@ describe('parseScheduleHTML — scenario-1-base.html (single week, mixed LT/TH)'
         const data = parseScheduleHTML(html)!;
         expect(data.weeks).toHaveLength(1);
         expect(data.weeks[0].weekNumber).toBe(1);
-        expect(data.weeks[0].dateRange).toBe('23/03/2026 - 29/03/2026');
+        expect(data.weeks[0].dateRange).toBe('02/11/2026 - 08/11/2026');
     });
 
     it('parses two morning sessions on Monday (LT + TH in the same cell)', () => {
@@ -123,8 +123,8 @@ describe('parseScheduleHTML — scenario-2-empty.html (empty week + populated we
     it('parses both weeks even when the first week has no sessions', () => {
         const data = parseScheduleHTML(html)!;
         expect(data.weeks).toHaveLength(2);
-        expect(data.weeks[0].dateRange).toBe('23/03/2026 - 29/03/2026');
-        expect(data.weeks[1].dateRange).toBe('30/03/2026 - 05/04/2026');
+        expect(data.weeks[0].dateRange).toBe('02/11/2026 - 08/11/2026');
+        expect(data.weeks[1].dateRange).toBe('09/11/2026 - 15/11/2026');
     });
 
     it('week 1 has zero sessions across all days and shifts', () => {

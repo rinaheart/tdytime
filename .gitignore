@@ -1,1 +1,102 @@
-node_modules
+# ============================================================================
+# 1. Dependencies & Package Manager Caches
+# ============================================================================
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+bun.lock
+bun.lockb
+
+# ============================================================================
+# 2. Build, Bundler & Deployment Outputs
+# ============================================================================
+dist/
+dist-ssr/
+dev-dist/
+build/
+.vite/
+.vercel/
+*.tsbuildinfo
+
+# ============================================================================
+# 3. Environment Variables & Secrets
+# ============================================================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*
+!.env.example
+
+# ============================================================================
+# 4. Logs & Temporary Files
+# ============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+tmp/
+temp/
+*.tmp
+*.bak
+
+# ============================================================================
+# 5. Test Coverage, Playwright, Lighthouse & QA Audit Artifacts
+# ============================================================================
+coverage/
+.nyc_output/
+.vitest/
+.lighthouseci/
+playwright-report/
+test-results/
+.playwright-cli/
+
+# Keep actual unit/integration test suites (*.test.ts, *.test.tsx, tests/mocks/)
+# Ignore generated audit reports, screenshots, mockups, and one-off audit runners
+tests/**/screenshots/
+tests/**/mockups/
+tests/**/*-report.json
+tests/**/bundle-stats.json
+tests/production-readiness/
+tests/release-validation/execute-validation.mjs
+tests/ui-audit/StatsDesignShowcase.tsx
+
+# ============================================================================
+# 6. AI Studio, Agent Session Logs & Patch/Bundle Dumps
+# ============================================================================
+.aistudio/
+.claude/
+.cursor/
+.gemini/
+docs/audits/
+docs/knowns/
+*.bundle
+*.patch
+
+# ============================================================================
+# 7. User Data & Local Backup Exports
+# ============================================================================
+tdytime-backup-*.json
+
+# ============================================================================
+# 8. Editor, IDE & OS Metadata
+# ============================================================================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini

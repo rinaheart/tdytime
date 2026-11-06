@@ -302,6 +302,19 @@
             "classDetail": "Course Section",
             "total": "Periods"
         },
+        "groupProgress": {
+            "title": "Progress by Group/Class",
+            "course": "Course",
+            "classGroup": "Class / Group",
+            "progress": "Progress",
+            "hours": "Done / Total",
+            "completedGroups": "{{done}}/{{total}} groups completed"
+        },
+        "tabs": {
+            "overview": "Overview",
+            "trends": "Trends",
+            "details": "Classes & Rooms"
+        },
         "conclusions": "Insights & Optimization Suggestions",
         "intensity": "Intensity",
         "eveningTeaching": "Evening",
@@ -349,6 +362,30 @@
             "warning": "Warning",
             "danger": "Danger",
             "save": "Save"
+        },
+        "backup": {
+            "title": "Backup & Restore Data",
+            "description": "Export all your active schedule, history, notes, and custom abbreviations to a safe JSON file.",
+            "exportBtn": "Backup All Data (Download .json)",
+            "restoreBtn": "Restore Data (Choose .json file)",
+            "lastBackup": "Last backup: {{date}}",
+            "noBackupYet": "No backup has been created on this browser yet",
+            "guidance": "Recommended to store this file on Google Drive, USB, or email before clearing site data or changing devices.",
+            "confirmRestoreTitle": "Confirm Data Restore",
+            "confirmRestoreDesc": "This will overwrite your current schedule, history, and notes with the contents of the backup file.",
+            "summaryTitle": "Summary of data in backup file:",
+            "activeSchedule": "Active Schedule: {{teacher}} (Semester {{semester}} - {{year}})",
+            "noActiveSchedule": "No active schedule",
+            "historyCount": "Timetable history items: {{count}}",
+            "notesCount": "Session notes: {{count}}",
+            "abbreviationsCount": "Custom abbreviations: {{count}}",
+            "exportedAt": "Backup created: {{date}}",
+            "confirmBtn": "Confirm & Restore",
+            "cancelBtn": "Cancel",
+            "exportSuccess": "Backup file downloaded successfully!",
+            "restoreSuccess": "Data restored successfully!",
+            "restoreError": "Restore failed: {{error}}",
+            "invalidFile": "Invalid backup file or corrupted format."
         },
         "export": {
             "title": "Export Data",
@@ -410,6 +447,17 @@
         "updateAvailable": "Update to v1.0.1 Now",
         "changelog": "Changelog",
         "history": [
+            {
+                "version": "v2026.11.05",
+                "date": "2026-11-05",
+                "changes": [
+                    "Segmented Focus: Redesigned Statistics into 3 focus tabs (Overview, Trends, Details) with lazy mounting, reducing DOM nodes by 55%.",
+                    "Group Progress: Added GroupProgressCard with collapsible table, consistent heading style, and soft accent subtitle.",
+                    "TdyTripZ Radii: Standardized border-radius tokens based on TdyTripZ design system (card 10px, modal 12px, badge 6-8px).",
+                    "Heatmap Horizontal Scroll: Added mobile-visible scrollbar and left-alignment preventing week clipping on small viewports.",
+                    "Performance & Security: O(N) single-pass schedule progress algorithm, WCAG 2.2 AA compliance, and zero runtime security vulnerabilities."
+                ]
+            },
             {
                 "version": "v2026.09.15",
                 "date": "2026-09-15",
@@ -814,7 +862,8 @@
         "confirmDelete": "Delete this note?",
         "charCount": "{{count}} characters",
         "clear": "Clear Note",
-        "noNotes": "No notes yet."
+        "noNotes": "No notes yet.",
+        "draftRestored": "Unsaved draft restored"
     },
     "report": {
         "university": "Hue University of Medicine and Pharmacy",

@@ -19,7 +19,6 @@ import { formatSemester } from '@/core/schedule';
 import ThemePicker from '@/ui/composites/ThemePicker';
 import { changeLanguage } from '@/i18n/config';
 
-
 // Navigation items for both Desktop Sidebar and Mobile BottomNav
 const NAV_ITEMS = [
     { path: '/today', icon: Zap, labelKey: 'nav.today' },
@@ -71,13 +70,13 @@ const AppLayout: React.FC = () => {
         const absDiff = Math.abs(diff);
         const mins = Math.round(absDiff / 60000);
         if (mins < 1) return null;
-        
+
         const sign = diff >= 0 ? '+' : '-';
         if (mins < 60) return `${sign}${mins}m`;
-        
+
         const hrs = Math.floor(mins / 60);
         if (hrs < 24) return `${sign}${hrs}h`;
-        
+
         const days = Math.floor(hrs / 24);
         return `${sign}${days}d`;
     }, []);
@@ -137,7 +136,7 @@ const AppLayout: React.FC = () => {
             const currentMs = mockState.startTimeMock + elapsed * mockState.multiplier;
             const date = new Date(currentMs);
             const fm = formatMockTime(date);
-            
+
             setMockDisplayDate(fm.dateStr);
             setMockDisplayTimeOnly(fm.timeStr);
             setMockOffset(calculateOffset(currentMs, now));
@@ -210,13 +209,17 @@ const AppLayout: React.FC = () => {
                     {/* LEFT: Branding & Config */}
                     <div className="flex items-center gap-3 flex-shrink-0 w-1/4">
                         <span className="flex items-center gap-1.5 animate-pulse opacity-80">
-                            <span className="w-1.5 h-1.5 rounded-none bg-amber-950"></span> 
+                            <span className="w-1.5 h-1.5 rounded-none bg-amber-950"></span>
                             <span className="hidden xl:inline text-[9px] tracking-[0.2em] font-black uppercase">MOCK</span>
                         </span>
-                        
-                        <button onClick={() => navigate('/dev')}
-                                title="Mở DevTools"
-                                className="px-2.5 py-1 bg-amber-950 hover:bg-black text-amber-500 text-[10px] font-black tracking-widest transition-none cursor-pointer flex items-center gap-1.5 rounded-none">
+
+                        <button
+                            type="button"
+                            onClick={() => navigate('/dev')}
+                            aria-label="Mở DevTools"
+                            title="Mở DevTools"
+                            className="px-2.5 py-1 bg-amber-950 hover:bg-black text-amber-400 text-[10px] font-black tracking-widest transition-none cursor-pointer flex items-center gap-1.5 rounded-none"
+                        >
                             <Wrench size={10} strokeWidth={3} />
                             <span className="hidden md:inline uppercase">DEVTOOLS</span>
                         </button>
@@ -227,33 +230,57 @@ const AppLayout: React.FC = () => {
                         {/* Clickable Time Group */}
                         <div className="flex items-center gap-1.5 bg-amber-950/10 p-1 relative rounded-none flex-shrink-0">
                             {/* Date Region */}
-                            <div className="flex items-center gap-2 cursor-pointer bg-amber-950 hover:bg-black text-amber-500 transition-none px-4 py-1.5 group h-full"
-                                 onClick={() => mockDateRef.current?.showPicker()}
-                                 title="Click để đổi ngày">
+                            <button
+                                type="button"
+                                className="flex items-center gap-2 cursor-pointer bg-amber-950 hover:bg-black text-amber-400 transition-none px-4 py-1.5 group h-full"
+                                onClick={() => mockDateRef.current?.showPicker()}
+                                aria-label={`Đổi ngày mô phỏng: ${mockDisplayDate}`}
+                                title="Click để đổi ngày"
+                            >
                                 <Calendar size={16} strokeWidth={3} className="opacity-80 hidden sm:block" />
                                 <span className="font-mono font-black text-base tracking-tight">
                                     {mockDisplayDate}
                                 </span>
-                            </div>
+                            </button>
 
                             {/* Time Region */}
-                            <div className="flex items-center gap-2 cursor-pointer bg-amber-950 hover:bg-black text-amber-400 transition-none px-4 py-1.5 group h-full"
-                                 onClick={() => mockTimeRef.current?.showPicker()}
-                                 title="Click để đổi giờ">
+                            <button
+                                type="button"
+                                className="flex items-center gap-2 cursor-pointer bg-amber-950 hover:bg-black text-amber-400 transition-none px-4 py-1.5 group h-full"
+                                onClick={() => mockTimeRef.current?.showPicker()}
+                                aria-label={`Đổi giờ mô phỏng: ${mockDisplayTimeOnly}`}
+                                title="Click để đổi giờ"
+                            >
                                 <Clock size={16} strokeWidth={3} className="opacity-80 hidden sm:block" />
                                 <span className="font-mono font-black text-base tracking-tight">
                                     {mockDisplayTimeOnly}
                                 </span>
-                            </div>
+                            </button>
 
                             {/* Hidden native pickers */}
-                            <input ref={mockDateRef} type="date" className="absolute opacity-0 pointer-events-none w-0 h-0" onChange={handleDateChange} />
-                            <input ref={mockTimeRef} type="time" className="absolute opacity-0 pointer-events-none w-0 h-0" onChange={handleTimeChange} />
+                            <input
+                                ref={mockDateRef}
+                                type="date"
+                                aria-label="Chọn ngày mô phỏng"
+                                tabIndex={-1}
+                                aria-hidden="true"
+                                className="absolute opacity-0 pointer-events-none w-0 h-0"
+                                onChange={handleDateChange}
+                            />
+                            <input
+                                ref={mockTimeRef}
+                                type="time"
+                                aria-label="Chọn giờ mô phỏng"
+                                tabIndex={-1}
+                                aria-hidden="true"
+                                className="absolute opacity-0 pointer-events-none w-0 h-0"
+                                onChange={handleTimeChange}
+                            />
                         </div>
 
                         {/* Offset badge */}
                         {mockOffset && (
-                            <span className="text-[10px] text-amber-950/50 font-mono tracking-tighter bg-amber-950/5 px-2 py-2 flex-shrink-0 hidden lg:inline border-x border-amber-950/5">
+                            <span className="text-[10px] text-amber-950/70 font-mono tracking-tighter bg-amber-950/5 px-2 py-2 flex-shrink-0 hidden lg:inline border-x border-amber-950/5">
                                 {mockOffset}
                             </span>
                         )}
@@ -267,14 +294,16 @@ const AppLayout: React.FC = () => {
                                 { l: '10m', v: 600 },
                                 { l: '30m', v: 1800 }
                             ].map(sp => (
-                                <button 
+                                <button
                                     key={sp.l}
+                                    type="button"
                                     onClick={() => useScheduleStore.getState().setMockState({ ...mockState, multiplier: sp.v })}
                                     className={`px-2.5 py-1.5 h-full cursor-pointer text-[10px] font-black tracking-widest transition-none ${
-                                        mockState.multiplier === sp.v 
-                                        ? 'bg-amber-950 text-amber-400 z-10 scale-y-110' 
-                                        : 'bg-amber-950/5 hover:bg-amber-950/20 text-amber-950/70 border border-transparent'
+                                        mockState.multiplier === sp.v
+                                            ? 'bg-amber-950 text-amber-400 z-10 scale-y-110'
+                                            : 'bg-amber-950/5 hover:bg-amber-950/20 text-amber-950/80 border border-transparent'
                                     }`}
+                                    aria-label={`Tốc độ mô phỏng ${sp.l}`}
                                     title={`Tốc độ: ${sp.l} mỗi giây thực`}
                                 >
                                     {sp.l}
@@ -285,15 +314,23 @@ const AppLayout: React.FC = () => {
 
                     {/* RIGHT: Lifecycle Actions */}
                     <div className="flex items-center justify-end flex-shrink-0 w-1/4">
-                        <button onClick={handleResetMockTime}
-                                title="Về giờ hệ thống"
-                                className="px-3 py-2 bg-amber-950/5 hover:bg-amber-950/10 text-amber-950/80 text-[10px] font-bold tracking-widest transition-none cursor-pointer flex items-center gap-1.5 border-l border-amber-950/10">
+                        <button
+                            type="button"
+                            onClick={handleResetMockTime}
+                            aria-label="Về giờ hệ thống"
+                            title="Về giờ hệ thống"
+                            className="px-3 py-2 bg-amber-950/5 hover:bg-amber-950/10 text-amber-950/90 text-[10px] font-bold tracking-widest transition-none cursor-pointer flex items-center gap-1.5 border-l border-amber-950/10"
+                        >
                             <span className="hidden sm:inline">RESET</span>
                             <span className="sm:hidden">↻</span>
                         </button>
-                        <button onClick={toggleMockEnabled} 
-                                title="Tạm tắt mô phỏng"
-                                className="px-3 py-2 bg-amber-950 hover:bg-black text-amber-400 text-[10px] font-black tracking-widest transition-none cursor-pointer border-l border-amber-400/20">
+                        <button
+                            type="button"
+                            onClick={toggleMockEnabled}
+                            aria-label="Tạm tắt mô phỏng"
+                            title="Tạm tắt mô phỏng"
+                            className="px-3 py-2 bg-amber-950 hover:bg-black text-amber-400 text-[10px] font-black tracking-widest transition-none cursor-pointer border-l border-amber-400/20"
+                        >
                             <span className="sm:hidden">×</span>
                             <span className="hidden sm:inline">HIDE</span>
                         </button>
@@ -307,18 +344,21 @@ const AppLayout: React.FC = () => {
                     {/* Left: Menu toggle + Teacher name */}
                     <div className="flex items-center gap-2">
                         <button
+                            type="button"
                             onClick={toggleSidebar}
-                            className="hidden lg:flex w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
-                            aria-label="Toggle sidebar"
+                            className="hidden lg:flex w-11 h-11 md:w-9 md:h-9 items-center justify-center rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            aria-label={sidebarCollapsed ? t('nav.expandSidebar', { defaultValue: 'Mở rộng thanh bên' }) : t('nav.collapseSidebar', { defaultValue: 'Thu gọn thanh bên' })}
+                            aria-expanded={!sidebarCollapsed}
                             title={sidebarCollapsed ? t('nav.expandSidebar', { defaultValue: 'Mở rộng' }) : t('nav.collapseSidebar', { defaultValue: 'Thu gọn' })}
                         >
                             <Menu size={20} />
                         </button>
-                        <div className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate max-w-[200px] md:max-w-none">
-                            {metadata?.teacher || 'TdyTime'}
+                        <div className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate max-w-[200px] md:max-w-none">
+                            <span className="md:hidden">TdyTime</span>
+                            <span className="hidden md:inline">{metadata?.teacher || 'TdyTime'}</span>
                         </div>
                         {metadata && (
-                            <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-500">
+                            <span className="hidden md:inline text-xs text-slate-500 dark:text-slate-400">
                                 {formatSemester(metadata.semester)} • {metadata.academicYear}
                             </span>
                         )}
@@ -327,8 +367,9 @@ const AppLayout: React.FC = () => {
                     {/* Right: Actions — Globe → ThemePicker → DarkMode → Upload */}
                     <div className="flex items-center gap-1">
                         <button
+                            type="button"
                             onClick={toggleLanguage}
-                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400 transition-colors"
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-600 dark:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
                             aria-label={t('common.switchLanguage')}
                             title={i18n.language === 'vi' ? 'English' : 'Tiếng Việt'}
                         >
@@ -336,16 +377,18 @@ const AppLayout: React.FC = () => {
                         </button>
                         <ThemePicker />
                         <button
+                            type="button"
                             onClick={toggleDarkMode}
-                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400 transition-colors"
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-600 dark:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
                             aria-label={darkMode ? t('common.lightMode', 'Sáng') : t('common.darkMode', 'Tối')}
                             title={darkMode ? t('common.lightMode', 'Chế độ sáng') : t('common.darkMode', 'Chế độ tối')}
                         >
                             {darkMode ? <Sun size={18} /> : <Moon size={18} />}
                         </button>
                         <button
+                            type="button"
                             onClick={handleReset}
-                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-500 dark:text-slate-400"
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-600 dark:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
                             aria-label={t('nav.loadData')}
                             title={t('nav.loadData')}
                         >
@@ -359,19 +402,23 @@ const AppLayout: React.FC = () => {
             <div className={`flex h-[calc(100dvh-48px)] md:h-[calc(100dvh-56px)] print:h-auto ${mockState && isMockEnabled ? 'pt-[88px] md:pt-[96px]' : 'pt-12 md:pt-14'} print:pt-0 relative transition-all duration-150`}>
                 {/* Sidebar (desktop only) */}
                 <aside
+                    aria-label="Thanh điều hướng bên"
                     className={`hidden lg:flex flex-col fixed ${mockState && isMockEnabled ? 'top-[88px] md:top-[96px]' : 'top-12 md:top-14'} bottom-0 left-0 z-30 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-all duration-150 ${sidebarCollapsed ? 'w-20' : 'w-48'
                         } print:hidden`}
                 >
-                    <nav className="flex-1 py-4 space-y-1 px-3 overflow-y-auto">
+                    <nav aria-label="Điều hướng chính" className="flex-1 py-4 space-y-1 px-3 overflow-y-auto">
                         {NAV_ITEMS.map(({ path, icon: Icon, labelKey }) => {
                             const isActive = location.pathname === path;
                             return (
                                 <button
                                     key={path}
+                                    type="button"
                                     onClick={() => navigate(path)}
+                                    aria-label={t(labelKey)}
+                                    aria-current={isActive ? 'page' : undefined}
                                     title={sidebarCollapsed ? t(labelKey) : undefined}
-                                    className={`w-full flex items-center gap-0 px-2 py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all ${isActive
-                                        ? 'bg-accent-50 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400'
+                                    className={`w-full flex items-center gap-0 px-2 py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${isActive
+                                        ? 'bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 font-bold'
                                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                                         }`}
                                 >
@@ -387,7 +434,7 @@ const AppLayout: React.FC = () => {
                     {/* Version */}
                     <div className="mt-auto pl-5 pb-6 transition-all duration-300">
                         <div className="w-10 flex items-center justify-center shrink-0">
-                            <span className="text-[9px] text-slate-500 dark:text-slate-600 uppercase font-black tracking-widest select-none">
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase font-black tracking-widest select-none">
                                 v{APP_VERSION}
                             </span>
                         </div>
@@ -400,7 +447,7 @@ const AppLayout: React.FC = () => {
                         } print:pl-0`}
                 >
                     <div className="h-full print:h-auto print:overflow-visible overflow-y-auto custom-scrollbar">
-                        <div className="max-w-7xl mx-auto p-3 md:p-8">
+                        <div className="max-w-7xl mx-auto p-3 md:p-8 pb-20 lg:pb-8">
                             <Outlet />
                         </div>
                     </div>
@@ -408,21 +455,23 @@ const AppLayout: React.FC = () => {
             </div>
 
             {/* Bottom Nav (mobile only) — San bằng 5 Tabs phẳng */}
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.04)] print:hidden">
+            <nav aria-label="Điều hướng di động" className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 pb-safe shadow-[0_-4px_12px_rgba(0,0,0,0.04)] print:hidden">
                 <div className="flex items-center h-16">
                     {NAV_ITEMS.map(({ path, icon: Icon, labelKey }) => {
                         const isActive = location.pathname === path;
                         return (
                             <button
                                 key={path}
+                                type="button"
                                 onClick={() => navigate(path)}
-                                className={`flex-1 flex flex-col items-center justify-center h-full pb-1 cursor-pointer transition-none ${isActive ? 'text-accent-600 dark:text-accent-400' : 'text-slate-500 dark:text-slate-400'}`}
                                 aria-label={t(labelKey)}
+                                aria-current={isActive ? 'page' : undefined}
+                                className={`flex-1 flex flex-col items-center justify-center h-full pb-1 cursor-pointer transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500 ${isActive ? 'text-accent-600 dark:text-accent-400' : 'text-slate-600 dark:text-slate-400'}`}
                             >
-                                <div className="">
-                                    <Icon size={24} className={isActive ? 'opacity-100' : 'opacity-[0.65]'} strokeWidth={isActive ? 2.5 : 2} />
+                                <div>
+                                    <Icon size={22} className={isActive ? 'opacity-100' : 'opacity-75'} strokeWidth={isActive ? 2.5 : 2} />
                                 </div>
-                                <span className={`text-[10px] mt-0.5 truncate w-full text-center px-1 tracking-tight ${isActive ? 'font-bold' : 'font-medium'}`}>
+                                <span className={`text-[11px] mt-0.5 truncate w-full text-center px-1 tracking-tight ${isActive ? 'font-bold' : 'font-medium'}`}>
                                     {t(labelKey)}
                                 </span>
                             </button>
