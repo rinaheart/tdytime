@@ -61,6 +61,7 @@ function tdyTimePwaPlugin(): Plugin {
             // via Cache-First in sw.js, making initial PWA install 3x faster.
             const TIER_C_ON_DEMAND_PREFIXES = [
                 'vendor-pdf-',
+                'react-pdf.browser-',
                 'ScheduleReport-',
                 'Roboto-',
                 'DevToolsView-',
@@ -188,21 +189,21 @@ self.addEventListener('activate', (event) => {
         reportCompressedSize: false,
         rollupOptions: {
             output: {
-                manualChunks(id) {
+                manualChunks(rawId) {
+                    const id = rawId.replace(/\\/g, '/');
                     if (id.includes('node_modules')) {
-                        // React core + JSX runtime
+                        // React core + JSX runtime (strictly root node_modules to avoid nested @react-pdf/reconciler/node_modules/scheduler or zustand/esm/react)
                         if (
-                            id.includes('/react/') ||
-                            id.includes('/react-dom/') ||
-                            id.includes('/scheduler/') ||
-                            id.includes('react/jsx-runtime')
+                            id.includes('/node_modules/react/') ||
+                            id.includes('/node_modules/react-dom/') ||
+                            id.includes('/node_modules/scheduler/')
                         ) {
                             return 'vendor-react';
                         }
-                        // PDF Renderer — Heavy engine isolated into lazy-only chunk
-                        if (id.includes('@react-pdf') || id.includes('pdfkit') || id.includes('fontkit') || id.includes('restructure')) {
-                            return 'vendor-pdf';
-                        }
+                        // Note: Do NOT manually group @react-pdf into a manualChunk here.
+                        // Because @react-pdf/renderer is exclusively imported via dynamic import(),
+                        // Rolldown automatically splits it into an isolated async chunk (react-pdf.browser-*.js)
+                        // without ever hoisting static CJS wrappers (require_jsx_runtime) into it under NODE_ENV=production.
                         // i18n — separate chunk
                         if (id.includes('i18next') || id.includes('react-i18next')) {
                             return 'vendor-i18n';
