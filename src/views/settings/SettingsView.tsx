@@ -19,10 +19,25 @@ const SettingsView: React.FC = () => {
     const { t } = useTranslation();
     const [toast, setToast] = useState<{ message: string; isError?: boolean } | null>(null);
     const [showAdvanced, setShowAdvanced] = useState(false);
+    const [isOnline, setIsOnline] = useState<boolean>(() =>
+        typeof navigator !== 'undefined' ? navigator.onLine : true
+    );
     const isStandalone = typeof window !== 'undefined' && (
         window.matchMedia('(display-mode: standalone)').matches ||
         (window.navigator as unknown as { standalone?: boolean }).standalone === true
     );
+
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
 
     useEffect(() => {
         if (toast) {
@@ -78,8 +93,13 @@ const SettingsView: React.FC = () => {
             <div className="flex flex-wrap justify-center gap-2.5 -mt-4">
                 <button
                     type="button"
+                    aria-disabled={!isOnline}
                     onClick={() => (window as unknown as { checkPWAUpdate?: () => void }).checkPWAUpdate?.()}
-                    className="flex items-center gap-1.5 px-3.5 min-h-[36px] py-1.5 bg-accent-50 dark:bg-accent-900/10 text-accent-700 dark:text-accent-400 rounded-xl text-xs font-bold hover:bg-accent-100 dark:hover:bg-accent-900/20 active:scale-95 transition-all border border-accent-100/50 dark:border-accent-900/20 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                    className={`flex items-center gap-1.5 px-3.5 min-h-[36px] py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
+                        isOnline
+                            ? 'bg-accent-50 dark:bg-accent-900/10 text-accent-700 dark:text-accent-400 hover:bg-accent-100 dark:hover:bg-accent-900/20 active:scale-95 border-accent-100/50 dark:border-accent-900/20'
+                            : 'opacity-50 bg-slate-100 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 border-slate-200/60 dark:border-slate-700/60'
+                    }`}
                 >
                     <RefreshCw size={12} strokeWidth={2.5} />
                     {t('pwa.update_check')}

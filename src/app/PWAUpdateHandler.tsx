@@ -21,7 +21,7 @@ interface BeforeInstallPromptEvent extends Event {
     userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
-type CheckStatus = 'idle' | 'checking' | 'up-to-date' | 'error';
+type CheckStatus = 'idle' | 'checking' | 'up-to-date' | 'offline' | 'error';
 
 export const PWAUpdateHandler: React.FC = () => {
     const { t } = useTranslation();
@@ -32,9 +32,6 @@ export const PWAUpdateHandler: React.FC = () => {
     const [showInstallGuide, setShowInstallGuide] = useState(false);
     const [offlineReady, setOfflineReady] = useState(false);
     const [needUpdate, setNeedUpdate] = useState(false);
-    const [isOnline, setIsOnline] = useState<boolean>(
-        typeof navigator !== 'undefined' ? navigator.onLine : true
-    );
     const [isInstalled, setIsInstalled] = useState<boolean>(() => {
         if (typeof window === 'undefined') return false;
         return (
@@ -79,19 +76,6 @@ export const PWAUpdateHandler: React.FC = () => {
         const timeouts = timeoutIds.current;
         return () => {
             timeouts.forEach((id) => window.clearTimeout(id));
-        };
-    }, []);
-
-    // Online / Offline connectivity listener
-    useEffect(() => {
-        const handleOnline = () => setIsOnline(true);
-        const handleOffline = () => setIsOnline(false);
-
-        window.addEventListener('online', handleOnline);
-        window.addEventListener('offline', handleOffline);
-        return () => {
-            window.removeEventListener('online', handleOnline);
-            window.removeEventListener('offline', handleOffline);
         };
     }, []);
 
@@ -294,6 +278,20 @@ export const PWAUpdateHandler: React.FC = () => {
         const checkFn = async () => {
             if (checkStatusRef.current === 'checking') return;
 
+            // If device is offline, re-hydrate local stores and immediately show Offline-First notice
+            if (typeof navigator !== 'undefined' && !navigator.onLine) {
+                try {
+                    await useScheduleStore.getState().initFromStorage();
+                    await Promise.resolve(useExamStore.persist?.rehydrate?.());
+                    await Promise.resolve(useNotesStore.persist?.rehydrate?.());
+                } catch {
+                    // Ignore local storage errors
+                }
+                setCheckStatus('offline');
+                addTimeout(() => setCheckStatus('idle'), 3500);
+                return;
+            }
+
             setCheckStatus('checking');
 
             try {
@@ -372,18 +370,6 @@ export const PWAUpdateHandler: React.FC = () => {
 
     return (
         <>
-            {/* Offline Mode Indicator Banner (Bottom Left) */}
-            {!isOnline && (
-                <div
-                    role="status"
-                    aria-live="polite"
-                    className="fixed bottom-20 lg:bottom-4 left-4 z-[95] flex items-center gap-2 rounded-xl bg-amber-500/95 dark:bg-amber-600/95 px-3.5 py-2 text-xs font-bold text-white shadow-lg backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-200"
-                >
-                    <WifiOff size={14} className="shrink-0" />
-                    <span>{t('pwa.offline_mode')}</span>
-                </div>
-            )}
-
             {/* Install Prompt Banner (Bottom Left/Center) */}
             {installPrompt && !isDismissed && !isInstalled && (
                 <div className="fixed bottom-24 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-sm z-[100] animate-in slide-in-from-bottom-10 fade-in duration-300">
@@ -497,13 +483,35 @@ export const PWAUpdateHandler: React.FC = () => {
 
             {/* Global Check for Update Toast */}
             {checkStatus !== 'idle' && (
-                <div role="status" aria-live="polite" className="fixed top-36 right-4 z-[110] animate-in slide-in-from-right-10 fade-in duration-300">
+                <div role="status" aria-live="polite" className="fixed top-20 right-4 z-[110] max-w-xs sm:max-w-sm animate-in slide-in-from-right-10 fade-in duration-300">
                     <div className="bg-slate-800 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3">
-                        <div className={`${checkStatus === 'checking' ? 'animate-spin' : checkStatus === 'error' ? 'bg-red-500 rounded-full p-0.5 text-white' : 'bg-green-500 rounded-full p-0.5 text-white'}`}>
-                            {checkStatus === 'checking' ? <RefreshCw size={14} /> : checkStatus === 'error' ? <X size={12} strokeWidth={4} /> : <Check size={12} strokeWidth={4} />}
+                        <div className={`shrink-0 ${
+                            checkStatus === 'checking'
+                                ? 'animate-spin'
+                                : checkStatus === 'offline'
+                                ? 'bg-amber-500 rounded-full p-1 text-white'
+                                : checkStatus === 'error'
+                                ? 'bg-red-500 rounded-full p-0.5 text-white'
+                                : 'bg-green-500 rounded-full p-0.5 text-white'
+                        }`}>
+                            {checkStatus === 'checking' ? (
+                                <RefreshCw size={14} />
+                            ) : checkStatus === 'offline' ? (
+                                <WifiOff size={12} strokeWidth={2.5} />
+                            ) : checkStatus === 'error' ? (
+                                <X size={12} strokeWidth={4} />
+                            ) : (
+                                <Check size={12} strokeWidth={4} />
+                            )}
                         </div>
-                        <span className="text-xs font-bold">
-                            {checkStatus === 'checking' ? t('pwa.checking') : checkStatus === 'error' ? t('pwa.check_error') : t('pwa.up_to_date')}
+                        <span className="text-xs font-bold leading-snug">
+                            {checkStatus === 'checking'
+                                ? t('pwa.checking')
+                                : checkStatus === 'offline'
+                                ? t('pwa.offline_mode')
+                                : checkStatus === 'error'
+                                ? t('pwa.check_error')
+                                : t('pwa.up_to_date')}
                         </span>
                     </div>
                 </div>

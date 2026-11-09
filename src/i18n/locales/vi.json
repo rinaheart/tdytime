@@ -810,8 +810,8 @@
         "parseNoWeeks": "⚠️ Không thể trích xuất dữ liệu theo tuần."
     },
     "pwa": {
-        "offlineReady": "Sẵn sàng hoạt động ngoại tuyến",
-        "offlineReadyDesc": "Ứng dụng đã được lưu cache để dùng khi không có mạng.",
+        "offlineReady": "Sẵn sàng hoạt động độc lập (Offline-First)",
+        "offlineReadyDesc": "TdyTime hoạt động 100% trên thiết bị mà không cần kết nối mạng.",
         "updateReady": "TdyTime đã có bản cập nhật mới! 🚀",
         "updateReadyDesc": "Bản cập nhật tối ưu đã sẵn sàng.\nBạn có muốn nâng cấp?",
         "reloadButton": "Nâng cấp ngay",
@@ -823,7 +823,7 @@
         "install_desc": "Thêm ứng dụng vào màn hình chính và theo dõi lịch giảng offline (không cần internet).",
         "install_button": "Cài đặt",
         "install_app": "Cài đặt ứng dụng",
-        "offline_mode": "Chế độ ngoại tuyến — Đang dùng dữ liệu đã lưu",
+        "offline_mode": "Đang ngoại tuyến — Mọi tính năng lịch vẫn hoạt động bình thường. Kết nối mạng để kiểm tra cập nhật mới.",
         "ios_guide_title": "Cài đặt TdyTime trên thiết bị",
         "ios_guide_step1": "1. Nhấn vào biểu tượng Chia sẻ (Share) hoặc Menu trình duyệt.",
         "ios_guide_step2": "2. Chọn 'Thêm vào Màn hình chính' (Add to Home Screen) hoặc 'Cài đặt ứng dụng'."

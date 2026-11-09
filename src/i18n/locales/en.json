@@ -811,8 +811,8 @@
         "parseNoWeeks": "⚠️ No weekly data could be extracted."
     },
     "pwa": {
-        "offlineReady": "Ready for Offline Use",
-        "offlineReadyDesc": "App cached for offline access.",
+        "offlineReady": "Offline-First Ready",
+        "offlineReadyDesc": "TdyTime works 100% locally on your device without needing an internet connection.",
         "updateReady": "TdyTime new update is ready! 🚀",
         "updateReadyDesc": "Optimized version ready.\nUpdate now?",
         "reloadButton": "Upgrade Now",
@@ -824,7 +824,7 @@
         "install_desc": "Add the app to your home screen to access your teaching schedule offline.",
         "install_button": "Install",
         "install_app": "Install App",
-        "offline_mode": "Offline Mode — Using cached data",
+        "offline_mode": "You're offline — All schedule features work normally. Connect to the internet to check for updates.",
         "ios_guide_title": "Install TdyTime on your device",
         "ios_guide_step1": "1. Tap the Share icon or browser menu button.",
         "ios_guide_step2": "2. Select 'Add to Home Screen' or 'Install App'."
