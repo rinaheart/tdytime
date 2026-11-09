@@ -101,7 +101,7 @@ function tdyTimePwaPlugin(): Plugin {
 
 export default defineConfig({
     optimizeDeps: {
-        include: ['react', 'react-dom', '@react-pdf/renderer'],
+        include: ['react', 'react-dom'],
     },
 
     define: {
@@ -190,13 +190,18 @@ self.addEventListener('activate', (event) => {
             output: {
                 manualChunks(id) {
                     if (id.includes('node_modules')) {
-                        // React core only (~140KB instead of 341KB)
+                        // React core + JSX runtime
                         if (
                             id.includes('/react/') ||
                             id.includes('/react-dom/') ||
-                            id.includes('/scheduler/')
+                            id.includes('/scheduler/') ||
+                            id.includes('react/jsx-runtime')
                         ) {
                             return 'vendor-react';
+                        }
+                        // PDF Renderer — Heavy engine isolated into lazy-only chunk
+                        if (id.includes('@react-pdf') || id.includes('pdfkit') || id.includes('fontkit') || id.includes('restructure')) {
+                            return 'vendor-pdf';
                         }
                         // i18n — separate chunk
                         if (id.includes('i18next') || id.includes('react-i18next')) {
@@ -214,9 +219,6 @@ self.addEventListener('activate', (event) => {
                             id.includes('@vercel/speed-insights')
                         ) {
                             return 'vendor-monitoring';
-                        }
-                        if (id.includes('@react-pdf/renderer')) {
-                            return 'vendor-pdf';
                         }
                         if (id.includes('exceljs')) {
                             return 'exceljs';

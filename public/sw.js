@@ -125,8 +125,8 @@ self.addEventListener('fetch', (event) => {
         return fetch(request).then((response) => {
           const isCacheable =
             response &&
-            response.status === 200 &&
-            (response.type === 'basic' || response.type === 'cors');
+            (response.status === 200 || response.status === 0) &&
+            (response.type === 'basic' || response.type === 'cors' || response.type === 'opaque');
           if (isCacheable) {
             const copy = response.clone();
             caches

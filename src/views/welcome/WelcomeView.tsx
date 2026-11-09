@@ -321,7 +321,7 @@ const WelcomeView: React.FC = () => {
             <div className="flex-1 flex flex-col items-center justify-start p-3 md:p-8 max-w-xl mx-auto w-full pt-[60px] md:pt-[88px]">
                 {/* Title Section - pt-1 to match Settings and other views */}
                 <div className="pt-1 pb-4 flex flex-col items-center text-center mb-6">
-                    <img src="/favicon.svg" alt="App Logo" className="w-16 h-16 mb-4 drop-shadow-sm" />
+                    <img src="/favicon.svg" alt="App Logo" width="64" height="64" fetchPriority="high" className="w-16 h-16 mb-4 drop-shadow-sm" />
 
                     <h1 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-baseline gap-1.5">
                         TdyTime 
