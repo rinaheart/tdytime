@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Check, ChevronDown, Settings2, Mail, Globe, RefreshCw, X } from 'lucide-react';
+import { Check, ChevronDown, Settings2, Mail, Globe, RefreshCw, Download, X } from 'lucide-react';
 import CourseTypeCard from './CourseTypeCard';
 import AbbreviationsCard from './AbbreviationsCard';
 import ThresholdsCard from './ThresholdsCard';
@@ -19,6 +19,10 @@ const SettingsView: React.FC = () => {
     const { t } = useTranslation();
     const [toast, setToast] = useState<{ message: string; isError?: boolean } | null>(null);
     const [showAdvanced, setShowAdvanced] = useState(false);
+    const isStandalone = typeof window !== 'undefined' && (
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as unknown as { standalone?: boolean }).standalone === true
+    );
 
     useEffect(() => {
         if (toast) {
@@ -70,16 +74,26 @@ const SettingsView: React.FC = () => {
                 </div>
             </div>
 
-            {/* PWA Update Check */}
-            <div className="flex justify-center -mt-4">
+            {/* PWA Update Check & Install Actions */}
+            <div className="flex flex-wrap justify-center gap-2.5 -mt-4">
                 <button
                     type="button"
                     onClick={() => (window as unknown as { checkPWAUpdate?: () => void }).checkPWAUpdate?.()}
-                    className="flex items-center gap-1.5 px-3.5 min-h-[36px] py-1.5 bg-accent-50 dark:bg-accent-900/10 text-accent-700 dark:text-accent-400 rounded-xl text-xs font-bold hover:bg-accent-100 dark:hover:bg-accent-900/20 active:scale-95 transition-all border border-accent-100/50 dark:border-accent-900/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                    className="flex items-center gap-1.5 px-3.5 min-h-[36px] py-1.5 bg-accent-50 dark:bg-accent-900/10 text-accent-700 dark:text-accent-400 rounded-xl text-xs font-bold hover:bg-accent-100 dark:hover:bg-accent-900/20 active:scale-95 transition-all border border-accent-100/50 dark:border-accent-900/20 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
                 >
                     <RefreshCw size={12} strokeWidth={2.5} />
                     {t('pwa.update_check')}
                 </button>
+                {!isStandalone && (
+                    <button
+                        type="button"
+                        onClick={() => (window as unknown as { triggerPWAInstall?: () => void }).triggerPWAInstall?.()}
+                        className="flex items-center gap-1.5 px-3.5 min-h-[36px] py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all border border-slate-200/60 dark:border-slate-700 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                    >
+                        <Download size={12} strokeWidth={2.5} />
+                        {t('pwa.install_app')}
+                    </button>
+                )}
             </div>
 
             {/* Primary Settings */}

@@ -17,7 +17,7 @@
   - `eslint`: `8.57.1` (Khóa)
   - `typescript`: `6.0.3` (Khóa)
   - `vitest`: `4.1.11` (Khóa)
-  - `vite-plugin-pwa`: `1.3.0` (Khóa theo chỉ đạo của người dùng)
+  - `vite-plugin-pwa`: `^2.0.0` (Nâng cấp bản mới nhất theo chỉ đạo của người dùng)
 
 ---
 

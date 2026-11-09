@@ -807,9 +807,15 @@
         "update_check": "Kiểm tra cập nhật",
         "checking": "Đang kiểm tra...",
         "up_to_date": "Đã là bản mới nhất",
+        "check_error": "Lỗi kiểm tra",
         "install_title": "Cài đặt TdyTime",
         "install_desc": "Thêm ứng dụng vào màn hình chính và theo dõi lịch giảng offline (không cần internet).",
-        "install_button": "Cài đặt"
+        "install_button": "Cài đặt",
+        "install_app": "Cài đặt ứng dụng",
+        "offline_mode": "Chế độ ngoại tuyến — Đang dùng dữ liệu đã lưu",
+        "ios_guide_title": "Cài đặt TdyTime trên thiết bị",
+        "ios_guide_step1": "1. Nhấn vào biểu tượng Chia sẻ (Share) hoặc Menu trình duyệt.",
+        "ios_guide_step2": "2. Chọn 'Thêm vào Màn hình chính' (Add to Home Screen) hoặc 'Cài đặt ứng dụng'."
     },
     "exam": {
         "title": "Lịch coi thi",

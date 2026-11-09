@@ -2,7 +2,7 @@
 
 > **Tài liệu Kỹ thuật Vòng đời Service Worker, Quản lý Bộ nhớ đệm & An toàn Dữ liệu**  
 > **Phiên bản áp dụng:** `v2026.11.05`  
-> **Thư viện cốt lõi:** `vite-plugin-pwa@^1.3.0` & `workbox-window@^7.4.1`  
+> **Thư viện cốt lõi:** `vite-plugin-pwa@^2.0.0` & `workbox-window@^7.4.1`  
 > **Trạng thái cấu hình:** Khóa ổn định kiến trúc PWA (`registerType: 'prompt'`)
 
 ---
@@ -12,7 +12,7 @@
 TdyTime là ứng dụng Progressive Web App (PWA) theo mô hình **Offline-First / Local-First**. Ứng dụng ưu tiên nạp tức thì từ bộ nhớ đệm (Cache Storage) và lưu trữ toàn bộ dữ liệu lịch giảng, ghi chú độc lập tại trình duyệt của người dùng thông qua **`IndexedDB`** và **`localStorage`**.
 
 Hệ thống PWA được xây dựng dựa trên:
-- **`vite-plugin-pwa@^1.3.0`** (cấu hình trong `vite.config.ts`): Tự động sinh `manifest.webmanifest`, biên dịch Service Worker (`sw.js`) và tiêm danh mục nạp trước (precache manifest) với mã băm nội dung byte-level.
+- **`vite-plugin-pwa@^2.0.0`** (cấu hình trong `vite.config.ts`): Tự động sinh `manifest.webmanifest`, biên dịch Service Worker (`sw.js`) và tiêm danh mục nạp trước (precache manifest) với mã băm nội dung byte-level.
 - **`workbox-window@^7.4.1`** (kết hợp với `src/app/PWAUpdateHandler.tsx`): Quản lý vòng đời cập nhật tại tầng giao diện React, phát hiện Service Worker mới và kích hoạt cập nhật có kiểm soát qua tín hiệu `postMessage({ type: 'SKIP_WAITING' })`.
 
 ---
@@ -241,7 +241,7 @@ Bảng đối chiếu tác động của từng hành động kỹ thuật lên 
 
 | Hạng mục kiểm tra | Phương pháp xác minh | Trạng thái | Bằng chứng / File mã nguồn |
 | :--- | :--- | :---: | :--- |
-| Khóa phiên bản `vite-plugin-pwa@^1.3.0` | Đối chiếu file cấu hình | **PASS** | `package.json` định nghĩa `"vite-plugin-pwa": "^1.3.0"` |
+| Khóa phiên bản `vite-plugin-pwa@^2.0.0` | Đối chiếu file cấu hình | **PASS** | `package.json` định nghĩa `"vite-plugin-pwa": "^2.0.0"` |
 | Cập nhật Service Worker đa tab | Kiểm thử tự động Vitest | **PASS** | `tests/release-validation/multi-tab-sw-update.test.ts` (Scenario 1 & 2) |
 | Tránh lặp vô hạn reload | Kiểm thử tự động Vitest | **PASS** | `tests/release-validation/multi-tab-sw-update.test.ts` (Scenario 1) |
 | Bảo vệ bản nháp tự động (Auto-Draft) | Kiểm thử tự động Vitest | **PASS** | `tests/release-validation/auto-draft.test.ts` (7/7 tests passed); `src/core/notes/draft.service.ts` |

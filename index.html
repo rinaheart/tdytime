@@ -7,7 +7,12 @@
     <meta property="og:title" content="TdyTime - Your Today, Your Time" />
     <meta property="og:description" content="Phân tích và Quản lý Lịch giảng thông minh - Your Today, Your Time" />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#020617" media="(prefers-color-scheme: dark)" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="TdyTime" />
     <!-- Critical CSS — app shell only (avoid render-blocking wait for full CSS) -->
     <style>
       html.dark { color-scheme: dark; background-color: #020617; }
@@ -22,8 +27,9 @@
     <!-- Async font loading — non-render-blocking & CSP-compliant (no inline event handlers) -->
     <link id="google-fonts-css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&family=Montserrat:wght@600;800&display=swap" media="print">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&family=Montserrat:wght@600;800&display=swap"></noscript>
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2026.11" />
+    <link rel="icon" type="image/png" sizes="64x64" href="/pwa-64x64.png?v=2026.11" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2026.11" />
     <title>TdyTime - Your Today, Your Time</title>
     <script>
       // Activate non-render-blocking Google Fonts stylesheet without inline onload attribute

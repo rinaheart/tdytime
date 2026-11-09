@@ -56,7 +56,7 @@ Tất cả các tài liệu, báo cáo JSON và kịch bản tự động đư�
 - **Mã nguồn ứng dụng:** Quét toàn bộ `src/` ghi nhận **0** trường hợp sử dụng `dangerouslySetInnerHTML`, `innerHTML`, `outerHTML`, `eval()`, hay `document.write()`.
 
 ### Phase 4 — PWA Update & Recovery
-- Giữ nguyên phiên bản ổn định **`vite-plugin-pwa@^1.3.0`** theo chỉ đạo.
+- Nâng cấp phiên bản mới nhất **`vite-plugin-pwa@^2.0.0`** theo chỉ đạo.
 - Chiến lược cập nhật: `registerType: 'prompt'` với toast thông báo `PWAUpdateHandler.tsx`, bảo vệ người dùng không bị tải lại trang bất ngờ khi đang giảng dạy hoặc ghi chú.
 - Dọn dẹp cache cũ: `cleanupOutdatedCaches: true` tự động giải phóng bộ nhớ khi kích hoạt phiên bản mới.
 
