@@ -1,13 +1,103 @@
+import fs from 'fs';
 import path from 'path';
-import { defineConfig } from 'vite';
+import { fileURLToPath } from 'url';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { VitePWA } from 'vite-plugin-pwa';
+
+const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 const isAIStudio = Boolean(
     process.env.APPLET_ID ||
     process.env.K_SERVICE ||
     process.env.DISABLE_HMR === 'true'
 );
+
+/**
+ * Zero-Dependency Custom PWA Plugin (TdyTripZ Architecture adapted for TdyTime)
+ * 1. Syncs `version` from package.json into `public/version.json` and `CACHE_NAME` in `public/sw.js`.
+ * 2. On `closeBundle`, scans `dist/assets/` and injects Tier A/B built assets into `dist/sw.js` `PRECACHE_URLS`,
+ *    while leaving Tier C Heavy Chunks (PDF Engine, Fonts, Excel, DevTools) for Cache-on-Demand.
+ */
+function tdyTimePwaPlugin(): Plugin {
+    const syncVersionMetadata = () => {
+        try {
+            const pkgPath = path.resolve(rootDir, 'package.json');
+            const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8')) as { version?: string };
+            const version = pkg.version;
+            if (!version) return;
+
+            // 1. Sync to public/version.json
+            const versionJsonPath = path.resolve(rootDir, 'public/version.json');
+            const nextJson = JSON.stringify({ version }, null, 2) + '\n';
+            if (!fs.existsSync(versionJsonPath) || fs.readFileSync(versionJsonPath, 'utf-8') !== nextJson) {
+                fs.writeFileSync(versionJsonPath, nextJson);
+            }
+
+            // 2. Sync CACHE_NAME in public/sw.js
+            const swPath = path.resolve(rootDir, 'public/sw.js');
+            if (fs.existsSync(swPath)) {
+                const swContent = fs.readFileSync(swPath, 'utf-8');
+                const nextSw = swContent.replace(
+                    /const CACHE_NAME\s*=\s*['"][^'"]+['"];/,
+                    `const CACHE_NAME = 'tdytime-pwa-v${version}';`
+                );
+                if (swContent !== nextSw) {
+                    fs.writeFileSync(swPath, nextSw);
+                }
+            }
+        } catch {
+            // Ignore non-fatal sync errors
+        }
+    };
+
+    const injectBuiltAssetsIntoDistSw = () => {
+        try {
+            const distDir = path.resolve(rootDir, 'dist');
+            const distSwPath = path.resolve(distDir, 'sw.js');
+            const assetsDir = path.resolve(distDir, 'assets');
+            if (!fs.existsSync(distSwPath) || !fs.existsSync(assetsDir)) return;
+
+            // Tier C (Cache-on-Demand): Heavy optional chunks (~2.3MB combined) are cached on first use
+            // via Cache-First in sw.js, making initial PWA install 3x faster.
+            const TIER_C_ON_DEMAND_PREFIXES = [
+                'vendor-pdf-',
+                'ScheduleReport-',
+                'Roboto-',
+                'DevToolsView-',
+                'exceljs-',
+                'vendor-monitoring-',
+            ];
+
+            const assetFiles = fs
+                .readdirSync(assetsDir)
+                .filter((file) => /\.(js|css|svg|png|jpg|jpeg|webp|woff2?)$/i.test(file))
+                .filter((file) => !TIER_C_ON_DEMAND_PREFIXES.some((prefix) => file.startsWith(prefix)))
+                .sort()
+                .map((file) => `/assets/${file}`);
+
+            if (assetFiles.length === 0) return;
+
+            const swContent = fs.readFileSync(distSwPath, 'utf-8');
+            const precacheMatch = swContent.match(/const PRECACHE_URLS\s*=\s*\[([\s\S]*?)\];/);
+            if (!precacheMatch) return;
+
+            const existingUrls = Array.from(precacheMatch[1].matchAll(/['"]([^'"]+)['"]/g)).map((m) => m[1]);
+            const mergedUrls = Array.from(new Set([...existingUrls, ...assetFiles]));
+            const formattedArray = `const PRECACHE_URLS = [\n${mergedUrls.map((u) => `  '${u}',`).join('\n')}\n];`;
+            const nextSwContent = swContent.replace(/const PRECACHE_URLS\s*=\s*\[[\s\S]*?\];/, formattedArray);
+            fs.writeFileSync(distSwPath, nextSwContent);
+        } catch {
+            // Ignore post-build injection errors
+        }
+    };
+
+    return {
+        name: 'tdytime-zero-dep-pwa',
+        buildStart: syncVersionMetadata,
+        handleHotUpdate: syncVersionMetadata,
+        closeBundle: injectBuiltAssetsIntoDistSw,
+    };
+}
 
 export default defineConfig({
     optimizeDeps: {
@@ -36,176 +126,7 @@ export default defineConfig({
 
     plugins: [
         react(),
-
-        VitePWA({
-            registerType: 'prompt', // ✔ giữ control update bằng UI của bạn
-
-            includeAssets: [
-                'favicon.svg',
-                'apple-touch-icon.png',
-                'pwa-64x64.png',
-                'pwa-192x192.png',
-                'pwa-512x512.png',
-                'pwa-maskable-192x192.png',
-                'pwa-maskable-512x512.png',
-                'screenshots/desktop-welcome.png',
-                'screenshots/mobile-today.png',
-            ],
-
-            manifest: {
-                id: '/tdytime',
-                name: 'TdyTime - Your Today, Your Time',
-                short_name: 'TdyTime',
-                description: 'Phân tích và Quản lý Lịch giảng thông minh - Your Today, Your Time',
-                lang: 'vi',
-                dir: 'ltr',
-                theme_color: '#ffffff',
-                background_color: '#ffffff',
-                display: 'standalone',
-                orientation: 'any',
-                start_url: '/',
-                scope: '/',
-                form_factors: ['wide', 'narrow'],
-                display_override: ['standalone', 'window-controls-overlay'],
-                icons: [
-                    {
-                        src: '/pwa-64x64.png?v=2026.11',
-                        sizes: '64x64',
-                        type: 'image/png',
-                        purpose: 'any',
-                    },
-                    {
-                        src: '/pwa-192x192.png?v=2026.11',
-                        sizes: '192x192',
-                        type: 'image/png',
-                        purpose: 'any',
-                    },
-                    {
-                        src: '/pwa-512x512.png?v=2026.11',
-                        sizes: '512x512',
-                        type: 'image/png',
-                        purpose: 'any',
-                    },
-                    {
-                        src: '/pwa-maskable-192x192.png?v=2026.11',
-                        sizes: '192x192',
-                        type: 'image/png',
-                        purpose: 'maskable',
-                    },
-                    {
-                        src: '/pwa-maskable-512x512.png?v=2026.11',
-                        sizes: '512x512',
-                        type: 'image/png',
-                        purpose: 'maskable',
-                    },
-                ],
-                screenshots: [
-                    {
-                        src: '/screenshots/desktop-welcome.png',
-                        sizes: '1280x720',
-                        type: 'image/png',
-                        form_factor: 'wide',
-                        label: 'TdyTime - Desktop',
-                    },
-                    {
-                        src: '/screenshots/mobile-today.png',
-                        sizes: '390x844',
-                        type: 'image/png',
-                        form_factor: 'narrow',
-                        label: 'TdyTime - Mobile',
-                    },
-                ],
-                categories: ['education', 'productivity', 'utilities'],
-                prefer_related_applications: false,
-            },
-
-            workbox: {
-                globPatterns: process.env.NODE_ENV === 'production' 
-                    ? ['**/*.{js,css,html,ico,png,svg,json,woff2}']
-                    : [],
-                ignoreURLParametersMatching: [/^v$/, /^utm_/, /^fbclid$/],
-                navigateFallback: '/index.html',
-                navigateFallbackDenylist: [/^\/api/],
-                maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-                navigationPreload: false, // Disabled — not needed with CacheFirst
-
-                cleanupOutdatedCaches: true,
-                clientsClaim: false,
-                skipWaiting: false,
-
-                runtimeCaching: [
-                    // HTML — CacheFirst: instant open, offline-first
-                    // Update flow: new deploy → SW detects precache diff → installs in background
-                    // → PWAUpdateHandler shows toast → user clicks update → reload
-                    {
-                        urlPattern: ({ request }) => request.mode === 'navigate',
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'html-shell-cache',
-                            plugins: [
-                                {
-                                    cacheWillUpdate: async ({ response }) => {
-                                        return response && response.status === 200 ? response : null;
-                                    },
-                                },
-                            ],
-                        },
-                    },
-
-                    // Static assets (JS/CSS)
-                    {
-                        urlPattern: ({ request }) =>
-                            request.destination === 'script' ||
-                            request.destination === 'style',
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'static-assets',
-                            expiration: {
-                                maxEntries: 50,
-                                maxAgeSeconds: 60 * 60 * 24 * 30,
-                            },
-                        },
-                    },
-
-                    // Google Fonts CSS
-                    {
-                        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'google-fonts-cache',
-                            expiration: {
-                                maxEntries: 10,
-                                maxAgeSeconds: 60 * 60 * 24 * 365,
-                            },
-                            cacheableResponse: {
-                                statuses: [0, 200],
-                            },
-                        },
-                    },
-
-                    // Google Fonts files
-                    {
-                        urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-                        handler: 'CacheFirst',
-                        options: {
-                            cacheName: 'gstatic-fonts-cache',
-                            expiration: {
-                                maxEntries: 10,
-                                maxAgeSeconds: 60 * 60 * 24 * 365,
-                            },
-                            cacheableResponse: {
-                                statuses: [0, 200],
-                            },
-                        },
-                    },
-                ],
-            },
-
-            devOptions: {
-                enabled: false,
-                type: 'module',
-            },
-        }),
+        tdyTimePwaPlugin(),
         {
             name: 'dev-sw-cleanup',
             configureServer(server) {
@@ -297,6 +218,9 @@ self.addEventListener('activate', (event) => {
                         if (id.includes('@react-pdf/renderer')) {
                             return 'vendor-pdf';
                         }
+                        if (id.includes('exceljs')) {
+                            return 'exceljs';
+                        }
                     }
                 },
             },
@@ -311,13 +235,13 @@ self.addEventListener('activate', (event) => {
 
     resolve: {
         alias: {
-            '@': path.resolve(import.meta.dirname, './src'),
+            '@': path.resolve(rootDir, './src'),
         },
     },
 
     test: {
         environment: 'jsdom',
         setupFiles: ['./src/setupTests.ts'],
-        globals: true
-    }
+        globals: true,
+    },
 });

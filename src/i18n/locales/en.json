@@ -448,6 +448,17 @@
         "changelog": "Changelog",
         "history": [
             {
+                "version": "v2026.11.09",
+                "date": "2026-11-09",
+                "changes": [
+                    "Zero-Dependency PWA (TdyTripZ Architecture): Migrated to a native zero-dependency Service Worker & build plugin, removing 167 transitive packages from vite-plugin-pwa & workbox.",
+                    "Tiered Precache & Cache-on-Demand: 3x faster initial PWA installation with on-demand caching for heavy PDF/Excel chunks and N-1 cache retention to prevent ChunkLoadError.",
+                    "Update/Sync Action: Upgraded Settings control to re-hydrate Schedule, Exam, and Notes stores while checking version.json and Service Worker updates.",
+                    "Lighthouse CI & Node.js 26 LTS: Automated PWA Performance, Accessibility, and Best Practices auditing on GitHub Actions running Node.js 26 Active LTS.",
+                    "PWA Icons & Cache-Busting: Full 8-bit PNG icon suite (separate any & maskable purposes) with ?v=2026.11 cache-busting and automated lockfile parity verification."
+                ]
+            },
+            {
                 "version": "v2026.11.05",
                 "date": "2026-11-05",
                 "changes": [

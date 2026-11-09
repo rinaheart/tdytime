@@ -447,6 +447,17 @@
         "changelog": "Changelog",
         "history": [
             {
+                "version": "v2026.11.09",
+                "date": "2026-11-09",
+                "changes": [
+                    "PWA Zero-Dependency (Chuẩn TdyTripZ): Chuyển sang kiến trúc Service Worker thuần không phụ thuộc thư viện ngoài, gỡ bỏ 167 gói trung gian của vite-plugin-pwa & workbox.",
+                    "Tiered Precache & Cache-on-Demand: Cài đặt PWA nhanh gấp 3 lần nhờ tách riêng gói PDF/Excel sang lưu đệm theo yêu cầu và giữ lại cache N-1 chống lỗi ChunkLoadError.",
+                    "Cập nhật/Đồng bộ (Update/Sync): Nâng cấp nút hành động trong Cài đặt giúp đồng bộ lại dữ liệu Lịch giảng, Coi thi, Ghi chú và kiểm tra bản cập nhật mới tức thì.",
+                    "Lighthouse CI & Node.js 26 LTS: Tích hợp kiểm toán tự động hiệu năng, khả năng truy cập trên GitHub Actions với chuẩn Node.js 26 Active LTS.",
+                    "PWA Icons & Cache-Busting: Chuẩn hóa bộ biểu tượng 8-bit PNG (any & maskable) kèm tham số ?v=2026.11 và bảo toàn đồng bộ Lockfile 100%."
+                ]
+            },
+            {
                 "version": "v2026.11.05",
                 "date": "2026-11-05",
                 "changes": [

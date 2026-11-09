@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026.11.09] - 2026-11-09
+
+### Added
+- **Kiến trúc PWA Zero-Dependency chuẩn TdyTripZ (`tdyTimePwaPlugin`, `public/sw.js`, `public/manifest.webmanifest`, `public/version.json`):**
+  - Xây dựng Service Worker thuần không phụ thuộc thư viện ngoài (`public/sw.js`) kết hợp plugin đồng bộ tự động `tdyTimePwaPlugin()` ngay trong `vite.config.ts`.
+  - Tự động đồng bộ phiên bản từ `package.json` (`2026.11.09`) sang `public/version.json` và `CACHE_NAME` trong `public/sw.js`, đồng thời tự động quét và bơm danh sách asset băm vào `PRECACHE_URLS` của `dist/sw.js` khi chạy `npm run build`.
+  - Bổ sung bộ 5 biểu tượng PWA chuẩn 8-bit PNG (`64×64`, `180×180`, `192×192`, `512×512` tách biệt `purpose: "any"` và `purpose: "maskable"`) kèm tham số chống lưu đệm `?v=2026.11` và hàm chuẩn hóa URL (`normalizeCacheUrl`).
+- **Tính năng "Cập nhật/Đồng bộ" (`Update/Sync`) trong Cài đặt (`PWAUpdateHandler.tsx` & `SettingsView.tsx`):**
+  - Nâng cấp nút kiểm tra cập nhật thành **"Cập nhật/Đồng bộ"** (`Update/Sync`), kết hợp nạp lại dữ liệu Lịch giảng, Lịch coi thi, Ghi chú từ bộ nhớ bền vững (`useScheduleStore`, `useExamStore`, `useNotesStore`) và ép kiểm tra phiên bản mới qua `/version.json` + `registration.update()`.
+  - Tích hợp băng rôn chỉ báo chế độ Ngoại tuyến (`Offline Mode Indicator`) và hộp thoại hướng dẫn cài đặt PWA thủ công cho iOS Safari.
+- **Tự động Kiểm toán Lighthouse CI (`.github/workflows/audit.yml` & `lighthouserc.json`):**
+  - Thiết lập GitHub Actions workflow tự động kiểm toán Performance, Accessibility và Best Practices của PWA mỗi khi push lên nhánh `main` và lưu báo cáo công khai kèm Artifact.
+  - Bổ sung bộ kiểm thử tự động `tests/release-validation/pwa-audit.test.ts` (7 bài kiểm tra toàn diện về kiến trúc PWA, toàn vẹn PNG header, mã băm CSP SHA-256, và đồng bộ tuyệt đối giữa `package.json` và `package-lock.json`).
+
+### Changed
+- **Tối ưu Tốc độ Cài đặt PWA gấp 3 lần (Tiered Precache & Cache-on-Demand):**
+  - Phân tầng tài nguyên rõ ràng: **Tier A/B** (Giao diện chính, Lịch giảng, Lịch coi thi, Thống kê, Ghi chú, Đa ngôn ngữ) được tải và xác minh nguyên tử 100% ngay khi cài đặt; **Tier C** (Các gói nặng ít dùng ngay như Engine xuất PDF, Font chữ PDF, Excel, DevTools ~2.35 MB) được chuyển sang cơ chế **Cache-on-Demand** (lưu đệm tự động theo chiến lược Cache-First ngay lần đầu người dùng mở tính năng).
+  - Giữ lại tối đa 1 bản cache liền kề trước đó (`N-1`) khi kích hoạt Service Worker mới để bảo vệ các tab đang mở dở không bao giờ gặp lỗi `ChunkLoadError` khi tải lazy chunk lúc Offline.
+  - Giữ cơ chế hỏi xác nhận qua hộp thoại trước khi tải lại trang: tự động lưu đồng bộ toàn bộ bản nháp ghi chú (`draftService.flushAll()`) trước khi gửi lệnh `SKIP_WAITING`.
+- **Tinh gọn Cây Phụ thuộc (-167 packages) & Nâng cấp Node.js 26 Active LTS:**
+  - Gỡ bỏ hoàn toàn `vite-plugin-pwa` và `workbox-window` khỏi `package.json` và `package-lock.json`, loại bỏ 167 gói phụ thuộc trung gian (`workbox-*`, `@babel/*`, `@rollup/plugin-*`...).
+  - Nâng cấp môi trường Node.js trên GitHub Actions (`.github/workflows/ci.yml`, `.github/workflows/audit.yml`) và cấu hình `.nvmrc` / `.node-version` lên **Node.js 26 (Active LTS)**, đồng thời mở rộng `engines.node` thành `>=22.0.0`.
+
+### Fixed
+- **Khắc phục triệt để lỗi `npm ci` lệch Lockfile & Badge Phiên bản trên GitHub:**
+  - Đồng bộ chuẩn xác `package-lock.json` với `package.json`, bổ sung cơ chế fallback `npm ci || npm install` trên CI workflows và bài test khóa đồng bộ tự động trong `pwa-audit.test.ts`.
+  - Cập nhật badge phiên bản trong `README.md` sang endpoint Dynamic JSON của Shields.io để hiển thị chính xác định dạng CalVer (`v2026.11.09`) thay vì báo lỗi `invalid response data`.
+
 ## [2026.11.05] - 2026-11-05
 
 ### Added

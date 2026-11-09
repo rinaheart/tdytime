@@ -1,12 +1,15 @@
 /**
- * PWA & Lighthouse CI Audit Verification Suite
+ * PWA & Lighthouse CI Audit Verification Suite (Zero-Dependency TdyTripZ Architecture)
  *
  * Validates:
- * 1. vite-plugin-pwa upgraded to latest v2.0.0 in package.json
- * 2. GitHub Action workflow .github/workflows/audit.yml & lighthouserc.json configuration
+ * 1. Zero-Dependency PWA setup in package.json (no vite-plugin-pwa / workbox-window bloat) & Node 26 LTS
+ * 2. GitHub Action workflows (.github/workflows/audit.yml & ci.yml) & lighthouserc.json configuration
  * 3. Complete PWA icon asset suite (dimensions, bit-depth, SVG, Apple Touch Icon, Any & Maskable icons)
- * 4. HTML head PWA & iOS Safari compliance and CSP inline script SHA-256 integrity
- * 5. VitePWA manifest & Workbox configuration in vite.config.ts
+ * 4. HTML head PWA & iOS Safari compliance, manifest link, and CSP inline script SHA-256 integrity
+ * 5. Static Web App Manifest (public/manifest.webmanifest), Tiered Service Worker (public/sw.js),
+ *    version sync (public/version.json), and tdyTimePwaPlugin in vite.config.ts
+ * 6. Native SW Update/Sync action ("Cập nhật/Đồng bộ") with draft flush & calendar store re-hydration
+ * 7. Strict package.json <-> package-lock.json parity and CalVer README badge
  */
 
 import { describe, it, expect } from 'vitest';
@@ -32,11 +35,11 @@ function readPngHeader(relPath: string) {
     return { width, height, bitDepth, colorType, byteLength: buf.length };
 }
 
-describe('PWA & Lighthouse CI Audit Verification', () => {
-    it('1. package.json specifies latest vite-plugin-pwa (^2.0.0), workbox-window (^7.4.1), and engines.node (>=22.0.0)', () => {
+describe('PWA & Lighthouse CI Audit Verification (Zero-Dependency TdyTripZ Architecture)', () => {
+    it('1. package.json uses Zero-Dependency PWA architecture (free of vite-plugin-pwa / workbox-window) and engines.node (>=22.0.0)', () => {
         const pkg = JSON.parse(readFileSync(resolve(ROOT_DIR, 'package.json'), 'utf-8'));
-        expect(pkg.devDependencies['vite-plugin-pwa']).toBe('^2.0.0');
-        expect(pkg.dependencies['workbox-window']).toBe('^7.4.1');
+        expect(pkg.devDependencies['vite-plugin-pwa']).toBeUndefined();
+        expect(pkg.dependencies['workbox-window']).toBeUndefined();
         expect(pkg.engines.node).toBe('>=22.0.0');
         expect(pkg.scripts['test:perf']).toBe('lhci autorun');
 
@@ -101,7 +104,7 @@ describe('PWA & Lighthouse CI Audit Verification', () => {
         }
     });
 
-    it('4. index.html includes complete PWA & iOS Safari meta tags and preserves CSP inline script SHA-256 hash', () => {
+    it('4. index.html includes complete PWA & iOS Safari meta tags, manifest link, and preserves CSP inline script SHA-256 hash', () => {
         const html = readFileSync(resolve(ROOT_DIR, 'index.html'), 'utf-8');
         expect(html).toContain('name="theme-color"');
         expect(html).toContain('name="mobile-web-app-capable" content="yes"');
@@ -109,6 +112,7 @@ describe('PWA & Lighthouse CI Audit Verification', () => {
         expect(html).toContain('name="apple-mobile-web-app-title" content="TdyTime"');
         expect(html).toContain('rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=2026.11"');
         expect(html).toContain('rel="icon" type="image/svg+xml" href="/favicon.svg?v=2026.11"');
+        expect(html).toContain('rel="manifest" href="/manifest.webmanifest"');
 
         // Verify CSP SHA-256 match with vercel.json
         const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/);
@@ -122,32 +126,53 @@ describe('PWA & Lighthouse CI Audit Verification', () => {
         expect(cspHeader?.value).toContain(hash);
     });
 
-    it('5. vite.config.ts defines compliant Web App Manifest with separate any and maskable icons and ?v=2026.11 cache-busting', () => {
+    it('5. public/manifest.webmanifest, public/sw.js, public/version.json, and vite.config.ts implement TdyTripZ Zero-Dependency PWA architecture', () => {
+        const pkg = JSON.parse(readFileSync(resolve(ROOT_DIR, 'package.json'), 'utf-8'));
+        const versionJson = JSON.parse(readFileSync(resolve(ROOT_DIR, 'public/version.json'), 'utf-8'));
+        expect(versionJson.version).toBe(pkg.version);
+
+        const manifest = JSON.parse(readFileSync(resolve(ROOT_DIR, 'public/manifest.webmanifest'), 'utf-8'));
+        expect(manifest.id).toBe('/tdytime');
+        expect(manifest.short_name).toBe('TdyTime');
+        expect(manifest.start_url).toBe('/');
+        expect(manifest.scope).toBe('/');
+        expect(manifest.display).toBe('standalone');
+        expect(manifest.icons).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ src: '/pwa-192x192.png?v=2026.11', purpose: 'any' }),
+                expect.objectContaining({ src: '/pwa-512x512.png?v=2026.11', purpose: 'any' }),
+                expect.objectContaining({ src: '/pwa-maskable-192x192.png?v=2026.11', purpose: 'maskable' }),
+                expect.objectContaining({ src: '/pwa-maskable-512x512.png?v=2026.11', purpose: 'maskable' }),
+            ])
+        );
+
+        const swCode = readFileSync(resolve(ROOT_DIR, 'public/sw.js'), 'utf-8');
+        expect(swCode).toContain(`const CACHE_NAME = 'tdytime-pwa-v${pkg.version}';`);
+        expect(swCode).toContain("event.data.type === 'SKIP_WAITING'");
+        expect(swCode).toContain('oldKeys.length > 1 ? oldKeys.slice(0, oldKeys.length - 1) : []');
+        expect(swCode).toContain('normalizeCacheUrl');
+
         const viteConfig = readFileSync(resolve(ROOT_DIR, 'vite.config.ts'), 'utf-8');
-        expect(viteConfig).toContain("id: '/tdytime'");
-        expect(viteConfig).toContain("short_name: 'TdyTime'");
-        expect(viteConfig).toContain("start_url: '/'");
-        expect(viteConfig).toContain("scope: '/'");
-        expect(viteConfig).toContain("display: 'standalone'");
-        expect(viteConfig).toContain("src: '/pwa-192x192.png?v=2026.11'");
-        expect(viteConfig).toContain("src: '/pwa-512x512.png?v=2026.11'");
-        expect(viteConfig).toContain("src: '/pwa-maskable-192x192.png?v=2026.11'");
-        expect(viteConfig).toContain("src: '/pwa-maskable-512x512.png?v=2026.11'");
-        expect(viteConfig).toContain('ignoreURLParametersMatching');
-        expect(viteConfig).toContain('cleanupOutdatedCaches: true');
+        expect(viteConfig).not.toContain('vite-plugin-pwa');
+        expect(viteConfig).toContain('tdyTimePwaPlugin');
+        expect(viteConfig).toContain('TIER_C_ON_DEMAND_PREFIXES');
+        expect(viteConfig).toContain("'exceljs-'");
     });
 
-    it('6. Update/Sync action re-fetches critical calendar data and forces a Service Worker update check', () => {
+    it('6. Update/Sync action re-fetches critical calendar data and forces a Native Service Worker update check', () => {
         const viJson = JSON.parse(readFileSync(resolve(ROOT_DIR, 'src/i18n/locales/vi.json'), 'utf-8'));
         const enJson = JSON.parse(readFileSync(resolve(ROOT_DIR, 'src/i18n/locales/en.json'), 'utf-8'));
         expect(viJson.pwa.update_check).toBe('Cập nhật/Đồng bộ');
         expect(enJson.pwa.update_check).toBe('Update/Sync');
 
         const handlerCode = readFileSync(resolve(ROOT_DIR, 'src/app/PWAUpdateHandler.tsx'), 'utf-8');
+        expect(handlerCode).not.toContain('virtual:pwa-register');
         expect(handlerCode).toContain('useScheduleStore.getState().initFromStorage()');
         expect(handlerCode).toContain('useExamStore.persist?.rehydrate?.()');
         expect(handlerCode).toContain('useNotesStore.persist?.rehydrate?.()');
         expect(handlerCode).toContain('await registration.update()');
+        expect(handlerCode).toContain("postMessage({ type: 'SKIP_WAITING' })");
+        expect(handlerCode).toContain('draftService.flushAll()');
     });
 
     it('7. package.json and package-lock.json are strictly synchronized (prevents npm ci failures) and README badge supports CalVer', () => {
@@ -165,9 +190,9 @@ describe('PWA & Lighthouse CI Audit Verification', () => {
             expect(lock.packages?.[`node_modules/${depName}`]).toBeDefined();
         }
 
-        // Verify vite-plugin-pwa in lockfile is >= 2.0.0
-        const pwaLockEntry = lock.packages?.['node_modules/vite-plugin-pwa'];
-        expect(pwaLockEntry?.version).toMatch(/^2\./);
+        // Verify vite-plugin-pwa and workbox-window are completely removed from lockfile
+        expect(lock.packages?.['node_modules/vite-plugin-pwa']).toBeUndefined();
+        expect(lock.packages?.['node_modules/workbox-window']).toBeUndefined();
 
         // Verify README version badge uses dynamic JSON query compatible with CalVer (e.g. 2026.11.05)
         const readme = readFileSync(resolve(ROOT_DIR, 'README.md'), 'utf-8');
@@ -175,4 +200,3 @@ describe('PWA & Lighthouse CI Audit Verification', () => {
         expect(readme).toContain('img.shields.io/badge/dynamic/json');
     });
 });
-

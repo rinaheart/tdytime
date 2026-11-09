@@ -1,10 +1,10 @@
 /**
- * PWAUpdateHandler — Manages PWA Registration, Install Prompt, Offline Status & Update Notifications
- * Handles "Check for updates", In-App Install Prompt, iOS Install Guide, and Offline Indicator.
+ * PWAUpdateHandler — Zero-Dependency PWA Lifecycle Manager (TdyTripZ Architecture)
+ * Manages Native Service Worker (`/sw.js`) Registration, Prompt-to-Update (`SKIP_WAITING`),
+ * "Update/Sync" (`Cập nhật/Đồng bộ`), In-App Install Prompt, iOS Install Guide, and Offline Status.
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useRegisterSW } from 'virtual:pwa-register/react';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Download, Check, X, WifiOff } from 'lucide-react';
 import { draftService } from '@/core/notes/draft.service';
@@ -30,6 +30,8 @@ export const PWAUpdateHandler: React.FC = () => {
     const [isDismissed, setIsDismissed] = useState(true);
     const [updateBypassed, setUpdateBypassed] = useState(false);
     const [showInstallGuide, setShowInstallGuide] = useState(false);
+    const [offlineReady, setOfflineReady] = useState(false);
+    const [needUpdate, setNeedUpdate] = useState(false);
     const [isOnline, setIsOnline] = useState<boolean>(
         typeof navigator !== 'undefined' ? navigator.onLine : true
     );
@@ -43,11 +45,15 @@ export const PWAUpdateHandler: React.FC = () => {
 
     const timeoutIds = useRef<number[]>([]);
     const installPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
+    const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
+    const refreshingRef = useRef(false);
+    const needUpdateRef = useRef(needUpdate);
+    const checkStatusRef = useRef(checkStatus);
 
     const addTimeout = useCallback((fn: () => void, delay: number) => {
         const id = window.setTimeout(() => {
             fn();
-            timeoutIds.current = timeoutIds.current.filter(tid => tid !== id);
+            timeoutIds.current = timeoutIds.current.filter((tid) => tid !== id);
         }, delay);
         timeoutIds.current.push(id);
     }, []);
@@ -70,7 +76,7 @@ export const PWAUpdateHandler: React.FC = () => {
 
         const timeouts = timeoutIds.current;
         return () => {
-            timeouts.forEach(id => window.clearTimeout(id));
+            timeouts.forEach((id) => window.clearTimeout(id));
         };
     }, []);
 
@@ -87,25 +93,64 @@ export const PWAUpdateHandler: React.FC = () => {
         };
     }, []);
 
-    const sw = useRegisterSW({
-        onRegistered() {
-            // SW registered successfully
-        },
-        onRegisterError() {
-            // SW registration failed silently
-        },
-    });
+    // Native Service Worker Registration & Update Lifecycle (Zero-Dependency)
+    useEffect(() => {
+        if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
 
-    const [offlineReady, setOfflineReady] = Array.isArray(sw.offlineReady)
-        ? sw.offlineReady
-        : [sw.offlineReady, () => { }];
-    const [needUpdate, setNeedUpdate] = Array.isArray(sw.needRefresh)
-        ? sw.needRefresh
-        : [sw.needRefresh, () => { }];
-    const { updateServiceWorker } = sw;
+        // Avoid registering production SW in Vite dev server unless running in production build
+        if (!import.meta.env.PROD) return;
 
-    const needUpdateRef = useRef(needUpdate);
-    const checkStatusRef = useRef(checkStatus);
+        let isMounted = true;
+
+        const handleControllerChange = () => {
+            if (refreshingRef.current) return;
+            refreshingRef.current = true;
+            window.location.reload();
+        };
+
+        navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
+
+        const observeRegistration = (reg: ServiceWorkerRegistration) => {
+            registrationRef.current = reg;
+
+            // If a new SW is already waiting on load, notify user immediately
+            if (reg.waiting && navigator.serviceWorker.controller) {
+                if (isMounted) setNeedUpdate(true);
+            }
+
+            reg.addEventListener('updatefound', () => {
+                const installingWorker = reg.installing;
+                if (!installingWorker) return;
+
+                installingWorker.addEventListener('statechange', () => {
+                    if (!isMounted) return;
+                    if (installingWorker.state === 'installed') {
+                        if (navigator.serviceWorker.controller) {
+                            // Existing controller present -> new update ready and waiting for confirmation
+                            setNeedUpdate(true);
+                        } else {
+                            // First-time install completed -> app is ready for offline use
+                            setOfflineReady(true);
+                        }
+                    }
+                });
+            });
+        };
+
+        navigator.serviceWorker
+            .register('/sw.js', { scope: '/' })
+            .then((reg) => {
+                if (isMounted) observeRegistration(reg);
+            })
+            .catch(() => {
+                // Silent failure in unsupported / restricted environments
+            });
+
+        return () => {
+            isMounted = false;
+            navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+        };
+    }, []);
 
     useEffect(() => {
         needUpdateRef.current = needUpdate;
@@ -148,10 +193,18 @@ export const PWAUpdateHandler: React.FC = () => {
         setUpdateBypassed(false);
     };
 
-    const handleUpdate = () => {
+    const handleUpdate = async () => {
         // Synchronously flush active drafts in current tab before service worker update reload
         draftService.flushAll();
-        updateServiceWorker(true);
+
+        if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+            const reg = registrationRef.current || (await navigator.serviceWorker.getRegistration());
+            if (reg?.waiting) {
+                reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                return;
+            }
+        }
+        window.location.reload();
     };
 
     const handleDismissInstall = useCallback(() => {
@@ -189,14 +242,30 @@ export const PWAUpdateHandler: React.FC = () => {
                 await Promise.resolve(useExamStore.persist?.rehydrate?.());
                 await Promise.resolve(useNotesStore.persist?.rehydrate?.());
 
-                // 2. Force Service Worker update check (bypassing automatic background cycle)
+                // 2. Check remote version.json for any new deployed version
+                let remoteVersionDiffers = false;
+                try {
+                    const verRes = await fetch(`/version.json?t=${Date.now()}`, { cache: 'no-store' });
+                    if (verRes.ok) {
+                        const data = (await verRes.json()) as { version?: string };
+                        if (data.version && typeof __APP_VERSION__ !== 'undefined' && data.version !== __APP_VERSION__) {
+                            remoteVersionDiffers = true;
+                        }
+                    }
+                } catch {
+                    // Offline or unreachable version.json — continue with SW registration check
+                }
+
+                // 3. Force Service Worker update check (bypassing automatic background cycle)
                 if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
-                    const registration = await navigator.serviceWorker.getRegistration();
+                    const registration =
+                        registrationRef.current || (await navigator.serviceWorker.getRegistration());
                     if (registration) {
+                        registrationRef.current = registration;
                         await registration.update();
 
                         addTimeout(() => {
-                            if (needUpdateRef.current || registration.waiting) {
+                            if (needUpdateRef.current || registration.waiting || remoteVersionDiffers) {
                                 setNeedUpdate(true);
                                 setUpdateBypassed(true);
                                 setCheckStatus('idle');
@@ -206,10 +275,15 @@ export const PWAUpdateHandler: React.FC = () => {
                             }
                         }, 1200);
                     } else {
-                        // In dev mode or before initial SW activation, resolve cleanly as up-to-date
                         addTimeout(() => {
-                            setCheckStatus('up-to-date');
-                            addTimeout(() => setCheckStatus('idle'), 3000);
+                            if (remoteVersionDiffers) {
+                                setNeedUpdate(true);
+                                setUpdateBypassed(true);
+                                setCheckStatus('idle');
+                            } else {
+                                setCheckStatus('up-to-date');
+                                addTimeout(() => setCheckStatus('idle'), 3000);
+                            }
                         }, 800);
                     }
                 } else {
@@ -232,7 +306,7 @@ export const PWAUpdateHandler: React.FC = () => {
             delete win.checkPWAUpdate;
             delete win.triggerPWAInstall;
         };
-    }, [addTimeout, handleInstall, setNeedUpdate]);
+    }, [addTimeout, handleInstall]);
 
     return (
         <>
