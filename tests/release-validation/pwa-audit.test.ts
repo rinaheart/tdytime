@@ -149,4 +149,30 @@ describe('PWA & Lighthouse CI Audit Verification', () => {
         expect(handlerCode).toContain('useNotesStore.persist?.rehydrate?.()');
         expect(handlerCode).toContain('await registration.update()');
     });
+
+    it('7. package.json and package-lock.json are strictly synchronized (prevents npm ci failures) and README badge supports CalVer', () => {
+        const pkg = JSON.parse(readFileSync(resolve(ROOT_DIR, 'package.json'), 'utf-8'));
+        const lock = JSON.parse(readFileSync(resolve(ROOT_DIR, 'package-lock.json'), 'utf-8'));
+        const rootLockPkg = lock.packages?.[''];
+
+        expect(rootLockPkg).toBeDefined();
+        expect(rootLockPkg.dependencies).toEqual(pkg.dependencies);
+        expect(rootLockPkg.devDependencies).toEqual(pkg.devDependencies);
+
+        // Ensure every declared dependency and devDependency is resolved in node_modules of lockfile
+        const allDeps = { ...pkg.dependencies, ...pkg.devDependencies };
+        for (const depName of Object.keys(allDeps)) {
+            expect(lock.packages?.[`node_modules/${depName}`]).toBeDefined();
+        }
+
+        // Verify vite-plugin-pwa in lockfile is >= 2.0.0
+        const pwaLockEntry = lock.packages?.['node_modules/vite-plugin-pwa'];
+        expect(pwaLockEntry?.version).toMatch(/^2\./);
+
+        // Verify README version badge uses dynamic JSON query compatible with CalVer (e.g. 2026.11.05)
+        const readme = readFileSync(resolve(ROOT_DIR, 'README.md'), 'utf-8');
+        expect(readme).not.toContain('img.shields.io/github/package-json/v/');
+        expect(readme).toContain('img.shields.io/badge/dynamic/json');
+    });
 });
+
