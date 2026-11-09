@@ -6,7 +6,8 @@ import { THEMES } from '../../core/themes/theme.registry';
 
 const ThemePicker: React.FC = () => {
     const { t } = useTranslation();
-    const { accentTheme, setAccentTheme } = useUIStore();
+    const accentTheme = useUIStore((s) => s.accentTheme);
+    const setAccentTheme = useUIStore((s) => s.setAccentTheme);
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const triggerRef = useRef<HTMLButtonElement>(null);

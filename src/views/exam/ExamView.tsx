@@ -1,24 +1,32 @@
-/**
- * ExamView — Exam supervision dashboard
- * Layout mirrors TodayView: Header → Summary → Table View (Standard/Detailed)
- */
-
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Play, CalendarCheck, Trash2, LayoutList, TableProperties, ChevronDown } from 'lucide-react';
-import { useExamStore, useUIStore, useScheduleStore } from '@/core/stores';
+import {
+    Play,
+    LayoutList,
+    Trash2,
+    TableProperties,
+    CalendarCheck,
+    ChevronDown,
+} from 'lucide-react';
+import { useExamStore, useScheduleStore, useUIStore } from '@/core/stores';
+import ConfirmModal from '@/ui/primitives/ConfirmModal';
 import { getExamStatus } from '@/core/exam/exam.parser';
+import type { ExamSession } from '@/core/exam/exam.types';
 import { LazyRender } from '@/ui/LazyRender';
 import { useCalculatedTime } from '@/core/hooks/useCalculatedTime';
-import { EmptyState } from '@/ui';
-import ConfirmModal from '@/ui/primitives/ConfirmModal';
+import { EmptyState } from '@/ui/composites';
 
-const STT_COL_CLASS = "w-7 h-7 shrink-0 flex items-center justify-center transition-all duration-500";
-const TIME_COL_CLASS = "w-[60px] text-right shrink-0 font-bold font-mono tabular-nums text-[13px] leading-none";
-const RIGHT_COL_CLASS = "w-[60px] shrink-0 flex flex-col items-end gap-0.5";
+interface ExamSessionWithStatus extends ExamSession {
+    status: 'upcoming' | 'ongoing' | 'past';
+    globalIndex: number;
+}
 
-// --- Sub-components ---
+const STT_COL_CLASS =
+    'w-7 h-7 shrink-0 flex items-center justify-center transition-all duration-500';
+const TIME_COL_CLASS =
+    'w-[60px] text-right shrink-0 font-bold font-mono tabular-nums text-[13px] leading-none';
+const RIGHT_COL_CLASS = 'w-[60px] shrink-0 flex flex-col items-end gap-0.5';
 
 const ExamRow = React.memo(function ExamRow({
     session,
@@ -26,27 +34,32 @@ const ExamRow = React.memo(function ExamRow({
     isNext,
     globalIndex,
 }: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    session: any,
-    viewMode: string,
-    isNext: boolean,
-    globalIndex: number,
+    session: ExamSessionWithStatus;
+    viewMode: 'table' | 'table-detailed';
+    isNext: boolean;
+    globalIndex: number;
 }) {
     const isOngoing = session.status === 'ongoing';
-
     return (
-        <div className={`flex flex-col py-2.5 min-h-[52px] ${session.status === 'past' ? 'opacity-50' : ''}`} role="article">
-            {/* Row 1: STT | Course Name | Time (Top Alignment) */}
+        <div
+            className={`flex flex-col py-2.5 min-h-[52px] ${
+                session.status === 'past' ? 'opacity-50' : ''
+            }`}
+            role="article"
+        >
             <div className="flex items-center gap-3">
                 <div className={STT_COL_CLASS}>
                     {isNext ? (
-                        <span className={`
+                        <span
+                            className={`
                             relative w-7 h-7 rounded-full flex items-center justify-center font-black text-[12px] font-num
-                            ${isOngoing
-                                ? 'bg-accent-500 text-white animate-pulse ring-2 ring-accent-500 ring-offset-2 dark:ring-offset-slate-900 shadow-sm'
-                                : 'bg-accent-100 dark:bg-accent-950/40 text-accent-700 dark:text-accent-400 ring-1 ring-accent-200 dark:ring-accent-800'
+                            ${
+                                isOngoing
+                                    ? 'bg-accent-500 text-white animate-pulse ring-2 ring-accent-500 ring-offset-2 dark:ring-offset-slate-900 shadow-sm'
+                                    : 'bg-accent-100 dark:bg-accent-950/40 text-accent-700 dark:text-accent-400 ring-1 ring-accent-200 dark:ring-accent-800'
                             }
-                        `}>
+                        `}
+                        >
                             {String(globalIndex).padStart(2, '0')}
                             {isOngoing && (
                                 <>
@@ -64,36 +77,57 @@ const ExamRow = React.memo(function ExamRow({
                         </span>
                     )}
                 </div>
-
-                <p className={`
-                    flex-1 min-w-0 text-sm ${viewMode === 'table-detailed' ? 'font-bold' : 'font-medium'} 
+                <p
+                    className={`
+                    flex-1 min-w-0 text-sm ${
+                        viewMode === 'table-detailed' ? 'font-bold' : 'font-medium'
+                    } 
                     text-slate-800 dark:text-slate-100
-                    ${viewMode === 'table-detailed' ? 'line-clamp-2 break-words leading-tight' : 'truncate'}
-                `} title={session.courseName}>
+                    ${
+                        viewMode === 'table-detailed'
+                            ? 'line-clamp-2 break-words leading-tight'
+                            : 'truncate'
+                    }
+                `}
+                    title={session.courseName}
+                >
                     {session.courseName}
                 </p>
-
                 <div className={TIME_COL_CLASS}>
-                    <span className={`font-bold ${isOngoing ? 'text-accent-600 dark:text-accent-400' : 'text-slate-900 dark:text-white'}`}>
+                    <span
+                        className={`font-bold ${
+                            isOngoing
+                                ? 'text-accent-600 dark:text-accent-400'
+                                : 'text-slate-900 dark:text-white'
+                        }`}
+                    >
                         {session.timeStr}
                     </span>
                 </div>
             </div>
-
-            {/* Row 2: Info | Room (Subtle & Aligned) */}
             <div className="flex items-center gap-3 ml-10 -mt-0.5">
                 <div className="flex-1 min-w-0 h-4 flex items-center">
                     {viewMode === 'table-detailed' && (
                         <p className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1.5 whitespace-nowrap overflow-hidden">
                             <span className="font-num font-semibold">{session.duration}&apos;</span>
-                            <span className="hidden md:inline text-slate-300 dark:text-slate-600">•</span>
-                            <span className="hidden md:inline normal-case lowercase">{session.role}</span>
-                            <span className="hidden md:inline text-slate-300 dark:text-slate-600">•</span>
-                            <span className="hidden md:inline normal-case lowercase truncate" title={session.format}>{session.format}</span>
+                            <span className="hidden md:inline text-slate-300 dark:text-slate-600">
+                                •
+                            </span>
+                            <span className="hidden md:inline normal-case lowercase">
+                                {session.role}
+                            </span>
+                            <span className="hidden md:inline text-slate-300 dark:text-slate-600">
+                                •
+                            </span>
+                            <span
+                                className="hidden md:inline normal-case lowercase truncate"
+                                title={session.format}
+                            >
+                                {session.format}
+                            </span>
                         </p>
                     )}
                 </div>
-
                 <div className="w-[60px] text-right shrink-0">
                     <span className="text-sm font-bold text-accent-600 dark:text-accent-400 leading-none">
                         {session.room}
@@ -104,8 +138,11 @@ const ExamRow = React.memo(function ExamRow({
     );
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CompletedExamRow = React.memo(function CompletedExamRow({ session }: { session: any }) {
+const CompletedExamRow = React.memo(function CompletedExamRow({
+    session,
+}: {
+    session: ExamSessionWithStatus;
+}) {
     return (
         <div className="flex items-center gap-3 py-2 text-sm opacity-75 hover:opacity-100 transition-opacity">
             <div className="w-7 text-center shrink-0 text-xs font-black text-slate-500 dark:text-slate-400 font-num">
@@ -131,36 +168,33 @@ const CompletedExamRow = React.memo(function CompletedExamRow({ session }: { ses
 const ExamView: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { data: examData, clearExamData } = useExamStore();
+    const examData = useExamStore((s) => s.data);
+    const clearExamData = useExamStore((s) => s.clearExamData);
     const [viewMode, setViewMode] = useState<'table' | 'table-detailed'>('table');
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const now = useCalculatedTime(10000); // 10s tick for exam view
-    const currentTimeTs = now.getTime();
+    const currentTimeTs = useCalculatedTime(10000).getTime();
 
     const isEmpty = !examData || examData.sessions.length === 0;
     const { sessions = [] } = examData || {};
 
-    // Calculate statuses and global index
     const sessionsWithStatus = useMemo(() => {
         return [...sessions]
             .sort((a, b) => a.startTime - b.startTime)
             .map((s, idx) => ({
                 ...s,
                 status: getExamStatus(s.startTime, s.endTime, currentTimeTs),
-                globalIndex: idx + 1
+                globalIndex: idx + 1,
             }));
     }, [sessions, currentTimeTs]);
 
     const total = sessions.length;
-    const completedCount = sessionsWithStatus.filter(s => s.status === 'past').length;
-    const activeSessions = sessionsWithStatus.filter(s => s.status !== 'past');
-    const completedSessions = sessionsWithStatus.filter(s => s.status === 'past');
+    const completedCount = sessionsWithStatus.filter((s) => s.status === 'past').length;
+    const activeSessions = sessionsWithStatus.filter((s) => s.status !== 'past');
+    const completedSessions = sessionsWithStatus.filter((s) => s.status === 'past');
     const nextExam = activeSessions[0];
-
     const isAllDone = completedCount === total && total > 0;
-    const ongoingCount = sessionsWithStatus.filter(s => s.status === 'ongoing').length;
+    const ongoingCount = sessionsWithStatus.filter((s) => s.status === 'ongoing').length;
 
-    // --- Table Grouping Logic (Active only) ---
     const getDayName = (dateStr: string) => {
         const [d, m, y] = dateStr.split('/').map(Number);
         const date = new Date(y, m - 1, d);
@@ -168,60 +202,67 @@ const ExamView: React.FC = () => {
         return t(`days.${dayIdx}`);
     };
 
-    const getPeriod = (timeStr: string) => {
+    const getPeriod = (timeStr: string): 'morning' | 'afternoon' | 'evening' => {
         const hour = parseInt(timeStr.split(':')[0], 10);
-        if (hour < 12) return 'morning'; // Sáng
-        if (hour < 17) return 'afternoon'; // Chiều
-        return 'evening'; // Tối
+        if (hour < 12) return 'morning';
+        if (hour < 17) return 'afternoon';
+        return 'evening';
     };
 
-    const tableGroups = activeSessions.reduce((acc, session) => {
-        const group = acc.find(g => g.dateStr === session.dateStr);
-        const period = getPeriod(session.timeStr);
-        if (group) {
-            group[period].push(session);
-        } else {
-            acc.push({
-                dateStr: session.dateStr,
-                dayName: getDayName(session.dateStr),
-                morning: period === 'morning' ? [session] : [],
-                afternoon: period === 'afternoon' ? [session] : [],
-                evening: period === 'evening' ? [session] : [],
-            });
-        }
-        return acc;
-    }, [] as {
-        dateStr: string;
-        dayName: string;
-        morning: typeof sessionsWithStatus;
-        afternoon: typeof sessionsWithStatus;
-        evening: typeof sessionsWithStatus;
-    }[]);
+    const tableGroups = activeSessions.reduce(
+        (acc, session) => {
+            const group = acc.find((g) => g.dateStr === session.dateStr);
+            const period = getPeriod(session.timeStr);
+            if (group) {
+                group[period].push(session);
+            } else {
+                acc.push({
+                    dateStr: session.dateStr,
+                    dayName: getDayName(session.dateStr),
+                    morning: period === 'morning' ? [session] : [],
+                    afternoon: period === 'afternoon' ? [session] : [],
+                    evening: period === 'evening' ? [session] : [],
+                });
+            }
+            return acc;
+        },
+        [] as Array<{
+            dateStr: string;
+            dayName: string;
+            morning: ExamSessionWithStatus[];
+            afternoon: ExamSessionWithStatus[];
+            evening: ExamSessionWithStatus[];
+        }>,
+    );
 
-    const completedGroups = completedSessions.reduce((acc, session) => {
-        const group = acc.find(g => g.dateStr === session.dateStr);
-        if (group) {
-            group.sessions.push(session);
-        } else {
-            acc.push({
-                dateStr: session.dateStr,
-                dayName: getDayName(session.dateStr),
-                sessions: [session]
-            });
-        }
-        return acc;
-    }, [] as {
-        dateStr: string;
-        dayName: string;
-        sessions: typeof sessionsWithStatus;
-    }[]);
+    const completedGroups = completedSessions.reduce(
+        (acc, session) => {
+            const group = acc.find((g) => g.dateStr === session.dateStr);
+            if (group) {
+                group.sessions.push(session);
+            } else {
+                acc.push({
+                    dateStr: session.dateStr,
+                    dayName: getDayName(session.dateStr),
+                    sessions: [session],
+                });
+            }
+            return acc;
+        },
+        [] as Array<{
+            dateStr: string;
+            dayName: string;
+            sessions: ExamSessionWithStatus[];
+        }>,
+    );
 
     return (
         <div className="max-w-3xl mx-auto pb-6 animate-in fade-in duration-300">
-            {/* Header — Binary Toggle between Table and Table-Detailed */}
             <ExamHeader
                 viewMode={viewMode}
-                onToggleView={() => setViewMode(prev => prev === 'table' ? 'table-detailed' : 'table')}
+                onToggleView={() =>
+                    setViewMode((prev) => (prev === 'table' ? 'table-detailed' : 'table'))
+                }
                 onClear={() => setIsModalOpen(true)}
             />
 
@@ -232,25 +273,49 @@ const ExamView: React.FC = () => {
                     </div>
                 ) : (
                     <>
-                        {/* Section Summary */}
                         <div className="px-2 mb-4">
                             <div className="flex flex-wrap items-center justify-between gap-y-1">
                                 <div className="flex items-center gap-2">
-                                    <Play size={12} fill="currentColor" className={!isAllDone ? 'text-accent-600 dark:text-accent-500' : 'text-slate-500'} />
-                                    <h2 className={`text-xs font-black uppercase tracking-wider ${!isAllDone ? 'text-accent-600 dark:text-accent-400' : 'text-slate-700 dark:text-slate-300'}`}>
-                                        {isAllDone
-                                            ? t('exam.summaryDone', { defaultValue: `✓ ${total} buổi — Hoàn thành`, total })
-                                            : t('exam.summaryActive', { defaultValue: `${total} buổi coi thi`, total, done: completedCount })
+                                    <Play
+                                        size={12}
+                                        fill="currentColor"
+                                        className={
+                                            !isAllDone
+                                                ? 'text-accent-600 dark:text-accent-500'
+                                                : 'text-slate-500'
                                         }
+                                    />
+                                    <h2
+                                        className={`text-xs font-black uppercase tracking-wider ${
+                                            !isAllDone
+                                                ? 'text-accent-600 dark:text-accent-400'
+                                                : 'text-slate-700 dark:text-slate-300'
+                                        }`}
+                                    >
+                                        {isAllDone
+                                            ? t('exam.summaryDone', {
+                                                  defaultValue: `✓ ${total} buổi — Hoàn thành`,
+                                                  total,
+                                              })
+                                            : t('exam.summaryActive', {
+                                                  defaultValue: `${total} buổi coi thi`,
+                                                  total,
+                                                  done: completedCount,
+                                              })}
                                     </h2>
                                 </div>
                                 {!isAllDone && activeSessions.length > 0 && (
                                     <div className="flex items-center gap-2 text-xs ml-auto">
                                         <span className="text-slate-600 dark:text-slate-400 font-medium whitespace-nowrap">
                                             {ongoingCount > 0
-                                                ? t('exam.liveCount', { defaultValue: `${ongoingCount} đang diễn ra`, count: ongoingCount })
-                                                : t('exam.pendingCount', { defaultValue: `${activeSessions.length} sắp tới`, count: activeSessions.length })
-                                            }
+                                                ? t('exam.liveCount', {
+                                                      defaultValue: `${ongoingCount} đang diễn ra`,
+                                                      count: ongoingCount,
+                                                  })
+                                                : t('exam.pendingCount', {
+                                                      defaultValue: `${activeSessions.length} sắp tới`,
+                                                      count: activeSessions.length,
+                                                  })}
                                         </span>
                                     </div>
                                 )}
@@ -260,51 +325,56 @@ const ExamView: React.FC = () => {
                         {tableGroups.length > 0 && (
                             <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md overflow-hidden shadow-sm mx-2">
                                 {tableGroups.map((group, gIdx) => (
-                                    <LazyRender key={group.dateStr} placeholderHeight={100} rootMargin="1000px">
-                                        <div className={gIdx > 0 ? 'border-t-2 border-slate-100 dark:border-slate-800' : ''}>
-                                            {/* Date Header */}
+                                    <LazyRender
+                                        key={group.dateStr}
+                                        placeholderHeight={100}
+                                        rootMargin="1000px"
+                                    >
+                                        <div
+                                            className={
+                                                gIdx > 0
+                                                    ? 'border-t-2 border-slate-100 dark:border-slate-800'
+                                                    : ''
+                                            }
+                                        >
                                             <div className="px-4 py-3 bg-slate-50 dark:bg-slate-800/50">
                                                 <h3 className="text-base font-bold text-slate-900 dark:text-white leading-tight">
                                                     {group.dayName}, {group.dateStr}
                                                 </h3>
                                             </div>
-
-                                            {/* Sessions (Sáng/Chiều/Tối) */}
-                                            {(['morning', 'afternoon', 'evening'] as const).map(periodKey => {
-                                                const sessionsInPeriod = group[periodKey];
-                                                if (sessionsInPeriod.length === 0) return null;
-                                                return (
-                                                    <div key={periodKey} className="px-4">
-                                                        {/* Shift Label */}
-                                                        <div className="flex items-center gap-3 pt-3 pb-1">
-                                                            <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 whitespace-nowrap">
-                                                                {t(`shifts.${periodKey}`)}
-                                                            </span>
-                                                            <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800" />
+                                            {(['morning', 'afternoon', 'evening'] as const).map(
+                                                (periodKey) => {
+                                                    const sessionsInPeriod = group[periodKey];
+                                                    if (sessionsInPeriod.length === 0) return null;
+                                                    return (
+                                                        <div key={periodKey} className="px-4">
+                                                            <div className="flex items-center gap-3 pt-3 pb-1">
+                                                                <span className="text-xs font-black uppercase tracking-widest text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                                                                    {t(`shifts.${periodKey}`)}
+                                                                </span>
+                                                                <div className="h-px flex-1 bg-slate-100 dark:bg-slate-800" />
+                                                            </div>
+                                                            <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
+                                                                {sessionsInPeriod.map((s) => (
+                                                                    <ExamRow
+                                                                        key={s.id}
+                                                                        session={s}
+                                                                        viewMode={viewMode}
+                                                                        isNext={s.id === nextExam?.id}
+                                                                        globalIndex={s.globalIndex}
+                                                                    />
+                                                                ))}
+                                                            </div>
                                                         </div>
-
-                                                        {/* Rows */}
-                                                        <div className="divide-y divide-slate-50 dark:divide-slate-800/50">
-                                                            {sessionsInPeriod.map(s => (
-                                                                <ExamRow
-                                                                    key={s.id}
-                                                                    session={s}
-                                                                    viewMode={viewMode}
-                                                                    isNext={s.id === nextExam?.id}
-                                                                    globalIndex={s.globalIndex}
-                                                                />
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
+                                                    );
+                                                },
+                                            )}
                                         </div>
                                     </LazyRender>
                                 ))}
                             </div>
                         )}
 
-                        {/* Completed Section (Today style) */}
                         {completedSessions.length > 0 && (
                             <div className="bg-slate-50/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700/60 rounded-2xl p-5 mt-6 mx-2">
                                 <details className="group" open={completedSessions.length < 5}>
@@ -312,7 +382,10 @@ const ExamView: React.FC = () => {
                                         <h3 className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">
                                             {t('common.completedItem')} ({completedSessions.length})
                                         </h3>
-                                        <ChevronDown size={14} className="text-slate-500 group-open:rotate-180 transition-transform duration-300" />
+                                        <ChevronDown
+                                            size={14}
+                                            className="text-slate-500 group-open:rotate-180 transition-transform duration-300"
+                                        />
                                     </summary>
                                     <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
                                         {completedGroups.map((group) => (
@@ -332,7 +405,6 @@ const ExamView: React.FC = () => {
                             </div>
                         )}
 
-                        {/* Celebration */}
                         {isAllDone && (
                             <div className="text-center py-12">
                                 <div className="text-5xl mb-4">🎉</div>
@@ -340,7 +412,10 @@ const ExamView: React.FC = () => {
                                     {t('exam.celebrationTitle', 'Chúc mừng!')}
                                 </h3>
                                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                                    {t('exam.celebrationDesc', 'Bạn đã hoàn thành tất cả các buổi coi thi.')}
+                                    {t(
+                                        'exam.celebrationDesc',
+                                        'Bạn đã hoàn thành tất cả các buổi coi thi.',
+                                    )}
                                 </p>
                             </div>
                         )}
@@ -348,13 +423,12 @@ const ExamView: React.FC = () => {
                 )}
             </div>
 
-            {/* Confirmation Modal */}
             <ConfirmModal
                 isOpen={isModalOpen}
                 title={t('exam.confirmClearTitle')}
                 description={t('exam.confirmClearDesc')}
                 confirmText={t('common.delete')}
-                isDanger
+                isDanger={true}
                 onConfirm={() => {
                     clearExamData();
                     const hasSchedule = !!useScheduleStore.getState().data;
@@ -374,18 +448,15 @@ const ExamView: React.FC = () => {
 const ExamHeader: React.FC<{
     onClear: () => void;
     viewMode: 'table' | 'table-detailed';
-    onToggleView: () => void
+    onToggleView: () => void;
 }> = ({ onClear, viewMode, onToggleView }) => {
     const { t } = useTranslation();
-    const examData = useExamStore((s) => s.data);
-    const teacherName = examData?.teacherName || '';
+    const teacherName = useExamStore((s) => s.data)?.teacherName || '';
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     useEffect(() => {
-        let timer: NodeJS.Timeout;
-        if (confirmDelete) {
-            timer = setTimeout(() => setConfirmDelete(false), 3000);
-        }
+        let timer: ReturnType<typeof setTimeout> | undefined;
+        if (confirmDelete) timer = setTimeout(() => setConfirmDelete(false), 3000);
         return () => clearTimeout(timer);
     }, [confirmDelete]);
 
@@ -393,7 +464,11 @@ const ExamHeader: React.FC<{
         <header className="px-2 pt-1 pb-6 flex justify-between items-start">
             <div className="flex flex-col gap-0.5 select-none">
                 <h1 className="text-[22px] md:text-2xl font-semibold text-slate-800 dark:text-slate-100 tracking-tight flex items-center gap-2">
-                    <CalendarCheck size={22} strokeWidth={1.5} className="text-accent-600 dark:text-accent-400" />
+                    <CalendarCheck
+                        size={22}
+                        strokeWidth={1.5}
+                        className="text-accent-600 dark:text-accent-400"
+                    />
                     {t('exam.title', 'Lịch coi thi')}
                 </h1>
                 {teacherName && (
@@ -403,39 +478,56 @@ const ExamHeader: React.FC<{
                 )}
             </div>
             <div className="flex items-center gap-2 mt-1">
-                {/* View Toggle Button */}
                 <button
                     type="button"
                     onClick={onToggleView}
-                    aria-label={viewMode === 'table' ? t('exam.detailedView', 'Chế độ chi tiết') : t('exam.compactView', 'Chế độ gọn')}
+                    aria-label={
+                        viewMode === 'table'
+                            ? t('exam.detailedView', 'Chế độ chi tiết')
+                            : t('exam.compactView', 'Chế độ gọn')
+                    }
                     className={`
                         flex items-center gap-2 px-3 min-h-[38px] py-1.5 rounded-full border transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500
-                        ${viewMode === 'table-detailed'
-                            ? 'bg-accent-50 border-accent-200 text-accent-700 dark:bg-accent-950/30 dark:border-accent-800 dark:text-accent-300'
-                            : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-400'
+                        ${
+                            viewMode === 'table-detailed'
+                                ? 'bg-accent-50 border-accent-200 text-accent-700 dark:bg-accent-950/30 dark:border-accent-800 dark:text-accent-300'
+                                : 'bg-white border-slate-200 text-slate-600 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-400'
                         }
                     `}
-                    title={viewMode === 'table' ? t('exam.detailedView', 'Chế độ chi tiết') : t('exam.compactView', 'Chế độ gọn')}
+                    title={
+                        viewMode === 'table'
+                            ? t('exam.detailedView', 'Chế độ chi tiết')
+                            : t('exam.compactView', 'Chế độ gọn')
+                    }
                 >
-                    {viewMode === 'table' ? <LayoutList size={16} strokeWidth={2} /> : <TableProperties size={16} strokeWidth={2} />}
+                    {viewMode === 'table' ? (
+                        <LayoutList size={16} strokeWidth={2} />
+                    ) : (
+                        <TableProperties size={16} strokeWidth={2} />
+                    )}
                     <span className="text-xs font-bold uppercase tracking-wider hidden sm:inline">
-                        {viewMode === 'table' ? t('exam.detail', 'Chi tiết') : t('exam.compact', 'Gọn')}
+                        {viewMode === 'table'
+                            ? t('exam.detail', 'Chi tiết')
+                            : t('exam.compact', 'Gọn')}
                     </span>
                 </button>
-
-                {/* Clear Button */}
                 <button
                     type="button"
                     onClick={() => {
                         if (confirmDelete) onClear();
                         else setConfirmDelete(true);
                     }}
-                    aria-label={confirmDelete ? t('settings.dangerZone.confirmButton', 'Xác nhận xóa dữ liệu thi') : t('exam.clearData', 'Xóa dữ liệu thi')}
+                    aria-label={
+                        confirmDelete
+                            ? t('settings.dangerZone.confirmButton', 'Xác nhận xóa dữ liệu thi')
+                            : t('exam.clearData', 'Xóa dữ liệu thi')
+                    }
                     className={`
                         w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl transition-all duration-200 relative overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500
-                        ${confirmDelete
-                            ? 'text-white bg-red-600 hover:bg-red-700 shadow-sm'
-                            : 'text-slate-500 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:bg-red-500/10'
+                        ${
+                            confirmDelete
+                                ? 'text-white bg-red-600 hover:bg-red-700 shadow-sm'
+                                : 'text-slate-500 hover:text-red-600 hover:bg-red-50 dark:text-slate-400 dark:hover:bg-red-500/10'
                         }
                     `}
                     title={t('exam.clearData', 'Xóa dữ liệu thi')}

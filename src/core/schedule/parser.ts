@@ -4,63 +4,53 @@
  * Logic preserved from v1 (battle-tested through 9 versions).
  */
 
-import {
-    ScheduleData,
-    Metadata,
-    WeekSchedule,
-    CourseSession,
-    CourseType,
-    DaySchedule,
-    AggregatedCourse,
-} from './schedule.types';
+import { CourseType, type ScheduleData, type WeekSchedule, type AggregatedCourse } from './schedule.types';
 import { COURSE_TYPE_TH_REGEX } from './schedule.utils';
-import { UNKNOWN_TEACHER, CHUA_RO } from '../constants';
+import { CHUA_RO } from '../constants';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+// Module-scope precompiled Regular Expressions (zero allocation inside parsing loops)
+const SEMESTER_REGEX = /Học kỳ:\s*(\d+)/i;
+const YEAR_REGEX = /năm học:\s*([\d-]+)/i;
+const ROOM_REGEX = /Phòng học:\s*([^<]+)/;
+const SLOT_REGEX = /Tiết:\s*(\d+)\s*-\s*(\d+)/;
+const TEACHER_REGEX = /Giáo viên:\s*([^<]*)/;
+const LEADING_DOT_REGEX = /^\.\s*/;
 
 /**
  * Parse a UMS HTML timetable string into structured schedule data.
  * @throws Error if the HTML doesn't contain valid timetable structure.
  */
-export const parseScheduleHTML = (html: string): ScheduleData | null => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
+export const parseScheduleHTML = (html: string): ScheduleData => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
 
-    // Validate essential structure
-    const weekCells = doc.querySelectorAll('.hitec-td-tkbTuan');
-    if (weekCells.length === 0) {
+    if (doc.querySelectorAll('.hitec-td-tkbTuan').length === 0) {
         throw new Error('upload.errors.parseWeekNotFound');
     }
-
-    const table = doc.querySelector('table.table-bordered');
-    if (!table) {
+    if (!doc.querySelector('table.table-bordered')) {
         throw new Error('upload.errors.parseTableNotFound');
     }
 
-    // Extract metadata
-    const teacher = doc.querySelector('.hitec-information h5')?.textContent?.trim() || UNKNOWN_TEACHER;
+    const teacher = doc.querySelector('.hitec-information h5')?.textContent?.trim() || 'Unknown Teacher';
     const yearSemesterText = doc.querySelector('.hitec-year')?.textContent?.trim() || '';
-    const semesterMatch = yearSemesterText.match(/Học kỳ:\s*(\d+)/i);
-    const yearMatch = yearSemesterText.match(/năm học:\s*([\d-]+)/i);
+    const semesterMatch = yearSemesterText.match(SEMESTER_REGEX);
+    const yearMatch = yearSemesterText.match(YEAR_REGEX);
 
-    const metadata: Metadata = {
+    const metadata = {
         teacher,
         semester: semesterMatch ? semesterMatch[1] : 'Unknown',
         academicYear: yearMatch ? yearMatch[1] : 'Unknown',
         extractedDate: new Date().toISOString(),
     };
 
-    // Parse weeks
     const weeks: WeekSchedule[] = [];
     const tableRows = Array.from(doc.querySelectorAll('table.table-bordered tbody tr'));
-
     let currentWeek: WeekSchedule | null = null;
     let weekCounter = 0;
 
     for (let i = 0; i < tableRows.length; i++) {
-        const row = tableRows[i];
-        const weekRangeCell = row.querySelector('.hitec-td-tkbTuan');
-
+        const weekRangeCell = tableRows[i].querySelector('.hitec-td-tkbTuan');
         if (weekRangeCell) {
             weekCounter++;
             currentWeek = {
@@ -68,9 +58,12 @@ export const parseScheduleHTML = (html: string): ScheduleData | null => {
                 dateRange: weekRangeCell.textContent?.trim() || '',
                 days: {},
             };
-
             DAYS.forEach((day) => {
-                currentWeek!.days[day] = { morning: [], afternoon: [], evening: [] };
+                currentWeek!.days[day] = {
+                    morning: [],
+                    afternoon: [],
+                    evening: [],
+                };
             });
 
             const morningRow = tableRows[i + 1];
@@ -103,19 +96,15 @@ const processSlotRow = (
     session: 'morning' | 'afternoon' | 'evening',
     week: WeekSchedule,
 ) => {
-    const cells = Array.from(row.querySelectorAll('td'));
-    cells.forEach((cell, dayIdx) => {
+    Array.from(row.querySelectorAll('td')).forEach((cell, dayIdx) => {
         if (dayIdx >= 7) return;
         const dayName = DAYS[dayIdx];
-        const courseLinks = Array.from(cell.querySelectorAll('a'));
 
-        courseLinks.forEach((link) => {
+        Array.from(cell.querySelectorAll('a')).forEach((link) => {
             const groupCode = link.querySelector('strong')?.textContent?.trim() || '';
             const popoverContent = link.getAttribute('data-content') || '';
-            const fullTitle = link.getAttribute('title') || '';
+            const parts = (link.getAttribute('title') || '').split(' - ').map((p) => p.trim());
 
-            // Parse: CourseName - Nhóm X - ClassName
-            const parts = fullTitle.split(' - ').map((p) => p.trim());
             let group = '';
             let className = '';
             let courseName = '';
@@ -129,23 +118,21 @@ const processSlotRow = (
                 courseName = parts[0] || groupCode;
             }
 
-            const roomMatch = popoverContent.match(/Phòng học:\s*([^<]+)/);
-            const slotMatch = popoverContent.match(/Tiết:\s*(\d+)\s*-\s*(\d+)/);
-            const teacherMatch = popoverContent.match(/Giáo viên:\s*([^<]*)/);
+            const roomMatch = popoverContent.match(ROOM_REGEX);
+            const slotMatch = popoverContent.match(SLOT_REGEX);
+            const teacherMatch = popoverContent.match(TEACHER_REGEX);
 
-            const periodStart = slotMatch ? parseInt(slotMatch[1]) : 0;
-            const periodEnd = slotMatch ? parseInt(slotMatch[2]) : 0;
+            const periodStart = slotMatch ? parseInt(slotMatch[1], 10) : 0;
+            const periodEnd = slotMatch ? parseInt(slotMatch[2], 10) : 0;
             const periods = periodEnd - periodStart + 1;
 
-            // SMART DEFAULTS: Auto-detect TH based on groupCode containing '-TH.'
-            // OR courseName starting with 'TT ' (Thực tập)
-            const isPractice = COURSE_TYPE_TH_REGEX.test(groupCode) || courseName.startsWith('TT ');
-            const type = isPractice ? CourseType.TH : CourseType.LT;
-
+            const type =
+                COURSE_TYPE_TH_REGEX.test(groupCode) || courseName.startsWith('TT ')
+                    ? CourseType.TH
+                    : CourseType.LT;
             const timeSlot = `${periodStart}-${periodEnd}`;
 
-            const sessionObj: CourseSession = {
-                // Generate unique ID
+            const sessionObj = {
                 id: `${groupCode}-${dayName}-${timeSlot}`,
                 courseCode: groupCode,
                 courseName,
@@ -153,7 +140,7 @@ const processSlotRow = (
                 className,
                 timeSlot,
                 periodCount: periods,
-                room: roomMatch ? roomMatch[1].trim().replace(/^\.\s*/, '') : 'Unknown',
+                room: roomMatch ? roomMatch[1].trim().replace(LEADING_DOT_REGEX, '') : 'Unknown',
                 teacher: teacherMatch ? teacherMatch[1].trim() : CHUA_RO,
                 type,
                 dayOfWeek: dayName,
@@ -170,11 +157,8 @@ const aggregateCourses = (weeks: WeekSchedule[]): AggregatedCourse[] => {
     const map = new Map<string, AggregatedCourse>();
 
     weeks.forEach((w) => {
-        Object.values(w.days).forEach((day) => {
-            const dayParts = day as DaySchedule;
-            const allSessions = [...dayParts.morning, ...dayParts.afternoon, ...dayParts.evening];
-
-            allSessions.forEach((s) => {
+        Object.values(w.days).forEach((dayParts) => {
+            [...dayParts.morning, ...dayParts.afternoon, ...dayParts.evening].forEach((s) => {
                 const fullCode = s.courseCode;
                 if (!map.has(fullCode)) {
                     map.set(fullCode, {
@@ -206,32 +190,22 @@ const aggregateCourses = (weeks: WeekSchedule[]): AggregatedCourse[] => {
  * Reapplies the deterministic '-TH.' course type logic to old arrays.
  */
 export const sanitizeScheduleData = (data: ScheduleData): ScheduleData => {
-    // 1. Deep clone to avoid mutating origin unexpectedly
-    const clonedData = JSON.parse(JSON.stringify(data)) as ScheduleData;
-
-    // 2. Traverse and reclassify all sessions
+    const clonedData: ScheduleData = JSON.parse(JSON.stringify(data));
     clonedData.weeks.forEach((week) => {
-        const daysToProcess: (keyof typeof week.days)[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        daysToProcess.forEach((dayName) => {
+        DAYS.forEach((dayName) => {
             const dayParts = week.days[dayName];
             if (!dayParts) return;
-
-            const sessions = [...dayParts.morning, ...dayParts.afternoon, ...dayParts.evening];
-            sessions.forEach(session => {
-                // Re-apply the deterministic rule (including 'TT ' prefix check)
-                const isPractice = COURSE_TYPE_TH_REGEX.test(session.courseCode) || session.courseName.startsWith('TT ');
-                session.type = isPractice ? CourseType.TH : CourseType.LT;
-                
-                // Sanitize room name (remove leading dots)
+            [...dayParts.morning, ...dayParts.afternoon, ...dayParts.evening].forEach((session) => {
+                session.type =
+                    COURSE_TYPE_TH_REGEX.test(session.courseCode) || session.courseName.startsWith('TT ')
+                        ? CourseType.TH
+                        : CourseType.LT;
                 if (session.room) {
-                    session.room = session.room.trim().replace(/^\.\s*/, '');
+                    session.room = session.room.trim().replace(LEADING_DOT_REGEX, '');
                 }
             });
         });
     });
-
-    // 3. Re-aggregate the summary array based on newly scrubbed sessions
     clonedData.allCourses = aggregateCourses(clonedData.weeks);
-
     return clonedData;
 };

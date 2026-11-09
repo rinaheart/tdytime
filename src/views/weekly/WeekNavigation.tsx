@@ -9,7 +9,9 @@ import { useScheduleStore } from '@/core/stores';
 import { isCurrentWeek, getCurrentWeekRange } from '@/core/schedule/schedule.utils';
 import { useNotesStore } from '@/core/stores/notes.store';
 import type { FlatSession } from '@/core/schedule/schedule.index';
-import { saveAs } from 'file-saver';
+
+const DATE_RANGE_REGEX = /\d{2}\/\d{2}\/\d{4}/g;
+
 interface WeekNavigationProps {
     viewMode: 'horizontal' | 'vertical';
     onToggleViewMode: () => void;
@@ -22,7 +24,6 @@ interface WeekNavigationProps {
 
 const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewMode, isFilterOpen, onToggleFilter, hasActiveFilters, sessions, teacherName }) => {
     const { t } = useTranslation();
-    const notesStore = useNotesStore();
     const [isExporting, setIsExporting] = React.useState(false);
     const data = useScheduleStore((s) => s.data);
     const currentWeekIndex = useScheduleStore((s) => s.currentWeekIndex);
@@ -95,9 +96,10 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
         
         try {
             setIsExporting(true);
-            const [{ pdf }, { ScheduleReport }] = await Promise.all([
+            const [{ pdf }, { ScheduleReport }, { saveAs }] = await Promise.all([
                 import('@react-pdf/renderer'),
-                import('../shared/ScheduleReport')
+                import('../shared/ScheduleReport'),
+                import('file-saver'),
             ]);
             
             const filename = `TdyTime_${teacherName.replace(/\s+/g, '_')}_T${weekNumber}.pdf`;
@@ -108,7 +110,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
                     sessions={sessions} 
                     weekRange={weekDateRange} 
                     teacherName={teacherName} 
-                    notes={notesStore.notes} 
+                    notes={useNotesStore.getState().notes} 
                     translations={reportTranslations}
                 />
             ).toBlob();
@@ -122,7 +124,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
     };
 
     const formatDateRange = (range: string) => {
-        const dates = range.match(/\d{2}\/\d{2}\/\d{4}/g);
+        const dates = range.match(DATE_RANGE_REGEX);
         if (dates && dates.length >= 2) return `${dates[0]} → ${dates[1]}`;
         return range;
     };

@@ -1,10 +1,25 @@
-import { ExamSession, ExamStatus } from './exam.types';
+/**
+ * Exam Schedule Parser — TdyTime v2
+ * Parses TSV exam schedule text and computes live status.
+ */
 
-/** 
- * getExamStatus — Determine status based on current time 
+import type { ExamSession } from './exam.types';
+
+// Module-scope precompiled Regular Expressions
+const LEADING_DOTS_REGEX = /^\.+/;
+const TIME_H_REGEX = /[gGhH]/;
+const LINE_SPLIT_REGEX = /\r?\n/;
+const SLASH_GLOBAL_REGEX = /\//g;
+
+/**
+ * getExamStatus — Determine status based on current time
  * No polling, calculated on render.
  */
-export const getExamStatus = (startTime: number, endTime: number, now: number = Date.now()): ExamStatus => {
+export const getExamStatus = (
+    startTime: number,
+    endTime: number,
+    now: number = Date.now(),
+): 'upcoming' | 'ongoing' | 'past' => {
     if (now < startTime) return 'upcoming';
     if (now > endTime) return 'past';
     return 'ongoing';
@@ -14,16 +29,16 @@ export const getExamStatus = (startTime: number, endTime: number, now: number = 
  * Sanitize Room Name
  * Removes leading dots (e.g., .K.301 -> K.301)
  */
-const sanitizeRoom = (room: string): string => {
-    return room.trim().replace(/^\.+/, '');
+export const sanitizeRoom = (room: string): string => {
+    return room.trim().replace(LEADING_DOTS_REGEX, '');
 };
 
 /**
  * Normalize Time String
  * Converts "13g30" to "13:30"
  */
-const normalizeTime = (time: string): string => {
-    return time.trim().replace(/[gGhH]/, ':');
+export const normalizeTime = (time: string): string => {
+    return time.trim().replace(TIME_H_REGEX, ':');
 };
 
 /**
@@ -31,7 +46,7 @@ const normalizeTime = (time: string): string => {
  * @param dateStr DD/MM/YYYY
  * @param timeStr HH:mm
  */
-const toTimestamp = (dateStr: string, timeStr: string): number => {
+export const toTimestamp = (dateStr: string, timeStr: string): number => {
     const [d, m, y] = dateStr.split('/').map(Number);
     const [hh, mm] = normalizeTime(timeStr).split(':').map(Number);
     return new Date(y, m - 1, d, hh, mm).getTime();
@@ -42,29 +57,22 @@ const toTimestamp = (dateStr: string, timeStr: string): number => {
  * Detects headers and returns list of sessions.
  */
 export const parseExamText = (text: string): ExamSession[] => {
-    const lines = text.trim().split(/\r?\n/);
+    const lines = text.trim().split(LINE_SPLIT_REGEX);
     if (lines.length < 2) return [];
-
     const header = lines[0].toLowerCase();
-    // Required columns check
     if (!header.includes('mã học phần') || !header.includes('hình thức thi')) return [];
 
     const sessions: ExamSession[] = [];
-    const rows = lines.slice(1);
-
-    rows.forEach(row => {
-        const cols = row.split('\t').map(c => c.trim());
+    lines.slice(1).forEach((row) => {
+        const cols = row.split('\t').map((c) => c.trim());
         if (cols.length < 8) return;
-
-        // Pattern mapping based on:
-        // STT(0) MãHP(1) TênHP(2) Phòng(3) HìnhThức(4) Ngày(5) Giờ(6) ThờiGian(7) VaiTrò(8)
         const courseCode = cols[1];
         const courseName = cols[2];
         const room = sanitizeRoom(cols[3]);
         const format = cols[4];
         const dateStr = cols[5];
         const timeStr = normalizeTime(cols[6]);
-        const duration = parseInt(cols[7]) || 0;
+        const duration = parseInt(cols[7], 10) || 0;
         const role = cols[8] || '';
 
         if (!courseCode || !dateStr || !timeStr) return;
@@ -73,7 +81,7 @@ export const parseExamText = (text: string): ExamSession[] => {
         const endTime = startTime + duration * 60000;
 
         sessions.push({
-            id: `${courseCode}_${dateStr.replace(/\//g, '')}`,
+            id: `${courseCode}_${dateStr.replace(SLASH_GLOBAL_REGEX, '')}`,
             courseCode,
             courseName,
             room,
@@ -83,10 +91,9 @@ export const parseExamText = (text: string): ExamSession[] => {
             duration,
             role,
             startTime,
-            endTime
+            endTime,
         });
     });
 
-    // Sort by time ascending
     return sessions.sort((a, b) => a.startTime - b.startTime);
 };

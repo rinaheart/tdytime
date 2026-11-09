@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useScheduleStore } from '@/core/stores/schedule.store';
+import { useScheduleStore } from '../stores/schedule.store';
 
 /**
  * useCalculatedTime — Hook to get current time (mock-aware)
  * Synchronized with global mockState from schedule store.
+ * Automatically pauses the polling interval when the tab is hidden in the background.
  */
-export const useCalculatedTime = (tickInterval = 30000) => {
-    const mockState = useScheduleStore(s => s.mockState);
-    const isMockEnabled = useScheduleStore(s => s.isMockEnabled);
+export const useCalculatedTime = (tickInterval = 30000): Date => {
+    const mockState = useScheduleStore((s) => s.mockState);
+    const isMockEnabled = useScheduleStore((s) => s.isMockEnabled);
 
     const getCalculatedTime = useCallback(() => {
         if (isMockEnabled && mockState) {
@@ -17,35 +18,59 @@ export const useCalculatedTime = (tickInterval = 30000) => {
         return new Date();
     }, [isMockEnabled, mockState]);
 
-    const [now, setNow] = useState(getCalculatedTime());
+    const [now, setNow] = useState<Date>(() => getCalculatedTime());
 
     useEffect(() => {
-        // Adjust interval based on multiplier if mocking
-        const effectiveInterval = mockState && mockState.multiplier > 1 
-            ? Math.max(1000, tickInterval / mockState.multiplier)
-            : tickInterval;
+        const effectiveInterval =
+            mockState && mockState.multiplier > 1
+                ? Math.max(1000, tickInterval / mockState.multiplier)
+                : tickInterval;
 
-        const interval = setInterval(() => {
-            setNow(getCalculatedTime());
-        }, effectiveInterval);
+        let interval: ReturnType<typeof setInterval> | null = null;
 
-        return () => clearInterval(interval);
-    }, [getCalculatedTime, mockState, tickInterval]);
+        const startTimer = () => {
+            if (interval !== null) clearInterval(interval);
+            interval = setInterval(() => {
+                setNow(getCalculatedTime());
+            }, effectiveInterval);
+        };
 
-    // Handle focus/visibility to sync immediately
-    useEffect(() => {
-        const handleSync = () => {
+        const stopTimer = () => {
+            if (interval !== null) {
+                clearInterval(interval);
+                interval = null;
+            }
+        };
+
+        if (typeof document === 'undefined' || document.visibilityState === 'visible') {
+            startTimer();
+        }
+
+        const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
+                setNow(getCalculatedTime());
+                startTimer();
+            } else {
+                stopTimer();
+            }
+        };
+
+        const handleFocus = () => {
+            if (typeof document === 'undefined' || document.visibilityState === 'visible') {
                 setNow(getCalculatedTime());
             }
         };
-        window.addEventListener('focus', handleSync);
-        document.addEventListener('visibilitychange', handleSync);
+
+        window.addEventListener('focus', handleFocus);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
         return () => {
-            window.removeEventListener('focus', handleSync);
-            document.removeEventListener('visibilitychange', handleSync);
+            stopTimer();
+            window.removeEventListener('focus', handleFocus);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
         };
-    }, [getCalculatedTime]);
+    }, [getCalculatedTime, mockState, tickInterval]);
 
     return now;
 };
+export default useCalculatedTime;

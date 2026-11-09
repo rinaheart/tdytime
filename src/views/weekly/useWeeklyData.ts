@@ -8,14 +8,15 @@ export interface WeeklyDataResult {
   grouped: Record<number, Record<ShiftType, FlatSession[]>>;
   rawSessions: FlatSession[];
   total: number;
+  unfilteredTotal: number;
   hasSessions: boolean;
   weekRange: string;
 }
 
 /**
  * useWeeklyData — Optimized hook for Weekly View.
- * Groups FlatSession[] by dayIdx and session shift.
- * Now supports an optional filter function for integrated filtering.
+ * Groups FlatSession[] by dayIdx and session shift in a single pass.
+ * Returns both filtered total and unfilteredTotal so callers do not need a second hook invocation.
  */
 export const useWeeklyData = (
   targetWeekIdx: number, 
@@ -25,17 +26,16 @@ export const useWeeklyData = (
   
   return useMemo(() => {
     if (!sessionsIndex || sessionsIndex.length === 0) {
-      return { grouped: {}, rawSessions: [], total: 0, hasSessions: false, weekRange: '' };
+      return { grouped: {}, rawSessions: [], total: 0, unfilteredTotal: 0, hasSessions: false, weekRange: '' };
     }
 
     // Filter sessions for the target week (weekIdx is 1-based)
-    let weekSessions = sessionsIndex.filter((s) => s.weekIdx === targetWeekIdx);
-    const weekRange = weekSessions.length > 0 ? weekSessions[0].weekRange : '';
+    const allWeekSessions = sessionsIndex.filter((s) => s.weekIdx === targetWeekIdx);
+    const unfilteredTotal = allWeekSessions.length;
+    const weekRange = unfilteredTotal > 0 ? allWeekSessions[0].weekRange : '';
 
     // Apply additional filtering if provided
-    if (filterFn) {
-      weekSessions = weekSessions.filter(filterFn);
-    }
+    const weekSessions = filterFn ? allWeekSessions.filter(filterFn) : allWeekSessions;
     
     // Group by dayIdx → shift → sessions
     const grouped = weekSessions.reduce((acc, session) => {
@@ -58,7 +58,8 @@ export const useWeeklyData = (
     return { 
       grouped, 
       rawSessions: weekSessions,
-      total: weekSessions.length, 
+      total: weekSessions.length,
+      unfilteredTotal,
       hasSessions: weekSessions.length > 0,
       weekRange
     };

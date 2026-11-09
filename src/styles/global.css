@@ -35,6 +35,16 @@ body {
     @apply bg-slate-50 dark:bg-slate-950;
 }
 
+/* Mobile Touch Optimization: Eliminate 300ms double-tap delay on interactive elements */
+button,
+[role="button"],
+[role="tab"],
+a,
+label,
+summary {
+    touch-action: manipulation;
+}
+
 h1,
 h2,
 h3,
@@ -129,7 +139,7 @@ h4,
     }
 
     .dark .scrollbar-mobile-visible::-webkit-scrollbar-thumb {
-        background-color: rgb(100 116 139 / 0.7);
+        background: rgb(100 116 139 / 0.7);
     }
 }
 

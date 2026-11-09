@@ -28,11 +28,18 @@ const NAV_ITEMS = [
     { path: '/settings', icon: Settings, labelKey: 'nav.settings' },
 ];
 
+const VI_DAY_MAP: Record<number, string> = {
+    0: 'CN', 1: 'T2', 2: 'T3', 3: 'T4', 4: 'T5', 5: 'T6', 6: 'T7'
+};
+
 const AppLayout: React.FC = () => {
     const { t, i18n } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
-    const { sidebarCollapsed, toggleSidebar, darkMode, toggleDarkMode } = useUIStore();
+    const sidebarCollapsed = useUIStore((s) => s.sidebarCollapsed);
+    const toggleSidebar = useUIStore((s) => s.toggleSidebar);
+    const darkMode = useUIStore((s) => s.darkMode);
+    const toggleDarkMode = useUIStore((s) => s.toggleDarkMode);
     const metadata = useScheduleStore(useShallow(s => s.data?.metadata));
     const mockState = useScheduleStore(s => s.mockState);
     const isMockEnabled = useScheduleStore(s => s.isMockEnabled);
@@ -47,10 +54,6 @@ const AppLayout: React.FC = () => {
     const [mockDisplayTimeOnly, setMockDisplayTimeOnly] = useState<string>('');
     const [mockOffset, setMockOffset] = useState<string | null>(null);
 
-    const VI_DAY_MAP: Record<number, string> = {
-        0: 'CN', 1: 'T2', 2: 'T3', 3: 'T4', 4: 'T5', 5: 'T6', 6: 'T7'
-    };
-
     const formatMockTime = useCallback((date: Date) => {
         const day = VI_DAY_MAP[date.getDay()];
         const d = String(date.getDate()).padStart(2, '0');
@@ -62,7 +65,6 @@ const AppLayout: React.FC = () => {
             dateStr: `${day}, ${d}/${mo}/${y}`,
             timeStr: `${hh}:${mm}`
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const calculateOffset = useCallback((mockMs: number, localMs: number) => {
@@ -122,13 +124,15 @@ const AppLayout: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (!mockState) {
+        if (!mockState || !isMockEnabled) {
             // eslint-disable-next-line react-hooks/set-state-in-effect
             setMockDisplayDate('');
             setMockDisplayTimeOnly('');
             setMockOffset(null);
             return;
         }
+
+        let interval: ReturnType<typeof setInterval> | null = null;
 
         const tick = () => {
             const now = Date.now();
@@ -142,10 +146,38 @@ const AppLayout: React.FC = () => {
             setMockOffset(calculateOffset(currentMs, now));
         };
 
+        const startInterval = () => {
+            if (interval !== null) clearInterval(interval);
+            interval = setInterval(tick, 1000);
+        };
+
+        const stopInterval = () => {
+            if (interval !== null) {
+                clearInterval(interval);
+                interval = null;
+            }
+        };
+
         tick();
-        const interval = setInterval(tick, 1000);
-        return () => clearInterval(interval);
-    }, [mockState, formatMockTime, calculateOffset]);
+        if (typeof document === 'undefined' || document.visibilityState === 'visible') {
+            startInterval();
+        }
+
+        const handleVis = () => {
+            if (document.visibilityState === 'visible') {
+                tick();
+                startInterval();
+            } else {
+                stopInterval();
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVis);
+        return () => {
+            stopInterval();
+            document.removeEventListener('visibilitychange', handleVis);
+        };
+    }, [mockState, isMockEnabled, formatMockTime, calculateOffset]);
 
     // Global Key Shortcuts
     useEffect(() => {

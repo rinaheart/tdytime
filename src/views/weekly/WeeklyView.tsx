@@ -25,7 +25,7 @@ const WeeklyView: React.FC = () => {
 
     const maxWeekIdx = useScheduleStore((s) => s.maxWeekIdx);
 
-    const { grouped, rawSessions, hasSessions, weekRange } = useWeeklyData(
+    const { grouped, rawSessions, hasSessions, unfilteredTotal, weekRange } = useWeeklyData(
         currentWeekIndex + 1,
         filterFn as (s: FlatSession) => boolean
     );
@@ -37,8 +37,7 @@ const WeeklyView: React.FC = () => {
         return isCurrentWeek(weekRange, now);
     }, [weekRange, now]);
 
-    const { total: totalUnfiltered } = useWeeklyData(currentWeekIndex + 1);
-    const isWeekEmpty = totalUnfiltered === 0;
+    const isWeekEmpty = unfilteredTotal === 0;
 
     if (currentWeekIndex === -1 && !hasSessions) {
         return <h1 className="p-8 text-center text-base font-bold text-slate-600 dark:text-slate-400">{t('weekly.noData')}</h1>;

@@ -16,7 +16,7 @@ const isAIStudio = Boolean(
  * Zero-Dependency Custom PWA Plugin (TdyTripZ Architecture adapted for TdyTime)
  * 1. Syncs `version` from package.json into `public/version.json` and `CACHE_NAME` in `public/sw.js`.
  * 2. On `closeBundle`, scans `dist/assets/` and injects Tier A/B built assets into `dist/sw.js` `PRECACHE_URLS`,
- *    while leaving Tier C Heavy Chunks (PDF Engine, Fonts, Excel, DevTools) for Cache-on-Demand.
+ *    while leaving Tier C Heavy Chunks (PDF Engine, Fonts, Excel, DevTools, CSV/FileSaver) for Cache-on-Demand.
  */
 function tdyTimePwaPlugin(): Plugin {
     const syncVersionMetadata = () => {
@@ -78,6 +78,7 @@ function tdyTimePwaPlugin(): Plugin {
                 'exceljs-',
                 'vendor-monitoring-',
                 'FileSaver.min-',
+                'export-csv-',
             ];
 
             const allBuildAssets = fs

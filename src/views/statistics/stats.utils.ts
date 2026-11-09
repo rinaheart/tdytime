@@ -4,16 +4,31 @@
  * with strict equivalence guarantees across all standard and edge-case business rules.
  */
 
+import { CourseType, type ScheduleData } from '@/core/schedule/schedule.types';
+import {
+    isSessionCancelled,
+    resolveSessionPeriodRange,
+    type FlatSession,
+} from '@/core/schedule/schedule.index';
+import { isMainTeacher, DATE_REGEX_GLOBAL } from '@/core/schedule/schedule.utils';
 import { DAYS_OF_WEEK } from '@/core/constants';
-import { isMainTeacher } from '@/core/schedule/schedule.utils';
-import { isSessionCancelled, resolveSessionPeriodRange, type FlatSession } from '@/core/schedule/schedule.index';
-import type { CourseSession, ScheduleData } from '@/core/schedule/schedule.types';
-import type { GroupProgressItem } from './cards/GroupProgressCard';
 
 export interface ProgressStat {
     percent: number;
     done: number;
     total: number;
+}
+
+export interface GroupProgressItem {
+    key: string;
+    code: string;
+    courseName: string;
+    className: string;
+    group: string;
+    type: CourseType;
+    done: number;
+    total: number;
+    percent: number;
 }
 
 export interface ScheduleProgressResult {
@@ -26,8 +41,6 @@ export interface ScheduleProgressResult {
     groupProgress: GroupProgressItem[];
 }
 
-const EMPTY_GROUP_PROGRESS: GroupProgressItem[] = [];
-
 const EMPTY_PROGRESS_RESULT: ScheduleProgressResult = {
     progress: {
         today: { percent: 0, done: 0, total: 0 },
@@ -35,15 +48,13 @@ const EMPTY_PROGRESS_RESULT: ScheduleProgressResult = {
         month: { percent: 0, done: 0, total: 0 },
         semester: { percent: 0, done: 0, total: 0 },
     },
-    groupProgress: EMPTY_GROUP_PROGRESS,
+    groupProgress: [],
 };
 
 const pad2 = (n: number): string => (n < 10 ? `0${n}` : `${n}`);
 
 const toValidPeriods = (periodCount: unknown): number => {
-    if (typeof periodCount !== 'number' || !Number.isFinite(periodCount) || periodCount <= 0) {
-        return 0;
-    }
+    if (typeof periodCount !== 'number' || !Number.isFinite(periodCount) || periodCount <= 0) return 0;
     return periodCount;
 };
 
@@ -56,23 +67,23 @@ const toProgressStat = (done: number, total: number): ProgressStat => ({
 /**
  * Find all 1-based week indices whose dateRange covers `now` [weekStart 00:00:00, weekStart + 7 days).
  */
-export const findMatchingWeekIndices = (data: ScheduleData, now: Date): Set<number> => {
+export const findMatchingWeekIndices = (
+    data: ScheduleData | null | undefined,
+    now: Date,
+): Set<number> => {
     const matched = new Set<number>();
     if (!data || !Array.isArray(data.weeks)) return matched;
-
     for (let i = 0; i < data.weeks.length; i++) {
         const w = data.weeks[i];
         if (!w || typeof w.dateRange !== 'string') continue;
-        const matches = w.dateRange.match(/(\d{2})\/(\d{2})\/(\d{4})/g);
+        const matches = w.dateRange.match(DATE_REGEX_GLOBAL);
         if (!matches || matches.length === 0) continue;
         const [ds, ms, ys] = matches[0].split('/').map(Number);
         if (!ds || !ms || !ys) continue;
         const weekStart = new Date(ys, ms - 1, ds, 0, 0, 0, 0);
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekStart.getDate() + 7);
-        if (now >= weekStart && now < weekEnd) {
-            matched.add(i + 1);
-        }
+        if (now >= weekStart && now < weekEnd) matched.add(i + 1);
     }
     return matched;
 };
@@ -84,9 +95,15 @@ export const calculateProgressFromIndex = (
     data: ScheduleData | null | undefined,
     sessionsIndex: FlatSession[] | null | undefined,
     now: Date,
-    teacherName: string
+    teacherName: string,
 ): ScheduleProgressResult => {
-    if (!data || !Array.isArray(data.weeks) || data.weeks.length === 0 || !sessionsIndex || sessionsIndex.length === 0) {
+    if (
+        !data ||
+        !Array.isArray(data.weeks) ||
+        data.weeks.length === 0 ||
+        !sessionsIndex ||
+        sessionsIndex.length === 0
+    ) {
         return EMPTY_PROGRESS_RESULT;
     }
 
@@ -106,7 +123,7 @@ export const calculateProgressFromIndex = (
             courseName: string;
             className: string;
             group: string;
-            type: CourseSession['type'];
+            type: CourseType;
             done: number;
             total: number;
         }
@@ -121,27 +138,32 @@ export const calculateProgressFromIndex = (
 
     for (let i = 0; i < sessionsIndex.length; i++) {
         const s = sessionsIndex[i];
-        if (!s || isSessionCancelled(s as unknown as Partial<CourseSession> & Record<string, unknown>)) continue;
-
+        if (!s || isSessionCancelled(s as unknown as Record<string, unknown>)) continue;
         const p = toValidPeriods(s.periodCount);
         if (p <= 0) continue;
-
         if (!isMainTeacher(s.teacher, teacherName)) continue;
 
-        const effectiveType = hasOverrides && overrides![s.courseCode] ? overrides![s.courseCode] : s.type;
+        const effectiveType =
+            hasOverrides && overrides![s.courseCode] ? overrides![s.courseCode] : s.type;
         const isToday = s.dateStr === todayStr;
-
         let finished: boolean;
+
         if (isToday) {
             if (s.hasValidEndTime === false) {
                 finished = false;
-            } else if (effectiveType !== s.type || s.hasValidEndTime === undefined || !Number.isFinite(s.endTs)) {
+            } else if (
+                effectiveType !== s.type ||
+                s.hasValidEndTime === undefined ||
+                !Number.isFinite(s.endTs)
+            ) {
                 const resolved = resolveSessionPeriodRange(s.timeSlot, effectiveType);
                 if (!resolved) {
                     finished = false;
                 } else {
                     const currentTotalMin = now.getHours() * 60 + now.getMinutes();
-                    finished = resolved.periodEnd.end[0] * 60 + resolved.periodEnd.end[1] <= currentTotalMin;
+                    finished =
+                        resolved.periodEnd.end[0] * 60 + resolved.periodEnd.end[1] <=
+                        currentTotalMin;
                 }
             } else {
                 finished = s.endTs <= nowTs;
@@ -159,10 +181,12 @@ export const calculateProgressFromIndex = (
             weekT += p;
             if (finished) weekD += p;
         }
+
         if (isToday) {
             todayT += p;
             if (finished) todayD += p;
         }
+
         if (typeof s.dateStr === 'string' && s.dateStr.endsWith(monthSuffix)) {
             monthT += p;
             if (finished) monthD += p;
@@ -186,11 +210,13 @@ export const calculateProgressFromIndex = (
         if (finished) gEntry.done += p;
     }
 
-    const groupProgress: GroupProgressItem[] = Array.from(groupMap.entries()).map(([key, item]) => ({
-        key,
-        ...item,
-        percent: item.total > 0 ? Math.round((item.done / item.total) * 100) : 0,
-    }));
+    const groupProgress: GroupProgressItem[] = Array.from(groupMap.entries()).map(
+        ([key, item]) => ({
+            key,
+            ...item,
+            percent: item.total > 0 ? Math.round((item.done / item.total) * 100) : 0,
+        }),
+    );
 
     return {
         progress: {
@@ -210,7 +236,7 @@ export const calculateProgressFromIndex = (
 export const calculateProgressLegacy = (
     data: ScheduleData | null | undefined,
     now: Date,
-    teacherName: string
+    teacherName: string,
 ): ScheduleProgressResult => {
     if (!data || !Array.isArray(data.weeks) || data.weeks.length === 0) {
         return EMPTY_PROGRESS_RESULT;
@@ -232,7 +258,7 @@ export const calculateProgressLegacy = (
             courseName: string;
             className: string;
             group: string;
-            type: CourseSession['type'];
+            type: CourseType;
             done: number;
             total: number;
         }
@@ -244,7 +270,11 @@ export const calculateProgressLegacy = (
     todayDate.setHours(0, 0, 0, 0);
     const seenKeys = new Set<string>();
 
-    const isSessionFinished = (s: CourseSession, effectiveType: CourseSession['type'], sessionDate: Date) => {
+    const isSessionFinished = (
+        s: { timeSlot?: string },
+        effectiveType: CourseType,
+        sessionDate: Date,
+    ): boolean => {
         const d = new Date(sessionDate);
         d.setHours(0, 0, 0, 0);
         if (d < todayDate) return true;
@@ -256,7 +286,7 @@ export const calculateProgressLegacy = (
 
     data.weeks.forEach((w, wIdx) => {
         if (!w || !w.days || typeof w.dateRange !== 'string') return;
-        const matches = w.dateRange.match(/(\d{2})\/(\d{2})\/(\d{4})/g);
+        const matches = w.dateRange.match(DATE_REGEX_GLOBAL);
         if (!matches || matches.length === 0) return;
         const [ds, ms, ys] = matches[0].split('/').map(Number);
         if (!ds || !ms || !ys) return;
@@ -268,22 +298,21 @@ export const calculateProgressLegacy = (
         const weekIdx = wIdx + 1;
 
         DAYS_OF_WEEK.forEach((dName, dIdx) => {
-            const dayObj = w.days[dName];
+            const dayObj = w.days[dName] as unknown as Record<string, unknown> | undefined;
             if (!dayObj) return;
-
             const targetDate = new Date(weekStart);
             targetDate.setDate(weekStart.getDate() + dIdx);
             const isToday = targetDate.getTime() === todayDate.getTime();
             const isCurrentMonth =
-                targetDate.getMonth() === now.getMonth() && targetDate.getFullYear() === now.getFullYear();
+                targetDate.getMonth() === now.getMonth() &&
+                targetDate.getFullYear() === now.getFullYear();
 
-            const shifts = ['morning', 'afternoon', 'evening', 'night'] as const;
-            shifts.forEach((shiftKey) => {
-                const shiftSessions = (dayObj as unknown as Record<string, CourseSession[]>)[shiftKey];
+            (['morning', 'afternoon', 'evening', 'night'] as const).forEach((shiftKey) => {
+                const shiftSessions = dayObj[shiftKey];
                 if (!Array.isArray(shiftSessions)) return;
 
                 shiftSessions.forEach((s) => {
-                    if (!s || isSessionCancelled(s as unknown as Partial<CourseSession> & Record<string, unknown>)) return;
+                    if (!s || isSessionCancelled(s)) return;
                     const p = toValidPeriods(s.periodCount);
                     if (p <= 0) return;
                     if (!isMainTeacher(s.teacher, teacherName)) return;
@@ -298,14 +327,17 @@ export const calculateProgressLegacy = (
 
                     semT += p;
                     if (finished) semD += p;
+
                     if (isCurrentWeek) {
                         weekT += p;
                         if (finished) weekD += p;
                     }
+
                     if (isToday) {
                         todayT += p;
                         if (finished) todayD += p;
                     }
+
                     if (isCurrentMonth) {
                         monthT += p;
                         if (finished) monthD += p;
@@ -332,11 +364,13 @@ export const calculateProgressLegacy = (
         });
     });
 
-    const groupProgress: GroupProgressItem[] = Array.from(groupMap.entries()).map(([key, item]) => ({
-        key,
-        ...item,
-        percent: item.total > 0 ? Math.round((item.done / item.total) * 100) : 0,
-    }));
+    const groupProgress: GroupProgressItem[] = Array.from(groupMap.entries()).map(
+        ([key, item]) => ({
+            key,
+            ...item,
+            percent: item.total > 0 ? Math.round((item.done / item.total) * 100) : 0,
+        }),
+    );
 
     return {
         progress: {
@@ -357,7 +391,7 @@ export const calculateScheduleProgress = (
     data: ScheduleData | null | undefined,
     sessionsIndex: FlatSession[] | null | undefined,
     now: Date,
-    teacherName: string
+    teacherName: string,
 ): ScheduleProgressResult => {
     if (!data || !Array.isArray(data.weeks) || data.weeks.length === 0) {
         return EMPTY_PROGRESS_RESULT;
