@@ -4,12 +4,12 @@
  */
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { formatSemester } from '@/core/schedule';
+import { formatSemester } from '@/core/schedule/schedule.utils';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Upload, FileText, History, Trash2, ArrowRight, ArrowLeft, Globe, Check, X, Sun, Moon } from 'lucide-react';
-import { useScheduleStore } from '@/core/stores';
-import type { HistoryItem } from '@/core/schedule';
+import { useScheduleStore } from '@/core/stores/schedule.store';
+import type { HistoryItem } from '@/core/schedule/history.service';
 import { APP_VERSION } from '@/core/constants';
 import ThemePicker from '@/ui/composites/ThemePicker';
 import { changeLanguage, loadLanguage } from '@/i18n/config';
@@ -349,7 +349,7 @@ const WelcomeView: React.FC = () => {
                             v{APP_VERSION}
                         </span>
                     </h1>
-                    <p className="text-xs text-accent-600 dark:text-accent-400 mt-0.5 font-medium tracking-wide text-balance">
+                    <p className="text-xs text-accent-600 dark:text-accent-400 mt-0.5 font-medium tracking-wide">
                         {t('app.tagline')}
                     </p>
                 </div>

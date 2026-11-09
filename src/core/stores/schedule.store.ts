@@ -4,6 +4,7 @@
  * Replaces old useSchedule hook with Zustand for selective re-renders.
  */
 
+import { startTransition } from 'react';
 import { create } from 'zustand';
 import {
     ScheduleData,
@@ -19,8 +20,21 @@ import {
 import { historyService, type HistoryItem } from '../schedule/history.service';
 import { parseScheduleHTML, sanitizeScheduleData } from '../schedule/parser';
 import { DEFAULT_THRESHOLDS } from '../constants';
+import { yieldToMain } from '../utils/scheduler';
 import { useUIStore } from './ui.store';
 import { useNotesStore } from './notes.store';
+
+let cachedDefaultTimezone: string | null = null;
+function getDefaultTimezone(): string {
+    if (!cachedDefaultTimezone) {
+        try {
+            cachedDefaultTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Ho_Chi_Minh';
+        } catch {
+            cachedDefaultTimezone = 'Asia/Ho_Chi_Minh';
+        }
+    }
+    return cachedDefaultTimezone;
+}
 
 interface ScheduleState {
     // Data
@@ -74,7 +88,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     sessionsIndex: [],
     semesterBounds: null,
     maxWeekIdx: -1,
-    userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    userTimezone: 'Asia/Ho_Chi_Minh',
     error: null,
     isProcessing: false,
     isInitialized: false,
@@ -83,6 +97,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
     isMockEnabled: false,
 
     initFromStorage: async () => {
+        await yieldToMain();
         await historyService.init();
         const fetchedHistory = await historyService.getAll();
         const prevHistory = get().historyList;
@@ -105,32 +120,48 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
                 ? prevAbbr
                 : globalAbbr;
 
+        const resolvedTz = getDefaultTimezone();
         const saved = localStorage.getItem('last_schedule_data');
         if (saved) {
             try {
+                await yieldToMain();
                 const parsed = JSON.parse(saved) as ScheduleData;
                 const sanitized = sanitizeScheduleData(parsed);
                 // Merge loaded abbreviations with global ones (global takes precedence)
                 const mergedAbbr = { ...(sanitized.abbreviations || {}), ...globalAbbr };
-                
-                const sessions = buildScheduleIndex(sanitized, { timezone: get().userTimezone });
-                set({
-                    historyList,
-                    data: sanitized,
-                    metrics: calculateMetrics(sanitized),
-                    currentWeekIndex: findCurrentWeekIndex(sanitized),
-                    overrides: sanitized.overrides || {},
-                    abbreviations: mergedAbbr,
-                    sessionsIndex: sessions,
-                    semesterBounds: calculateSemesterBounds(sessions),
-                    maxWeekIdx: calculateMaxWeekIdx(sessions),
-                    isInitialized: true,
+
+                await yieldToMain();
+                const sessions = buildScheduleIndex(sanitized, { timezone: resolvedTz });
+                const metrics = calculateMetrics(sanitized);
+                const currentWeekIndex = findCurrentWeekIndex(sanitized);
+                const semesterBounds = calculateSemesterBounds(sessions);
+                const maxWeekIdx = calculateMaxWeekIdx(sessions);
+
+                await yieldToMain();
+                startTransition(() => {
+                    set({
+                        historyList,
+                        data: sanitized,
+                        metrics,
+                        currentWeekIndex,
+                        overrides: sanitized.overrides || {},
+                        abbreviations: mergedAbbr,
+                        sessionsIndex: sessions,
+                        semesterBounds,
+                        maxWeekIdx,
+                        userTimezone: resolvedTz,
+                        isInitialized: true,
+                    });
                 });
             } catch {
-                set({ historyList, abbreviations: nextEmptyAbbr, isInitialized: true });
+                startTransition(() => {
+                    set({ historyList, abbreviations: nextEmptyAbbr, userTimezone: resolvedTz, isInitialized: true });
+                });
             }
         } else {
-            set({ historyList, abbreviations: nextEmptyAbbr, isInitialized: true });
+            startTransition(() => {
+                set({ historyList, abbreviations: nextEmptyAbbr, userTimezone: resolvedTz, isInitialized: true });
+            });
         }
     },
 

@@ -126,7 +126,7 @@ function tdyTimePwaPlugin(): Plugin {
 }
 
 export default defineConfig(({ command, mode }) => {
-    if (command === 'build' || mode === 'production') {
+    if (command === 'build' || mode === 'production' || process.argv.includes('build')) {
         process.env.NODE_ENV = 'production';
     }
 
@@ -137,7 +137,7 @@ export default defineConfig(({ command, mode }) => {
 
     define: {
         global: 'window',
-        'process.env.NODE_ENV': JSON.stringify(command === 'build' || mode === 'production' ? 'production' : 'development'),
+        'process.env.NODE_ENV': JSON.stringify(command === 'build' || mode === 'production' || process.argv.includes('build') ? 'production' : 'development'),
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
         __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
     },
@@ -225,9 +225,10 @@ self.addEventListener('activate', (event) => {
                     if (id.includes('node_modules')) {
                         // React core + JSX runtime (strictly root node_modules to avoid nested @react-pdf/reconciler/node_modules/scheduler or zustand/esm/react)
                         if (
-                            id.includes('/node_modules/react/') ||
-                            id.includes('/node_modules/react-dom/') ||
-                            id.includes('/node_modules/scheduler/')
+                            !id.includes('@react-pdf') &&
+                            (id.includes('/node_modules/react/') ||
+                                id.includes('/node_modules/react-dom/') ||
+                                id.includes('/node_modules/scheduler/'))
                         ) {
                             return 'vendor-react';
                         }

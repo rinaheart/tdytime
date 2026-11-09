@@ -7,7 +7,7 @@ import React, { lazy, Suspense } from 'react';
 import { createHashRouter, Navigate, useRouteError } from 'react-router-dom';
 import { useScheduleStore } from '../core/stores/schedule.store';
 import { useExamStore } from '../core/stores/exam.store';
-import { SessionCardSkeleton } from '../ui/primitives';
+import { SessionCardSkeleton } from '../ui/primitives/Skeleton';
 import WelcomeView from '../views/welcome/WelcomeView';
 import i18n, { loadLanguage } from '../i18n/config';
 

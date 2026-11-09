@@ -30,9 +30,19 @@ function resolveTheme(raw: string | null): AccentTheme {
     return THEME_MIGRATION[raw] || DEFAULT_THEME;
 }
 
-/** Apply accent theme attribute to <html> */
+/** Apply accent theme attribute to <html> without redundant style invalidation */
 function applyAccentTheme(theme: AccentTheme) {
-    document.documentElement.setAttribute('data-accent', theme);
+    if (typeof document !== 'undefined' && document.documentElement.getAttribute('data-accent') !== theme) {
+        document.documentElement.setAttribute('data-accent', theme);
+    }
+}
+
+function isViewportCollapsed(): boolean {
+    if (typeof window === 'undefined') return true;
+    if (typeof window.matchMedia === 'function') {
+        return !window.matchMedia('(min-width: 1024px)').matches;
+    }
+    return window.innerWidth < 1024;
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -40,7 +50,7 @@ export const useUIStore = create<UIState>((set) => ({
         try {
             const saved = localStorage.getItem('color-theme');
             if (saved) return saved === 'dark';
-            return window.matchMedia('(prefers-color-scheme: dark)').matches;
+            return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
         } catch {
             return false;
         }
@@ -54,7 +64,7 @@ export const useUIStore = create<UIState>((set) => ({
         }
     })(),
 
-    sidebarCollapsed: typeof window !== 'undefined' ? window.innerWidth < 1024 : true,
+    sidebarCollapsed: isViewportCollapsed(),
     
     toast: { message: null, type: 'success' },
 
@@ -85,7 +95,7 @@ export const useUIStore = create<UIState>((set) => ({
     resetAll: () => {
         localStorage.removeItem('color-theme');
         localStorage.removeItem('accent-theme');
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const systemDark = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (systemDark) document.documentElement.classList.add('dark');
         else document.documentElement.classList.remove('dark');
         applyAccentTheme(DEFAULT_THEME);
@@ -93,25 +103,31 @@ export const useUIStore = create<UIState>((set) => ({
         set({
             darkMode: systemDark,
             accentTheme: DEFAULT_THEME,
-            sidebarCollapsed: typeof window !== 'undefined' ? window.innerWidth < 1024 : true,
+            sidebarCollapsed: isViewportCollapsed(),
             toast: { message: null, type: 'success' }
         });
     },
 }));
 
-// Apply initial classes on load
+// Apply initial classes on load without forcing redundant DOM invalidation
 if (typeof window !== 'undefined') {
     try {
         const savedDark = localStorage.getItem('color-theme');
-        if (savedDark === 'dark' || (!savedDark && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        const shouldBeDark =
+            savedDark === 'dark' ||
+            (!savedDark && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        if (shouldBeDark && !document.documentElement.classList.contains('dark')) {
             document.documentElement.classList.add('dark');
         }
         
-        const accent = resolveTheme(localStorage.getItem('accent-theme'));
+        const rawAccent = localStorage.getItem('accent-theme');
+        const accent = resolveTheme(rawAccent);
         applyAccentTheme(accent);
 
-        // Persist migrated value
-        localStorage.setItem('accent-theme', accent);
+        // Only write to localStorage if migrated or missing
+        if (rawAccent !== accent) {
+            localStorage.setItem('accent-theme', accent);
+        }
     } catch {
         // Ignore
     }

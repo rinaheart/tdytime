@@ -3,6 +3,7 @@
  * Loads Vietnamese and English translations with localStorage persistence.
  */
 
+import { startTransition } from 'react';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { APP_VERSION } from '@/core/constants';
@@ -187,6 +188,7 @@ i18n.use(initReactI18next).init({
 
 /**
  * Lazy load the full locale dictionary (`vi.json` or `en.json`)
+ * Wrapped in React.startTransition to prevent synchronous re-render storms on the main thread.
  */
 export const loadLanguage = async (lng: string) => {
     const targetLng = lng === 'en' ? 'en' : 'vi';
@@ -196,15 +198,17 @@ export const loadLanguage = async (lng: string) => {
             targetLng === 'en'
                 ? await import('./locales/en.json')
                 : await import('./locales/vi.json');
-        i18n.addResourceBundle(targetLng, 'translation', resources.default, true, true);
         loadedFullBundles.add(targetLng);
+        startTransition(() => {
+            i18n.addResourceBundle(targetLng, 'translation', resources.default, true, true);
+        });
     } catch (error) {
         console.error(`Failed to load language: ${targetLng}`, error);
     }
 };
 
 // Load full locale immediately if user has existing data, is on an inner route, or in tests;
-// otherwise defer full locale warmup until after initial WelcomeView idle window.
+// otherwise defer full locale warmup until after window.load + quiet window.
 const shouldLoadFullLocaleImmediately = () => {
     try {
         if (import.meta.env.MODE === 'test') return true;
@@ -221,9 +225,23 @@ const shouldLoadFullLocaleImmediately = () => {
 if (shouldLoadFullLocaleImmediately()) {
     void loadLanguage(defaultLanguage);
 } else if (typeof window !== 'undefined') {
-    window.setTimeout(() => {
-        void loadLanguage(defaultLanguage);
-    }, 5500);
+    const scheduleLocaleWarmup = () => {
+        window.setTimeout(() => {
+            const winWithIdle = window as Window & {
+                requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+            };
+            if (typeof winWithIdle.requestIdleCallback === 'function') {
+                winWithIdle.requestIdleCallback(() => void loadLanguage(defaultLanguage), { timeout: 3000 });
+            } else {
+                void loadLanguage(defaultLanguage);
+            }
+        }, 8000);
+    };
+    if (document.readyState === 'complete') {
+        scheduleLocaleWarmup();
+    } else {
+        window.addEventListener('load', scheduleLocaleWarmup, { once: true });
+    }
 }
 
 /**
@@ -231,14 +249,21 @@ if (shouldLoadFullLocaleImmediately()) {
  */
 export const changeLanguage = async (lng: string) => {
     await loadLanguage(lng);
-    await i18n.changeLanguage(lng);
+    startTransition(() => {
+        void i18n.changeLanguage(lng);
+    });
     localStorage.setItem('language', lng);
 };
 
-// Sync document lang attribute
+// Sync document lang attribute without forcing unnecessary root style invalidation
 i18n.on('languageChanged', (lng) => {
-    document.documentElement.lang = lng;
+    if (typeof document !== 'undefined' && document.documentElement.lang !== lng) {
+        document.documentElement.lang = lng;
+    }
 });
-document.documentElement.lang = i18n.language || defaultLanguage;
+const initialDocLang = i18n.language || defaultLanguage;
+if (typeof document !== 'undefined' && document.documentElement.lang !== initialDocLang) {
+    document.documentElement.lang = initialDocLang;
+}
 
 export default i18n;
