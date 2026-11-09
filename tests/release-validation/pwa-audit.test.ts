@@ -33,23 +33,31 @@ function readPngHeader(relPath: string) {
 }
 
 describe('PWA & Lighthouse CI Audit Verification', () => {
-    it('1. package.json specifies latest vite-plugin-pwa (^2.0.0) and workbox-window (^7.4.1)', () => {
+    it('1. package.json specifies latest vite-plugin-pwa (^2.0.0), workbox-window (^7.4.1), and engines.node (>=22.0.0)', () => {
         const pkg = JSON.parse(readFileSync(resolve(ROOT_DIR, 'package.json'), 'utf-8'));
         expect(pkg.devDependencies['vite-plugin-pwa']).toBe('^2.0.0');
         expect(pkg.dependencies['workbox-window']).toBe('^7.4.1');
+        expect(pkg.engines.node).toBe('>=22.0.0');
         expect(pkg.scripts['test:perf']).toBe('lhci autorun');
+
+        expect(readFileSync(resolve(ROOT_DIR, '.nvmrc'), 'utf-8').trim()).toBe('26');
+        expect(readFileSync(resolve(ROOT_DIR, '.node-version'), 'utf-8').trim()).toBe('26');
     });
 
-    it('2. .github/workflows/audit.yml and lighthouserc.json are configured for push to main', () => {
+    it('2. .github/workflows/audit.yml, ci.yml, and lighthouserc.json are configured with Node 26 LTS', () => {
         const workflowPath = resolve(ROOT_DIR, '.github/workflows/audit.yml');
         expect(existsSync(workflowPath)).toBe(true);
         const workflowYaml = readFileSync(workflowPath, 'utf-8');
 
         expect(workflowYaml).toContain('push:');
         expect(workflowYaml).toContain('"main"');
+        expect(workflowYaml).toContain("node-version: '26'");
         expect(workflowYaml).toContain('npm run build');
         expect(workflowYaml).toContain('treosh/lighthouse-ci-action@v12');
         expect(workflowYaml).toContain('./lighthouserc.json');
+
+        const ciYaml = readFileSync(resolve(ROOT_DIR, '.github/workflows/ci.yml'), 'utf-8');
+        expect(ciYaml).toContain("node-version: '26'");
 
         const lhrcPath = resolve(ROOT_DIR, 'lighthouserc.json');
         expect(existsSync(lhrcPath)).toBe(true);
@@ -127,5 +135,18 @@ describe('PWA & Lighthouse CI Audit Verification', () => {
         expect(viteConfig).toContain("src: '/pwa-maskable-512x512.png?v=2026.11'");
         expect(viteConfig).toContain('ignoreURLParametersMatching');
         expect(viteConfig).toContain('cleanupOutdatedCaches: true');
+    });
+
+    it('6. Update/Sync action re-fetches critical calendar data and forces a Service Worker update check', () => {
+        const viJson = JSON.parse(readFileSync(resolve(ROOT_DIR, 'src/i18n/locales/vi.json'), 'utf-8'));
+        const enJson = JSON.parse(readFileSync(resolve(ROOT_DIR, 'src/i18n/locales/en.json'), 'utf-8'));
+        expect(viJson.pwa.update_check).toBe('Cập nhật/Đồng bộ');
+        expect(enJson.pwa.update_check).toBe('Update/Sync');
+
+        const handlerCode = readFileSync(resolve(ROOT_DIR, 'src/app/PWAUpdateHandler.tsx'), 'utf-8');
+        expect(handlerCode).toContain('useScheduleStore.getState().initFromStorage()');
+        expect(handlerCode).toContain('useExamStore.persist?.rehydrate?.()');
+        expect(handlerCode).toContain('useNotesStore.persist?.rehydrate?.()');
+        expect(handlerCode).toContain('await registration.update()');
     });
 });

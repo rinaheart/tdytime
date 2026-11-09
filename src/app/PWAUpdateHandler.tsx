@@ -8,6 +8,9 @@ import { useRegisterSW } from 'virtual:pwa-register/react';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Download, Check, X, WifiOff } from 'lucide-react';
 import { draftService } from '@/core/notes/draft.service';
+import { useScheduleStore } from '@/core/stores/schedule.store';
+import { useExamStore } from '@/core/stores/exam.store';
+import { useNotesStore } from '@/core/stores/notes.store';
 
 const INSTALL_PROMPT_DISMISS_KEY = 'tdytime_install_prompt_dismissed';
 const PWA_DISMISS_KEY = 'tdytime_pwa_dismiss_date';
@@ -173,7 +176,7 @@ export const PWAUpdateHandler: React.FC = () => {
         }
     }, [handleDismissInstall]);
 
-    // Expose checkPWAUpdate and triggerPWAInstall functions to window for SettingsView to trigger
+    // Expose checkPWAUpdate (Update/Sync) and triggerPWAInstall functions to window for SettingsView to trigger
     useEffect(() => {
         const checkFn = async () => {
             if (checkStatusRef.current === 'checking') return;
@@ -181,13 +184,20 @@ export const PWAUpdateHandler: React.FC = () => {
             setCheckStatus('checking');
 
             try {
+                // 1. Re-fetch & re-hydrate critical calendar data (schedule, history, exams, notes)
+                await useScheduleStore.getState().initFromStorage();
+                await Promise.resolve(useExamStore.persist?.rehydrate?.());
+                await Promise.resolve(useNotesStore.persist?.rehydrate?.());
+
+                // 2. Force Service Worker update check (bypassing automatic background cycle)
                 if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
                     const registration = await navigator.serviceWorker.getRegistration();
                     if (registration) {
                         await registration.update();
 
                         addTimeout(() => {
-                            if (needUpdateRef.current) {
+                            if (needUpdateRef.current || registration.waiting) {
+                                setNeedUpdate(true);
                                 setUpdateBypassed(true);
                                 setCheckStatus('idle');
                             } else {
@@ -222,7 +232,7 @@ export const PWAUpdateHandler: React.FC = () => {
             delete win.checkPWAUpdate;
             delete win.triggerPWAInstall;
         };
-    }, [addTimeout, handleInstall]);
+    }, [addTimeout, handleInstall, setNeedUpdate]);
 
     return (
         <>
