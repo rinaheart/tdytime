@@ -84,8 +84,10 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
 
     initFromStorage: async () => {
         await historyService.init();
-        const historyList = await historyService.getAll();
-        set({ historyList });
+        const fetchedHistory = await historyService.getAll();
+        const prevHistory = get().historyList;
+        const historyList =
+            fetchedHistory.length === 0 && prevHistory.length === 0 ? prevHistory : fetchedHistory;
 
         const savedAbbrStr = localStorage.getItem('global_abbreviations');
         let globalAbbr: Record<string, string> = {};
@@ -97,6 +99,11 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
                 globalAbbr = {};
             }
         }
+        const prevAbbr = get().abbreviations;
+        const nextEmptyAbbr =
+            Object.keys(globalAbbr).length === 0 && Object.keys(prevAbbr).length === 0
+                ? prevAbbr
+                : globalAbbr;
 
         const saved = localStorage.getItem('last_schedule_data');
         if (saved) {
@@ -108,6 +115,7 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
                 
                 const sessions = buildScheduleIndex(sanitized, { timezone: get().userTimezone });
                 set({
+                    historyList,
                     data: sanitized,
                     metrics: calculateMetrics(sanitized),
                     currentWeekIndex: findCurrentWeekIndex(sanitized),
@@ -119,10 +127,10 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
                     isInitialized: true,
                 });
             } catch {
-                set({ abbreviations: globalAbbr, isInitialized: true });
+                set({ historyList, abbreviations: nextEmptyAbbr, isInitialized: true });
             }
         } else {
-            set({ abbreviations: globalAbbr, isInitialized: true });
+            set({ historyList, abbreviations: nextEmptyAbbr, isInitialized: true });
         }
     },
 

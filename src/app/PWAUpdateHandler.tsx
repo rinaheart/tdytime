@@ -46,7 +46,9 @@ export const PWAUpdateHandler: React.FC = () => {
     const timeoutIds = useRef<number[]>([]);
     const installPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
     const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
+    const registerPromiseRef = useRef<Promise<ServiceWorkerRegistration | null> | null>(null);
     const refreshingRef = useRef(false);
+    const userConfirmedUpdateRef = useRef(false);
     const needUpdateRef = useRef(needUpdate);
     const checkStatusRef = useRef(checkStatus);
 
@@ -93,6 +95,57 @@ export const PWAUpdateHandler: React.FC = () => {
         };
     }, []);
 
+    const ensureServiceWorkerRegistered = useCallback(
+        (isMountedGetter: () => boolean = () => true): Promise<ServiceWorkerRegistration | null> => {
+            if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !import.meta.env.PROD) {
+                return Promise.resolve(null);
+            }
+            if (registrationRef.current) {
+                return Promise.resolve(registrationRef.current);
+            }
+            if (registerPromiseRef.current) {
+                return registerPromiseRef.current;
+            }
+
+            const hadControllerAtRegistration = Boolean(navigator.serviceWorker.controller);
+
+            const promise = navigator.serviceWorker
+                .register('/sw.js', { scope: '/' })
+                .then((reg) => {
+                    registrationRef.current = reg;
+
+                    if (reg.waiting && navigator.serviceWorker.controller) {
+                        if (isMountedGetter()) setNeedUpdate(true);
+                    }
+
+                    reg.addEventListener('updatefound', () => {
+                        const installingWorker = reg.installing;
+                        if (!installingWorker) return;
+
+                        installingWorker.addEventListener('statechange', () => {
+                            if (!isMountedGetter()) return;
+                            if (installingWorker.state === 'installed') {
+                                if (hadControllerAtRegistration && navigator.serviceWorker.controller) {
+                                    // Existing controller was present before registration -> new update waiting
+                                    setNeedUpdate(true);
+                                } else {
+                                    // First-time install completed -> app is ready for offline use (do NOT reload)
+                                    setOfflineReady(true);
+                                }
+                            }
+                        });
+                    });
+
+                    return reg;
+                })
+                .catch(() => null);
+
+            registerPromiseRef.current = promise;
+            return promise;
+        },
+        []
+    );
+
     // Native Service Worker Registration & Update Lifecycle (Zero-Dependency)
     useEffect(() => {
         if (typeof window === 'undefined' || !('serviceWorker' in navigator)) return;
@@ -101,56 +154,58 @@ export const PWAUpdateHandler: React.FC = () => {
         if (!import.meta.env.PROD) return;
 
         let isMounted = true;
+        let idleTimerId: number | undefined;
+        let idleCallbackId: number | undefined;
 
         const handleControllerChange = () => {
-            if (refreshingRef.current) return;
+            // CRITICAL: Only reload when the user explicitly confirmed an update via handleUpdate().
+            // Never reload when a first-time Service Worker calls clients.claim() on an uncontrolled page.
+            if (!userConfirmedUpdateRef.current || refreshingRef.current) return;
             refreshingRef.current = true;
             window.location.reload();
         };
 
         navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
 
-        const observeRegistration = (reg: ServiceWorkerRegistration) => {
-            registrationRef.current = reg;
-
-            // If a new SW is already waiting on load, notify user immediately
-            if (reg.waiting && navigator.serviceWorker.controller) {
-                if (isMounted) setNeedUpdate(true);
-            }
-
-            reg.addEventListener('updatefound', () => {
-                const installingWorker = reg.installing;
-                if (!installingWorker) return;
-
-                installingWorker.addEventListener('statechange', () => {
-                    if (!isMounted) return;
-                    if (installingWorker.state === 'installed') {
-                        if (navigator.serviceWorker.controller) {
-                            // Existing controller present -> new update ready and waiting for confirmation
-                            setNeedUpdate(true);
-                        } else {
-                            // First-time install completed -> app is ready for offline use
-                            setOfflineReady(true);
-                        }
-                    }
-                });
-            });
+        const scheduleRegistration = () => {
+            // Defer SW registration until after initial render & network/CPU quiet window
+            idleTimerId = window.setTimeout(() => {
+                if (!isMounted) return;
+                const winWithIdle = window as Window & {
+                    requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+                };
+                if (typeof winWithIdle.requestIdleCallback === 'function') {
+                    idleCallbackId = winWithIdle.requestIdleCallback(
+                        () => {
+                            if (isMounted) void ensureServiceWorkerRegistered(() => isMounted);
+                        },
+                        { timeout: 2000 }
+                    );
+                } else {
+                    void ensureServiceWorkerRegistered(() => isMounted);
+                }
+            }, 6000);
         };
 
-        navigator.serviceWorker
-            .register('/sw.js', { scope: '/' })
-            .then((reg) => {
-                if (isMounted) observeRegistration(reg);
-            })
-            .catch(() => {
-                // Silent failure in unsupported / restricted environments
-            });
+        if (document.readyState === 'complete') {
+            scheduleRegistration();
+        } else {
+            window.addEventListener('load', scheduleRegistration, { once: true });
+        }
 
         return () => {
             isMounted = false;
+            window.removeEventListener('load', scheduleRegistration);
+            if (idleTimerId !== undefined) window.clearTimeout(idleTimerId);
+            const winWithCancelIdle = window as Window & {
+                cancelIdleCallback?: (id: number) => void;
+            };
+            if (idleCallbackId !== undefined && typeof winWithCancelIdle.cancelIdleCallback === 'function') {
+                winWithCancelIdle.cancelIdleCallback(idleCallbackId);
+            }
             navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
         };
-    }, []);
+    }, [ensureServiceWorkerRegistered]);
 
     useEffect(() => {
         needUpdateRef.current = needUpdate;
@@ -194,11 +249,16 @@ export const PWAUpdateHandler: React.FC = () => {
     };
 
     const handleUpdate = async () => {
+        // Mark that the user explicitly confirmed the update reload
+        userConfirmedUpdateRef.current = true;
         // Synchronously flush active drafts in current tab before service worker update reload
         draftService.flushAll();
 
         if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
-            const reg = registrationRef.current || (await navigator.serviceWorker.getRegistration());
+            const reg =
+                registrationRef.current ||
+                (await ensureServiceWorkerRegistered()) ||
+                (await navigator.serviceWorker.getRegistration());
             if (reg?.waiting) {
                 reg.waiting.postMessage({ type: 'SKIP_WAITING' });
                 return;
@@ -259,7 +319,9 @@ export const PWAUpdateHandler: React.FC = () => {
                 // 3. Force Service Worker update check (bypassing automatic background cycle)
                 if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
                     const registration =
-                        registrationRef.current || (await navigator.serviceWorker.getRegistration());
+                        registrationRef.current ||
+                        (await ensureServiceWorkerRegistered()) ||
+                        (await navigator.serviceWorker.getRegistration());
                     if (registration) {
                         registrationRef.current = registration;
                         await registration.update();
@@ -306,7 +368,7 @@ export const PWAUpdateHandler: React.FC = () => {
             delete win.checkPWAUpdate;
             delete win.triggerPWAInstall;
         };
-    }, [addTimeout, handleInstall]);
+    }, [addTimeout, ensureServiceWorkerRegistered, handleInstall]);
 
     return (
         <>

@@ -27,6 +27,8 @@ const PRECACHE_URLS = [
   '/pwa-maskable-512x512.png?v=2026.11',
 ];
 
+const WARM_CACHE_URLS = [];
+
 const IGNORED_QUERY_PARAM_PATTERNS = [/^v$/, /^utm_/i, /^fbclid$/i];
 
 function normalizeCacheUrl(rawUrl) {
@@ -41,22 +43,23 @@ function normalizeCacheUrl(rawUrl) {
   return url.toString();
 }
 
+async function cacheAssetUrl(cache, url) {
+  const isHashedAsset = url.startsWith('/assets/');
+  const response = await fetch(url, { cache: isHashedAsset ? 'force-cache' : 'no-cache' });
+  if (!response || response.status !== 200) {
+    throw new Error(`Precache failed for required offline asset: ${url}`);
+  }
+  await cache.put(url, response.clone());
+  const normalized = normalizeCacheUrl(url);
+  if (normalized !== new URL(url, self.location.origin).toString()) {
+    await cache.put(normalized, response.clone());
+  }
+}
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(async (cache) => {
-      await Promise.all(
-        PRECACHE_URLS.map(async (url) => {
-          const response = await fetch(url, { cache: 'no-cache' });
-          if (!response || response.status !== 200) {
-            throw new Error(`Precache failed for required offline asset: ${url}`);
-          }
-          await cache.put(url, response.clone());
-          const normalized = normalizeCacheUrl(url);
-          if (normalized !== new URL(url, self.location.origin).toString()) {
-            await cache.put(normalized, response.clone());
-          }
-        })
-      );
+      await Promise.all(PRECACHE_URLS.map((url) => cacheAssetUrl(cache, url)));
 
       for (const requiredUrl of PRECACHE_URLS) {
         const matched = await cache.match(requiredUrl);
@@ -92,6 +95,22 @@ self.addEventListener('activate', (event) => {
         return Promise.all(keysToDelete.map((key) => caches.delete(key)));
       })
       .then(() => self.clients.claim())
+      .then(async () => {
+        // Gently warm Tier B route chunks sequentially in background without blocking activation
+        if (WARM_CACHE_URLS.length > 0) {
+          try {
+            const cache = await caches.open(CACHE_NAME);
+            for (const url of WARM_CACHE_URLS) {
+              const existing = await cache.match(url);
+              if (!existing) {
+                await cacheAssetUrl(cache, url).catch(() => {});
+              }
+            }
+          } catch {
+            // Non-fatal background warmup
+          }
+        }
+      })
   );
 });
 
@@ -112,16 +131,25 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  const isStaticShellIconOrManifest =
+    url.origin === self.location.origin &&
+    /\.(svg|png|ico|webmanifest)$/i.test(url.pathname);
+
   const isImmutableOrOnDemandAsset =
     url.pathname.startsWith('/assets/') ||
+    isStaticShellIconOrManifest ||
     url.hostname === 'fonts.googleapis.com' ||
     url.hostname === 'fonts.gstatic.com';
 
-  // Cache-First strategy for hashed build assets (Tier A/B + Tier C Cache-on-Demand) and Google Fonts
+  // Cache-First strategy for hashed build assets, static shell icons/manifest, and Google Fonts
   if (isImmutableOrOnDemandAsset) {
     event.respondWith(
-      caches.match(request).then((cached) => {
+      caches.match(request).then(async (cached) => {
         if (cached) return cached;
+        if (isStaticShellIconOrManifest) {
+          const normCached = await caches.match(normalizeCacheUrl(request.url));
+          if (normCached) return normCached;
+        }
         return fetch(request).then((response) => {
           const isCacheable =
             response &&
@@ -131,7 +159,15 @@ self.addEventListener('fetch', (event) => {
             const copy = response.clone();
             caches
               .open(CACHE_NAME)
-              .then((cache) => cache.put(request, copy))
+              .then((cache) => {
+                cache.put(request, copy.clone());
+                if (isStaticShellIconOrManifest) {
+                  const normalized = normalizeCacheUrl(request.url);
+                  if (normalized !== request.url) {
+                    cache.put(normalized, copy);
+                  }
+                }
+              })
               .catch(() => {});
           }
           return response;

@@ -8,10 +8,11 @@ import { createHashRouter, Navigate, useRouteError } from 'react-router-dom';
 import { useScheduleStore } from '../core/stores/schedule.store';
 import { useExamStore } from '../core/stores/exam.store';
 import { SessionCardSkeleton } from '../ui/primitives';
+import WelcomeView from '../views/welcome/WelcomeView';
+import i18n, { loadLanguage } from '../i18n/config';
 
 /** Global Error Boundary for Router */
 
-const WelcomeView = lazy(() => import('../views/welcome/WelcomeView'));
 const AppLayout = lazy(() => import('./layout/AppLayout'));
 const TodayView = lazy(() => import('../views/today/TodayView'));
 const WeeklyView = lazy(() => import('../views/weekly/WeeklyView'));
@@ -29,6 +30,7 @@ const DevGuard = ({ children }: { children: React.ReactNode }) => {
         }
         return <Navigate to="/" replace />;
     }
+    void loadLanguage(i18n.language || 'vi');
     return <>{children}</>;
 };
 
@@ -77,8 +79,7 @@ const RequireData = ({ children }: { children: React.ReactNode }) => {
     if (!isInitSchedule || !isInitExam) return <LoadingFallback />;
     if (!hasData && !hasExamData) return <Navigate to="/" replace />;
     
-    // If user only has exam data and tries to access empty layout routes, ideally we redirect to /exam
-    // but React Router handles this by just rendering what's requested. It's fine for now.
+    void loadLanguage(i18n.language || 'vi');
     return <>{children}</>;
 };
 
@@ -86,11 +87,7 @@ export const router = createHashRouter([
     {
         path: '/',
         errorElement: <RouteError />,
-        element: (
-            <Suspense fallback={<LoadingFallback />}>
-                <WelcomeView />
-            </Suspense>
-        ),
+        element: <WelcomeView />,
     },
     {
         path: '/demo',

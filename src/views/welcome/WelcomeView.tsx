@@ -12,9 +12,8 @@ import { useScheduleStore } from '@/core/stores';
 import type { HistoryItem } from '@/core/schedule';
 import { APP_VERSION } from '@/core/constants';
 import ThemePicker from '@/ui/composites/ThemePicker';
-import { changeLanguage } from '@/i18n/config';
+import { changeLanguage, loadLanguage } from '@/i18n/config';
 import { useExamStore } from '@/core/stores/exam.store';
-import { parseExamText } from '@/core/exam/exam.parser';
 import { useUIStore } from '@/core/stores/ui.store';
 
 // ============================================
@@ -199,9 +198,11 @@ const WelcomeView: React.FC = () => {
         if (data && !isForceUpload) navigate('/today', { replace: true });
     }, [data, isForceUpload, navigate]);
 
-    const processContent = useCallback((content: string) => {
-        // Try parsing as Exam Schedule first
+    const processContent = useCallback(async (content: string) => {
+        await loadLanguage(i18n.language);
+        // Try parsing as Exam Schedule first (lazy-loaded on demand)
         try {
+            const { parseExamText } = await import('@/core/exam/exam.parser');
             const exams = parseExamText(content);
             if (exams && exams.length > 0) {
                 setExamData('', exams);
@@ -234,7 +235,7 @@ const WelcomeView: React.FC = () => {
         const reader = new FileReader();
         reader.onload = (event) => {
             const content = event.target?.result as string;
-            if (content) processContent(content);
+            if (content) void processContent(content);
         };
         reader.readAsText(file);
     }, [processContent, t]);
@@ -253,15 +254,16 @@ const WelcomeView: React.FC = () => {
         const reader = new FileReader();
         reader.onload = (event) => {
             const content = event.target?.result as string;
-            if (content) processContent(content);
+            if (content) void processContent(content);
         };
         reader.readAsText(file);
     }, [processContent, t]);
 
-    const handleHistoryLoad = useCallback((item: HistoryItem) => {
+    const handleHistoryLoad = useCallback(async (item: HistoryItem) => {
+        await loadLanguage(i18n.language);
         loadHistoryItem(item, t);
         navigate('/today', { replace: true });
-    }, [loadHistoryItem, t, navigate]);
+    }, [loadHistoryItem, t, navigate, i18n.language]);
 
     const toggleLanguage = useCallback(() => {
         const newLang = i18n.language === 'vi' ? 'en' : 'vi';
@@ -321,7 +323,21 @@ const WelcomeView: React.FC = () => {
             <div className="flex-1 flex flex-col items-center justify-start p-3 md:p-8 max-w-xl mx-auto w-full pt-[60px] md:pt-[88px]">
                 {/* Title Section - pt-1 to match Settings and other views */}
                 <div className="pt-1 pb-4 flex flex-col items-center text-center mb-6">
-                    <img src="/favicon.svg" alt="App Logo" width="64" height="64" fetchPriority="high" className="w-16 h-16 mb-4 drop-shadow-sm" />
+                    <svg
+                        role="img"
+                        aria-label="App Logo"
+                        width="64"
+                        height="64"
+                        viewBox="84 84 344 344"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="w-16 h-16 mb-4 drop-shadow-sm"
+                    >
+                        <rect x="96" y="108" width="320" height="308" rx="48" fill="#fff" stroke="#0358d5" strokeWidth="24" />
+                        <path d="M96 168h320M190 96v25m132-25v25" stroke="#0358d5" strokeWidth="24" strokeLinecap="round" />
+                        <path d="M203 246h106m-53 0v100" stroke="#0358d5" strokeWidth="40" strokeLinecap="round" strokeLinejoin="round" />
+                        <rect x="294" y="326" width="40" height="40" rx="10" fill="#ba1a1a" />
+                    </svg>
 
                     <h1 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-baseline gap-1.5">
                         TdyTime 

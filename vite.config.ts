@@ -57,6 +57,16 @@ function tdyTimePwaPlugin(): Plugin {
             const assetsDir = path.resolve(distDir, 'assets');
             if (!fs.existsSync(distSwPath) || !fs.existsSync(assetsDir)) return;
 
+            // Tier A (Core Entry Bundles — already in browser HTTP cache from initial load, 0ms force-cache install)
+            const TIER_A_CORE_ENTRY_PREFIXES = [
+                'index-',
+                'rolldown-runtime-',
+                'vendor-react-',
+                'vendor-router-',
+                'vendor-i18n-',
+                'vendor-utils-',
+            ];
+
             // Tier C (Cache-on-Demand): Heavy optional chunks (~2.3MB combined) are cached on first use
             // via Cache-First in sw.js, making initial PWA install 3x faster.
             const TIER_C_ON_DEMAND_PREFIXES = [
@@ -67,26 +77,40 @@ function tdyTimePwaPlugin(): Plugin {
                 'DevToolsView-',
                 'exceljs-',
                 'vendor-monitoring-',
+                'FileSaver.min-',
             ];
 
-            const assetFiles = fs
+            const allBuildAssets = fs
                 .readdirSync(assetsDir)
                 .filter((file) => /\.(js|css|svg|png|jpg|jpeg|webp|woff2?)$/i.test(file))
                 .filter((file) => !TIER_C_ON_DEMAND_PREFIXES.some((prefix) => file.startsWith(prefix)))
-                .sort()
+                .sort();
+
+            if (allBuildAssets.length === 0) return;
+
+            const tierAAssets = allBuildAssets
+                .filter((file) => TIER_A_CORE_ENTRY_PREFIXES.some((prefix) => file.startsWith(prefix)))
                 .map((file) => `/assets/${file}`);
 
-            if (assetFiles.length === 0) return;
+            const tierBAssets = allBuildAssets
+                .filter((file) => !TIER_A_CORE_ENTRY_PREFIXES.some((prefix) => file.startsWith(prefix)))
+                .map((file) => `/assets/${file}`);
 
-            const swContent = fs.readFileSync(distSwPath, 'utf-8');
+            let swContent = fs.readFileSync(distSwPath, 'utf-8');
             const precacheMatch = swContent.match(/const PRECACHE_URLS\s*=\s*\[([\s\S]*?)\];/);
-            if (!precacheMatch) return;
+            if (precacheMatch) {
+                const existingUrls = Array.from(precacheMatch[1].matchAll(/['"]([^'"]+)['"]/g)).map((m) => m[1]);
+                const mergedUrls = Array.from(new Set([...existingUrls, ...tierAAssets]));
+                const formattedPrecache = `const PRECACHE_URLS = [\n${mergedUrls.map((u) => `  '${u}',`).join('\n')}\n];`;
+                swContent = swContent.replace(/const PRECACHE_URLS\s*=\s*\[[\s\S]*?\];/, formattedPrecache);
+            }
 
-            const existingUrls = Array.from(precacheMatch[1].matchAll(/['"]([^'"]+)['"]/g)).map((m) => m[1]);
-            const mergedUrls = Array.from(new Set([...existingUrls, ...assetFiles]));
-            const formattedArray = `const PRECACHE_URLS = [\n${mergedUrls.map((u) => `  '${u}',`).join('\n')}\n];`;
-            const nextSwContent = swContent.replace(/const PRECACHE_URLS\s*=\s*\[[\s\S]*?\];/, formattedArray);
-            fs.writeFileSync(distSwPath, nextSwContent);
+            if (tierBAssets.length > 0 && /const WARM_CACHE_URLS\s*=\s*\[[\s\S]*?\];/.test(swContent)) {
+                const formattedWarm = `const WARM_CACHE_URLS = [\n${tierBAssets.map((u) => `  '${u}',`).join('\n')}\n];`;
+                swContent = swContent.replace(/const WARM_CACHE_URLS\s*=\s*\[[\s\S]*?\];/, formattedWarm);
+            }
+
+            fs.writeFileSync(distSwPath, swContent);
         } catch {
             // Ignore post-build injection errors
         }
@@ -100,13 +124,19 @@ function tdyTimePwaPlugin(): Plugin {
     };
 }
 
-export default defineConfig({
+export default defineConfig(({ command, mode }) => {
+    if (command === 'build' || mode === 'production') {
+        process.env.NODE_ENV = 'production';
+    }
+
+    return {
     optimizeDeps: {
         include: ['react', 'react-dom'],
     },
 
     define: {
         global: 'window',
+        'process.env.NODE_ENV': JSON.stringify(command === 'build' || mode === 'production' ? 'production' : 'development'),
         __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
         __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
     },
@@ -247,4 +277,5 @@ self.addEventListener('activate', (event) => {
         setupFiles: ['./src/setupTests.ts'],
         globals: true,
     },
+    };
 });
