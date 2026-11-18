@@ -72,8 +72,10 @@ tdytime/
     │   │   ├── exam.store.ts            # Zustand: exam data management
     │   │   ├── notes.store.ts           # Zustand: lesson notes persistence
     │   │   └── ui.store.ts              # Zustand: theme, language, view mode, thresholds
-    │   └── themes/
-    │       └── theme.registry.ts        # 7 accent themes definition, migration map, validators
+    │   ├── themes/
+    │   │   └── theme.registry.ts        # 7 accent themes definition, migration map, validators
+    │   └── utils/
+    │       └── scheduler.ts             # Cooperative main-thread yielding (scheduler.yield / setTimeout)
     │
     ├── i18n/                            # ── Internationalization ──
     │   ├── config.ts                    # i18next config (vi/en, localStorage persistence)
@@ -216,3 +218,27 @@ Google Fonts được tải thông qua pattern `preload` + `onload`.
 
 ### 3. Deferred Monitoring Scripts
 Các script nặng như `@vercel/analytics` và `@vercel/speed-insights` được trì hoãn tải thông qua `requestIdleCallback`. Chúng chỉ được thực thi khi trình duyệt ở trạng thái rảnh rỗi, đảm bảo không tranh chấp tài nguyên với luồng render chính của người dùng.
+
+---
+
+## 🛡️ Codebase Architecture Guardrails (Quy ước Kiến trúc Codebase)
+
+Để duy trì **Total Blocking Time (TBT) < 150ms** trên thiết bị di động (4x CPU slowdown) và ngăn chặn hồi quy hiệu năng trong các đợt phát triển tính năng tiếp theo, toàn bộ codebase bắt buộc tuân thủ **3 quy tắc vàng (Architecture Guardrails)** sau:
+
+### 1. Atomic Zustand Selectors (Chỉ dùng Selector nguyên tử cho Zustand)
+- **Quy tắc:** Tuyệt đối chỉ truy cập Zustand store thông qua **Atomic Selectors**: `useStore((s) => s.field)` (hoặc bọc trong `useShallow` khi cần lấy nhiều trường liên quan).
+- **Cấm:** Không bao giờ gọi `useStore()` trần không đối số (ví dụ: `const { data } = useScheduleStore()`).
+- **Lý do:** Gọi `useStore()` trần khiến component đăng ký nhận thông báo từ toàn bộ store, kích hoạt re-render đồng bộ (synchronous re-render cascade) trên toàn cây giao diện mỗi khi bất kỳ trường nào trong store thay đổi.
+
+### 2. No Barrel-File Imports in Entry / Layout / Router Files (Không import qua Barrel File ở các tệp khởi động)
+- **Quy tắc:** Tuyệt đối không import qua các file barrel (`src/ui/primitives/index.ts`, `src/ui/composites/index.ts`, `src/core/stores/index.ts`, `src/core/schedule/index.ts`) bên trong các tệp thuộc đường dẫn tới hạn: `src/main.tsx`, `src/app/App.tsx`, `src/app/layout/AppLayout.tsx`, và `src/app/router.tsx`.
+- **Thực hành chuẩn:** Luôn import trực tiếp từ tệp module đích (ví dụ: `import { useScheduleStore } from '@/core/stores/schedule.store'`, `import { SessionCardSkeleton } from '@/ui/primitives/Skeleton'`).
+- **Lý do:** Import qua barrel file trên đường dẫn khởi tạo khiến trình đóng gói (Rollup/Vite) kéo toàn bộ đồ thị phụ thuộc của mọi module con vào entry chunk, phá vỡ ranh giới code-splitting và làm tăng thời gian `Script Evaluation` lúc khởi động.
+
+### 3. No Top-Level Synchronous API Calls (Không gọi API hệ thống đồng bộ nặng ở Top-Level Module Scope)
+- **Quy tắc:** Tuyệt đối không đặt các lệnh gọi API hệ thống đồng bộ nặng hoặc gây Forced Synchronous Reflow (`Intl.DateTimeFormat`, `localStorage`, `window.innerWidth`) ngay ở phạm vi khởi tạo module (top-level module scope).
+- **Thực hành chuẩn:**
+  - Trì hoãn (lazy-evaluate) các lệnh gọi như `Intl.DateTimeFormat().resolvedOptions().timeZone` hoặc `localStorage.getItem(...)` vào bên trong hàm thực thi khi thực sự cần đến (ví dụ: `getDefaultTimezone()`).
+  - Sử dụng `window.matchMedia('(min-width: 1024px)').matches` thay cho `window.innerWidth < 1024` để kiểm tra kích thước màn hình mà không buộc trình duyệt phải tính toán lại bố cục đồng bộ (Forced Reflow) trong lúc đang nạp script/font.
+
+

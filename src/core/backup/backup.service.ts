@@ -12,10 +12,8 @@
 
 import { APP_VERSION } from '@/core/constants';
 import { historyService, type HistoryItem } from '@/core/schedule/history.service';
-import { useNotesStore } from '@/core/stores/notes.store';
 import { useScheduleStore } from '@/core/stores/schedule.store';
 import type { ScheduleData } from '@/core/schedule/schedule.types';
-import { saveAs } from 'file-saver';
 
 export const BACKUP_FORMAT = 'tdytime-backup';
 export const BACKUP_FORMAT_VERSION = 1;
@@ -30,7 +28,7 @@ export interface BackupPreferences {
 export interface BackupDataPayload {
     activeSchedule: ScheduleData | null;
     history: HistoryItem[];
-    notes: Record<string, string>;
+    notes?: Record<string, string>;
     abbreviations: Record<string, string>;
     preferences: BackupPreferences;
 }
@@ -63,6 +61,26 @@ export interface ValidationResult {
 }
 
 export class BackupService {
+    /** Trigger native browser download without external dependencies */
+    public triggerDownload(blob: Blob, filename: string): void {
+        if (typeof window === 'undefined' || typeof document === 'undefined' || typeof URL.createObjectURL !== 'function') {
+            return;
+        }
+        try {
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = filename;
+            anchor.style.display = 'none';
+            document.body.appendChild(anchor);
+            anchor.click();
+            document.body.removeChild(anchor);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        } catch {
+            // Ignore in headless/non-DOM environments
+        }
+    }
+
     /** Generate default backup filename with current date: tdytime-backup-YYYY-MM-DD.json */
     public generateFilename(): string {
         const d = new Date();
@@ -100,12 +118,16 @@ export class BackupService {
             throw new Error('backup.errors.historyReadFailed');
         }
 
-        // 3. Collect Notes
+        // 3. Preserve any legacy notes in localStorage for backward compatibility
         let notes: Record<string, string> = {};
         try {
-            notes = useNotesStore.getState().notes || {};
-        } catch (e) {
-            console.warn('Failed to read notes from store:', e);
+            const rawNotes = localStorage.getItem('tdy_session_notes');
+            if (rawNotes) {
+                const parsedNotes = JSON.parse(rawNotes) as { state?: { notes?: Record<string, string> } };
+                notes = parsedNotes?.state?.notes || {};
+            }
+        } catch {
+            // Ignore invalid legacy notes
         }
 
         // 4. Collect Global Abbreviations
@@ -163,7 +185,7 @@ export class BackupService {
         const jsonBlob = new Blob([JSON.stringify(backupFile, null, 2)], {
             type: 'application/json;charset=utf-8;',
         });
-        saveAs(jsonBlob, filename);
+        this.triggerDownload(jsonBlob, filename);
 
         return { file: backupFile, filename, summary };
     }
@@ -294,9 +316,8 @@ export class BackupService {
             const abbreviations = backup.data.abbreviations || {};
             localStorage.setItem('global_abbreviations', JSON.stringify(abbreviations));
 
-            // 2. Restore Notes
+            // 2. Restore legacy Notes in localStorage if present in backup
             const notes = backup.data.notes || {};
-            useNotesStore.setState({ notes });
             localStorage.setItem(
                 'tdy_session_notes',
                 JSON.stringify({
@@ -369,8 +390,8 @@ export class BackupService {
 
                 if (rollbackSnapshot.notesRaw) {
                     localStorage.setItem('tdy_session_notes', rollbackSnapshot.notesRaw);
-                    const parsedNotes = JSON.parse(rollbackSnapshot.notesRaw);
-                    useNotesStore.setState({ notes: parsedNotes?.state?.notes || {} });
+                } else {
+                    localStorage.removeItem('tdy_session_notes');
                 }
 
                 if (rollbackSnapshot.abbrRaw) {

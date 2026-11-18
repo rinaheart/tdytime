@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import { type AccentTheme, DEFAULT_THEME, THEME_MIGRATION, isValidTheme } from '../themes/theme.registry';
+import { createAtomicStore } from './createAtomicStore';
 
 // Re-export for convenience
 export type { AccentTheme };
@@ -45,69 +46,71 @@ function isViewportCollapsed(): boolean {
     return window.innerWidth < 1024;
 }
 
-export const useUIStore = create<UIState>((set) => ({
-    darkMode: (() => {
-        try {
-            const saved = localStorage.getItem('color-theme');
-            if (saved) return saved === 'dark';
-            return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        } catch {
-            return false;
-        }
-    })(),
+export const useUIStore = createAtomicStore(
+    create<UIState>((set) => ({
+        darkMode: (() => {
+            try {
+                const saved = localStorage.getItem('color-theme');
+                if (saved) return saved === 'dark';
+                return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            } catch {
+                return false;
+            }
+        })(),
 
-    accentTheme: (() => {
-        try {
-            return resolveTheme(localStorage.getItem('accent-theme'));
-        } catch {
-            return DEFAULT_THEME;
-        }
-    })(),
+        accentTheme: (() => {
+            try {
+                return resolveTheme(localStorage.getItem('accent-theme'));
+            } catch {
+                return DEFAULT_THEME;
+            }
+        })(),
 
-    sidebarCollapsed: isViewportCollapsed(),
-    
-    toast: { message: null, type: 'success' },
+        sidebarCollapsed: isViewportCollapsed(),
+        
+        toast: { message: null, type: 'success' },
 
-    toggleDarkMode: () =>
-        set((state) => {
-            const newDark = !state.darkMode;
-            const theme = newDark ? 'dark' : 'light';
-            localStorage.setItem('color-theme', theme);
-            if (newDark) document.documentElement.classList.add('dark');
+        toggleDarkMode: () =>
+            set((state) => {
+                const newDark = !state.darkMode;
+                const theme = newDark ? 'dark' : 'light';
+                localStorage.setItem('color-theme', theme);
+                if (newDark) document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
+                return { darkMode: newDark };
+            }),
+
+        setAccentTheme: (theme: AccentTheme) => {
+            localStorage.setItem('accent-theme', theme);
+            applyAccentTheme(theme);
+            set({ accentTheme: theme });
+        },
+
+        toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+
+        setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+
+        setToast: (message, type = 'success') => set({ toast: { message, type } }),
+        
+        clearToast: () => set({ toast: { message: null, type: 'success' } }),
+
+        resetAll: () => {
+            localStorage.removeItem('color-theme');
+            localStorage.removeItem('accent-theme');
+            const systemDark = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (systemDark) document.documentElement.classList.add('dark');
             else document.documentElement.classList.remove('dark');
-            return { darkMode: newDark };
-        }),
+            applyAccentTheme(DEFAULT_THEME);
 
-    setAccentTheme: (theme: AccentTheme) => {
-        localStorage.setItem('accent-theme', theme);
-        applyAccentTheme(theme);
-        set({ accentTheme: theme });
-    },
-
-    toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
-
-    setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
-
-    setToast: (message, type = 'success') => set({ toast: { message, type } }),
-    
-    clearToast: () => set({ toast: { message: null, type: 'success' } }),
-
-    resetAll: () => {
-        localStorage.removeItem('color-theme');
-        localStorage.removeItem('accent-theme');
-        const systemDark = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (systemDark) document.documentElement.classList.add('dark');
-        else document.documentElement.classList.remove('dark');
-        applyAccentTheme(DEFAULT_THEME);
-
-        set({
-            darkMode: systemDark,
-            accentTheme: DEFAULT_THEME,
-            sidebarCollapsed: isViewportCollapsed(),
-            toast: { message: null, type: 'success' }
-        });
-    },
-}));
+            set({
+                darkMode: systemDark,
+                accentTheme: DEFAULT_THEME,
+                sidebarCollapsed: isViewportCollapsed(),
+                toast: { message: null, type: 'success' }
+            });
+        },
+    }))
+);
 
 // Apply initial classes on load without forcing redundant DOM invalidation
 if (typeof window !== 'undefined') {

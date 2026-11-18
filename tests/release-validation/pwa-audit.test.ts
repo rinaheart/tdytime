@@ -58,6 +58,13 @@ describe('PWA & Lighthouse CI Audit Verification (Zero-Dependency TdyTripZ Archi
         expect(workflowYaml).toContain('npm run build');
         expect(workflowYaml).toContain('treosh/lighthouse-ci-action@v12');
         expect(workflowYaml).toContain('./lighthouserc.json');
+        expect(workflowYaml).toContain('total-blocking-time');
+        expect(workflowYaml).toContain('150');
+        expect(workflowYaml).toContain('0.95');
+        expect(workflowYaml).toContain('deployment_status:');
+        expect(workflowYaml).toContain('GITHUB_STEP_SUMMARY');
+        expect(workflowYaml).toContain('lighthouse-metrics-summary.json');
+        expect(workflowYaml).toContain('actions/upload-artifact@v4');
 
         const ciYaml = readFileSync(resolve(ROOT_DIR, '.github/workflows/ci.yml'), 'utf-8');
         expect(ciYaml).toContain("node-version: '26'");
@@ -70,7 +77,8 @@ describe('PWA & Lighthouse CI Audit Verification (Zero-Dependency TdyTripZ Archi
         expect(lhrc.ci.collect.settings.onlyCategories).toEqual(
             expect.arrayContaining(['performance', 'accessibility', 'best-practices'])
         );
-        expect(lhrc.ci.assert.assertions['categories:performance']).toBeDefined();
+        expect(lhrc.ci.assert.assertions['categories:performance']).toEqual(['error', { minScore: 0.95 }]);
+        expect(lhrc.ci.assert.assertions['total-blocking-time']).toEqual(['error', { maxNumericValue: 150 }]);
         expect(lhrc.ci.assert.assertions['categories:accessibility']).toBeDefined();
         expect(lhrc.ci.assert.assertions['categories:best-practices']).toBeDefined();
     });
@@ -169,10 +177,8 @@ describe('PWA & Lighthouse CI Audit Verification (Zero-Dependency TdyTripZ Archi
         expect(handlerCode).not.toContain('virtual:pwa-register');
         expect(handlerCode).toContain('useScheduleStore.getState().initFromStorage()');
         expect(handlerCode).toContain('useExamStore.persist?.rehydrate?.()');
-        expect(handlerCode).toContain('useNotesStore.persist?.rehydrate?.()');
         expect(handlerCode).toContain('await registration.update()');
         expect(handlerCode).toContain("postMessage({ type: 'SKIP_WAITING' })");
-        expect(handlerCode).toContain('draftService.flushAll()');
     });
 
     it('7. package.json and package-lock.json are strictly synchronized (prevents npm ci failures) and README badge supports CalVer', () => {

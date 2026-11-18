@@ -181,17 +181,6 @@ const WelcomeView: React.FC = () => {
 
     const [isDragging, setIsDragging] = useState(false);
     const [showPaste, setShowPaste] = useState(false);
-    const [clicks, setClicks] = useState(0);
-
-    const handleVersionClick = useCallback(() => {
-        setClicks(c => c + 1);
-        if (clicks + 1 >= 5) {
-            localStorage.setItem('devtools_enabled', 'true');
-            navigate('/dev');
-            setClicks(0);
-        }
-        setTimeout(() => setClicks(0), 2000);
-    }, [clicks, navigate]);
 
     // Redirect if data exists AND we are not forcing an upload
     React.useEffect(() => {
@@ -341,11 +330,7 @@ const WelcomeView: React.FC = () => {
 
                     <h1 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-baseline gap-1.5">
                         TdyTime 
-                        <span 
-                            onClick={handleVersionClick}
-                            className="text-slate-500 dark:text-slate-400 font-num text-[10px] font-medium cursor-pointer select-none"
-                            title="Tap 5 times for Developer Demo Mode"
-                        >
+                        <span className="text-slate-500 dark:text-slate-400 font-num text-[10px] font-medium select-none">
                             v{APP_VERSION}
                         </span>
                     </h1>

@@ -223,20 +223,13 @@ self.addEventListener('activate', (event) => {
                 manualChunks(rawId) {
                     const id = rawId.replace(/\\/g, '/');
                     if (id.includes('node_modules')) {
-                        // React core + JSX runtime (strictly root node_modules to avoid nested @react-pdf/reconciler/node_modules/scheduler or zustand/esm/react)
                         if (
-                            !id.includes('@react-pdf') &&
-                            (id.includes('/node_modules/react/') ||
-                                id.includes('/node_modules/react-dom/') ||
-                                id.includes('/node_modules/scheduler/'))
+                            id.includes('/node_modules/react/') ||
+                            id.includes('/node_modules/react-dom/') ||
+                            id.includes('/node_modules/scheduler/')
                         ) {
                             return 'vendor-react';
                         }
-                        // Note: Do NOT manually group @react-pdf into a manualChunk here.
-                        // Because @react-pdf/renderer is exclusively imported via dynamic import(),
-                        // Rolldown automatically splits it into an isolated async chunk (react-pdf.browser-*.js)
-                        // without ever hoisting static CJS wrappers (require_jsx_runtime) into it under NODE_ENV=production.
-                        // i18n — separate chunk
                         if (id.includes('i18next') || id.includes('react-i18next')) {
                             return 'vendor-i18n';
                         }
@@ -246,22 +239,12 @@ self.addEventListener('activate', (event) => {
                         if (id.includes('lucide-react') || id.includes('zustand')) {
                             return 'vendor-utils';
                         }
-                        // Vercel monitoring — separate to defer loading
-                        if (
-                            id.includes('@vercel/analytics') ||
-                            id.includes('@vercel/speed-insights')
-                        ) {
-                            return 'vendor-monitoring';
-                        }
-                        if (id.includes('exceljs')) {
-                            return 'exceljs';
-                        }
                     }
                 },
             },
         },
 
-        chunkSizeWarningLimit: 1500,
+        chunkSizeWarningLimit: 500,
 
         modulePreload: {
             polyfill: true,
@@ -278,6 +261,7 @@ self.addEventListener('activate', (event) => {
         environment: 'jsdom',
         setupFiles: ['./src/setupTests.ts'],
         globals: true,
+        exclude: ['**/node_modules/**', '**/dist/**', '**/archive/**'],
     },
     };
 });

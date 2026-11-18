@@ -7,10 +7,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Download, Check, X, WifiOff } from 'lucide-react';
-import { draftService } from '@/core/notes/draft.service';
 import { useScheduleStore } from '@/core/stores/schedule.store';
 import { useExamStore } from '@/core/stores/exam.store';
-import { useNotesStore } from '@/core/stores/notes.store';
 
 const INSTALL_PROMPT_DISMISS_KEY = 'tdytime_install_prompt_dismissed';
 const PWA_DISMISS_KEY = 'tdytime_pwa_dismiss_date';
@@ -235,8 +233,6 @@ export const PWAUpdateHandler: React.FC = () => {
     const handleUpdate = async () => {
         // Mark that the user explicitly confirmed the update reload
         userConfirmedUpdateRef.current = true;
-        // Synchronously flush active drafts in current tab before service worker update reload
-        draftService.flushAll();
 
         if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
             const reg =
@@ -283,7 +279,6 @@ export const PWAUpdateHandler: React.FC = () => {
                 try {
                     await useScheduleStore.getState().initFromStorage();
                     await Promise.resolve(useExamStore.persist?.rehydrate?.());
-                    await Promise.resolve(useNotesStore.persist?.rehydrate?.());
                 } catch {
                     // Ignore local storage errors
                 }
@@ -295,10 +290,9 @@ export const PWAUpdateHandler: React.FC = () => {
             setCheckStatus('checking');
 
             try {
-                // 1. Re-fetch & re-hydrate critical calendar data (schedule, history, exams, notes)
+                // 1. Re-fetch & re-hydrate critical calendar data (schedule, history, exams)
                 await useScheduleStore.getState().initFromStorage();
                 await Promise.resolve(useExamStore.persist?.rehydrate?.());
-                await Promise.resolve(useNotesStore.persist?.rehydrate?.());
 
                 // 2. Check remote version.json for any new deployed version
                 let remoteVersionDiffers = false;

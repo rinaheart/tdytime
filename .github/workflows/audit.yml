@@ -3,12 +3,14 @@ name: Lighthouse CI Audit
 on:
   push:
     branches: [ "main" ]
+  deployment_status:
   workflow_dispatch:
 
 jobs:
   lighthouse-audit:
     name: PWA Performance, Accessibility & Best Practices Audit
     runs-on: ubuntu-latest
+    if: github.event_name != 'deployment_status' || github.event.deployment_status.state == 'success'
 
     steps:
       - name: Checkout repository
@@ -26,9 +28,126 @@ jobs:
       - name: Build production PWA
         run: npm run build
 
-      - name: Run Lighthouse CI Audit
+      - name: Verify Lighthouse Performance Budget Assertions
+        run: |
+          node -e '
+            const fs = require("fs");
+            const lhrc = JSON.parse(fs.readFileSync("./lighthouserc.json", "utf8"));
+            const assertions = lhrc?.ci?.assert?.assertions || {};
+            const perf = assertions["categories:performance"];
+            const tbt = assertions["total-blocking-time"];
+            if (!perf || perf[0] !== "error" || perf[1]?.minScore < 0.95) {
+              throw new Error("CI Budget Violation: categories:performance must enforce minScore: 0.95");
+            }
+            if (!tbt || tbt[0] !== "error" || tbt[1]?.maxNumericValue > 150) {
+              throw new Error("CI Budget Violation: total-blocking-time must enforce maxNumericValue: 150");
+            }
+          '
+
+      - name: Run Lighthouse CI Audit (performance >= 0.95, total-blocking-time <= 150ms)
+        id: lhci
         uses: treosh/lighthouse-ci-action@v12
         with:
           configPath: './lighthouserc.json'
           uploadArtifacts: true
           temporaryPublicStorage: true
+
+      - name: Generate Automated Performance & TBT Report (Job Summary + JSON Metrics)
+        if: always()
+        env:
+          LHCI_MANIFEST: ${{ steps.lhci.outputs.manifest }}
+          LHCI_LINKS: ${{ steps.lhci.outputs.links }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const path = require("path");
+
+            // 1. Read Lighthouse LHR JSON reports from .lighthouseci/
+            const lhciDir = path.resolve(".lighthouseci");
+            let lhrFiles = [];
+            if (fs.existsSync(lhciDir)) {
+              lhrFiles = fs.readdirSync(lhciDir)
+                .filter((f) => f.startsWith("lhr-") && f.endsWith(".json"))
+                .map((f) => path.join(lhciDir, f));
+            }
+
+            const runs = lhrFiles.map((file) => {
+              const lhr = JSON.parse(fs.readFileSync(file, "utf8"));
+              return {
+                performance: Math.round((lhr.categories?.performance?.score || 0) * 100),
+                accessibility: Math.round((lhr.categories?.accessibility?.score || 0) * 100),
+                bestPractices: Math.round((lhr.categories?.["best-practices"]?.score || 0) * 100),
+                tbtMs: Math.round(lhr.audits?.["total-blocking-time"]?.numericValue || 0),
+                fcpMs: Math.round(lhr.audits?.["first-contentful-paint"]?.numericValue || 0),
+                lcpMs: Math.round(lhr.audits?.["largest-contentful-paint"]?.numericValue || 0),
+                cls: Number((lhr.audits?.["cumulative-layout-shift"]?.numericValue || 0).toFixed(4)),
+              };
+            });
+
+            // Pick median run by TBT (or fallback if empty)
+            runs.sort((a, b) => a.tbtMs - b.tbtMs);
+            const median = runs[Math.floor(runs.length / 2)] || {
+              performance: 0, accessibility: 0, bestPractices: 0, tbtMs: 0, fcpMs: 0, lcpMs: 0, cls: 0
+            };
+
+            // 2. Measure dist/assets bundle size
+            const assetsDir = path.resolve("dist/assets");
+            let totalAssetsKB = 0;
+            if (fs.existsSync(assetsDir)) {
+              const bytes = fs.readdirSync(assetsDir).reduce((sum, f) => {
+                return sum + fs.statSync(path.join(assetsDir, f)).size;
+              }, 0);
+              totalAssetsKB = Number((bytes / 1024).toFixed(2));
+            }
+
+            const reportPayload = {
+              commitSha: process.env.GITHUB_SHA || "local",
+              ref: process.env.GITHUB_REF_NAME || "main",
+              timestamp: new Date().toISOString(),
+              budgets: {
+                performanceMinScore: 0.95,
+                totalBlockingTimeMaxMs: 150
+              },
+              medianMetrics: median,
+              allRuns: runs,
+              bundleAssetsKB: totalAssetsKB
+            };
+
+            fs.writeFileSync("lighthouse-metrics-summary.json", JSON.stringify(reportPayload, null, 2));
+
+            // 3. Write Markdown table to GitHub Actions Step Summary ($GITHUB_STEP_SUMMARY)
+            const summaryFile = process.env.GITHUB_STEP_SUMMARY;
+            if (summaryFile) {
+              const perfPass = median.performance >= 95 ? "PASS" : "FAIL";
+              const tbtPass = median.tbtMs <= 150 ? "PASS" : "FAIL";
+              const md = [
+                "## Báo cáo Hiệu năng & Ngân sách TBT (TdyTime PWA)",
+                "",
+                `- **Commit**: \`${(process.env.GITHUB_SHA || "local").slice(0, 7)}\` | **Thời gian**: \`${reportPayload.timestamp}\``,
+                `- **Tổng dung lượng \`dist/assets/\`**: \`${totalAssetsKB} kB\``,
+                "",
+                "| Chỉ số (Metric) | Kết quả (Median) | Ngưỡng Ngân sách (Budget) | Trạng thái |",
+                "| :--- | ---: | ---: | :---: |",
+                `| **Performance Score** | **${median.performance} / 100** | \`>= 95 / 100\` (\`minScore: 0.95\`) | **${perfPass}** |`,
+                `| **Total Blocking Time (TBT)** | **${median.tbtMs} ms** | \`<= 150 ms\` (\`maxNumericValue: 150\`) | **${tbtPass}** |`,
+                `| First Contentful Paint (FCP) | ${median.fcpMs} ms | \`<= 1800 ms\` | INFO |`,
+                `| Largest Contentful Paint (LCP) | ${median.lcpMs} ms | \`<= 2500 ms\` | INFO |`,
+                `| Cumulative Layout Shift (CLS) | ${median.cls} | \`<= 0.1\` | INFO |`,
+                `| Accessibility / Best Practices | ${median.accessibility} / ${median.bestPractices} | \`>= 90\` | INFO |`,
+                ""
+              ].join("\n");
+              fs.appendFileSync(summaryFile, md);
+            }
+          '
+
+      - name: Archive Performance Metrics JSON (90-Day History)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-metrics-${{ github.sha }}
+          path: |
+            lighthouse-metrics-summary.json
+            .lighthouseci/assertion-results.json
+          retention-days: 90
+          if-no-files-found: ignore
+

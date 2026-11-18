@@ -25,7 +25,7 @@ const WeeklyView: React.FC = () => {
 
     const maxWeekIdx = useScheduleStore((s) => s.maxWeekIdx);
 
-    const { grouped, rawSessions, hasSessions, unfilteredTotal, weekRange } = useWeeklyData(
+    const { grouped, hasSessions, unfilteredTotal, weekRange } = useWeeklyData(
         currentWeekIndex + 1,
         filterFn as (s: FlatSession) => boolean
     );
@@ -51,8 +51,6 @@ const WeeklyView: React.FC = () => {
                 isFilterOpen={isFilterOpen}
                 onToggleFilter={toggleFilter}
                 hasActiveFilters={hasActiveFilters}
-                sessions={rawSessions}
-                teacherName={teacherName}
             />
 
             {isFilterOpen && (

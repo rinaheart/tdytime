@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026.11.18] - 2026-11-18
+
+### Added
+- **Tiện ích Bắt buộc Atomic Selector cho Zustand (`src/core/stores/createAtomicStore.ts`):**
+  - Xây dựng wrapper `createAtomicStore` và `useAtomicSelector` áp dụng cho toàn bộ các store cốt lõi (`useScheduleStore`, `useUIStore`, `useExamStore`).
+  - Chặn đứng việc gọi `useStore()` trần không đối số ở cả cấp độ biên dịch TypeScript lẫn runtime, đồng thời cung cấp hệ thống lazy proxy `.use.<field>()` tự động sinh và lưu đệm selector nguyên tử cho từng trường dữ liệu.
+- **Hệ thống Lưu trữ Tính năng Mở rộng (`/archive/future-features/` & `README.md`):**
+  - Thiết lập cấu trúc lưu trữ độc lập cho 4 nhóm tính năng phụ trợ (`notes/`, `pdf-export/`, `csv-export/`, `devtools/`) kèm tài liệu hướng dẫn khôi phục từng bước để dễ dàng tích hợp lại khi cần trong tương lai.
+- **Tự động Báo cáo & Lưu trữ Lịch sử Hiệu năng sau mỗi đợt Deploy (`.github/workflows/audit.yml`):**
+  - Bổ sung trigger `deployment_status` chạy kiểm định Lighthouse tự động ngay sau mỗi lần deploy thành công.
+  - Tự động tổng hợp kết quả trung vị (Median) từ `.lighthouseci/lhr-*.json` (`Performance Score`, `TBT`, `FCP`, `LCP`, `CLS`, dung lượng `dist/assets/`) để xuất bảng báo cáo Markdown trực tiếp lên **GitHub Actions Job Summary (`$GITHUB_STEP_SUMMARY`)** và lưu trữ file `lighthouse-metrics-summary.json` trong 90 ngày qua `actions/upload-artifact@v4`.
+
+### Changed
+- **Kiến trúc Lean Offline-First Mobile PWA (`-65.0%` Tổng dung lượng Build, `100%` Offline Precache):**
+  - Tập trung 100% vào trải nghiệm cốt lõi trên di động (theo dõi lịch giảng dạy, lịch coi thi và tiến độ học kỳ hoàn toàn ngoại tuyến).
+  - Giảm tổng dung lượng thư mục `dist/` từ **2.56 MB xuống 897.12 kB (-65.0%)**, giảm tổng dung lượng JavaScript từ **2.10 MB xuống 711.93 kB (-66.0%)**, loại bỏ **275.14 kB (-100%)** font nhúng PDF và tăng tốc độ build production gấp **2.13 lần** (`10.40s ⟶ 4.89s`).
+  - Toàn bộ **32/32 file tài sản tĩnh (`100%`)** trong `dist/assets/` được Service Worker (`dist/sw.js`) lưu đệm hoàn toàn (`PRECACHE_URLS` + `WARM_CACHE_URLS`), đảm bảo ứng dụng khởi chạy tức thì trong chế độ máy bay (Airplane Mode) mà không còn bất kỳ chunk phụ thuộc mạng nào.
+- **Tối ưu Hóa `SessionCard` (-48.2%) & `AppLayout` (-51.2%):**
+  - Chuyển đổi `WeeklyCard` và `TodayCard` trong `src/views/shared/SessionCard.tsx` thành **Pure Stateless Components** (loại bỏ `NoteModal`, `useState` và `useNotesStore` subscription trên từng thẻ tiết học), giảm kích thước chunk `SessionCard-*.js` từ **10.74 kB xuống 5.56 kB (-48.2%)**.
+  - Gỡ bỏ 240 dòng logic/DOM của thanh công cụ Mock Time Developer khỏi `src/app/layout/AppLayout.tsx`, giảm kích thước chunk `AppLayout-*.js` từ **15.56 kB xuống 7.59 kB (-51.2%)**.
+- **Tinh gọn Runtime Dependencies (`11 ⟶ 7` gói cốt lõi) & Tải File Sao lưu Thuần Trình duyệt:**
+  - Thay thế thư viện `file-saver` trong `BackupService` (`src/core/backup/backup.service.ts`) bằng phương thức `triggerDownload()` thuần trình duyệt (`URL.createObjectURL` + `<a download>`), đồng thời duy trì tương thích ngược 100% với các file sao lưu `.json` cũ.
+  - Gỡ bỏ `@react-pdf/renderer`, `@tanstack/react-virtual`, `file-saver`, `pako`, và `@types/file-saver` khỏi `package.json`, chỉ giữ lại đúng 7 thư viện runtime thiết yếu (`react`, `react-dom`, `react-router-dom`, `zustand`, `i18next`, `react-i18next`, `lucide-react`).
+
 ## [2026.11.09] - 2026-11-09
 
 ### Added
@@ -12,26 +36,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Xây dựng Service Worker thuần không phụ thuộc thư viện ngoài (`public/sw.js`) kết hợp plugin đồng bộ tự động `tdyTimePwaPlugin()` ngay trong `vite.config.ts`.
   - Tự động đồng bộ phiên bản từ `package.json` (`2026.11.09`) sang `public/version.json` và `CACHE_NAME` trong `public/sw.js`, đồng thời tự động quét và bơm danh sách asset băm vào `PRECACHE_URLS` của `dist/sw.js` khi chạy `npm run build`.
   - Bổ sung bộ 5 biểu tượng PWA chuẩn 8-bit PNG (`64×64`, `180×180`, `192×192`, `512×512` tách biệt `purpose: "any"` và `purpose: "maskable"`) kèm tham số chống lưu đệm `?v=2026.11` và hàm chuẩn hóa URL (`normalizeCacheUrl`).
-- **Tính năng "Cập nhật/Đồng bộ" (`Update/Sync`) trong Cài đặt (`PWAUpdateHandler.tsx` & `SettingsView.tsx`):**
+- **Tiện ích Điều phối Luồng chính (`src/core/utils/scheduler.ts`) & Cooperative Bootstrap:**
+  - Bổ sung tiện ích `yieldToMain()` ưu tiên `scheduler.yield()` (fallback `setTimeout(0)`) giúp chia nhỏ chuỗi khởi động trong `src/main.tsx` và `scheduleStore.initFromStorage()` thành các lát cắt hợp tác (< 50ms), kết hợp bọc cập nhật state lớn và nạp ngôn ngữ (`i18n.addResourceBundle` / `changeLanguage`) trong `React.startTransition`.
+- **Tính năng "Cập nhật/Đồng bộ" (`Update/Sync`) chuẩn Offline-First (`PWAUpdateHandler.tsx` & `SettingsView.tsx`):**
   - Nâng cấp nút kiểm tra cập nhật thành **"Cập nhật/Đồng bộ"** (`Update/Sync`), kết hợp nạp lại dữ liệu Lịch giảng, Lịch coi thi, Ghi chú từ bộ nhớ bền vững (`useScheduleStore`, `useExamStore`, `useNotesStore`) và ép kiểm tra phiên bản mới qua `/version.json` + `registration.update()`.
-  - Tích hợp băng rôn chỉ báo chế độ Ngoại tuyến (`Offline Mode Indicator`) và hộp thoại hướng dẫn cài đặt PWA thủ công cho iOS Safari.
-- **Tự động Kiểm toán Lighthouse CI (`.github/workflows/audit.yml` & `lighthouserc.json`):**
-  - Thiết lập GitHub Actions workflow tự động kiểm toán Performance, Accessibility và Best Practices của PWA mỗi khi push lên nhánh `main` và lưu báo cáo công khai kèm Artifact.
-  - Bổ sung bộ kiểm thử tự động `tests/release-validation/pwa-audit.test.ts` (7 bài kiểm tra toàn diện về kiến trúc PWA, toàn vẹn PNG header, mã băm CSP SHA-256, và đồng bộ tuyệt đối giữa `package.json` và `package-lock.json`).
+  - Đồng bộ trạng thái nút theo kết nối mạng thực tế (`navigator.onLine` + sự kiện `online`/`offline`): hoạt động bình thường khi có mạng; tự động làm mờ (`opacity-50`) khi ngoại tuyến và hiển thị thông báo Toast thân thiện khẳng định mọi tính năng lịch vẫn hoạt động 100% trên thiết bị.
+- **Tự động Kiểm toán Lighthouse CI & Chốt chặn Ngân sách Hiệu năng (`.github/workflows/audit.yml`, `lighthouserc.json`, `ARCHITECTURE.md`):**
+  - Thiết lập GitHub Actions workflow kiểm toán tự động với ngưỡng bắt buộc `categories:performance >= 0.95` (95/100) và `total-blocking-time <= 150ms` ở mức `error`.
+  - Ban hành **Codebase Architecture Guardrails** (3 quy tắc vàng) trong `ARCHITECTURE.md` và bộ kiểm thử tự động `tests/release-validation/pwa-audit.test.ts`.
 
 ### Changed
+- **Đột phá Hiệu năng Mobile Lighthouse 100/100 (`TBT 580ms ⟶ 50ms`, Entry Chunk `-94.9%`):**
+  - Cắt đứt chuỗi import qua barrel file (`ui/primitives/index.ts`, `core/stores/index.ts`, `core/schedule/index.ts`) trên đường dẫn khởi tạo (`main.tsx`, `App.tsx`, `router.tsx`, `WelcomeView.tsx`) và tách `@react-pdf` khỏi `vendor-react`, giảm kích thước entry chunk `index-*.js` từ **73.60 kB xuống 3.74 kB (-94.9%)**.
+  - Khởi động sớm (Font Pre-warming) 4 mặt chữ Google Fonts (`Be Vietnam Pro` 400/700 Latin+VN và `Montserrat` 800) ngay trong `#root` kết hợp gỡ bỏ `text-rendering: optimizeLegibility` và `text-balance`, triệt tiêu hoàn toàn tác vụ `Style & Layout` 176ms khi hoán đổi font.
+  - Lùi thời điểm mount `PWAUpdateHandler` và nạp từ điển ngôn ngữ đầy đủ (`vi.json` / `en.json`) sang sau khi trang hoàn tất khởi tạo (`window.load` + quiet window hoặc tương tác người dùng).
+- **Chuẩn hóa Zustand Atomic Selectors & Dọn dẹp Codebase:**
+  - Chuyển đổi toàn bộ 18 lời gọi `useStore()` trần sang **Atomic Selectors** (`useStore((s) => s.field)` / `useShallow`) trên 10 component (`AppLayout`, `WelcomeView`, `TodayView`, `WeeklyView`, `SemesterView`, `StatisticsView`, `SettingsView`, `DevToolsView`, `ScheduleBuilderForm`, `StateInspector`), ngăn chặn triệt để hiện tượng re-render dây chuyền.
+  - Loại bỏ 9 hằng số dead code trong `src/core/constants.ts`, cô lập `window.__TDY_STORES__` chỉ chạy trong môi trường DEV, và gộp các phép biến đổi mảng trong `StatisticsView` về 1 vòng lặp duy nhất.
 - **Tối ưu Tốc độ Cài đặt PWA gấp 3 lần (Tiered Precache & Cache-on-Demand):**
-  - Phân tầng tài nguyên rõ ràng: **Tier A/B** (Giao diện chính, Lịch giảng, Lịch coi thi, Thống kê, Ghi chú, Đa ngôn ngữ) được tải và xác minh nguyên tử 100% ngay khi cài đặt; **Tier C** (Các gói nặng ít dùng ngay như Engine xuất PDF, Font chữ PDF, Excel, DevTools ~2.35 MB) được chuyển sang cơ chế **Cache-on-Demand** (lưu đệm tự động theo chiến lược Cache-First ngay lần đầu người dùng mở tính năng).
-  - Giữ lại tối đa 1 bản cache liền kề trước đó (`N-1`) khi kích hoạt Service Worker mới để bảo vệ các tab đang mở dở không bao giờ gặp lỗi `ChunkLoadError` khi tải lazy chunk lúc Offline.
-  - Giữ cơ chế hỏi xác nhận qua hộp thoại trước khi tải lại trang: tự động lưu đồng bộ toàn bộ bản nháp ghi chú (`draftService.flushAll()`) trước khi gửi lệnh `SKIP_WAITING`.
+  - Phân tầng tài nguyên rõ ràng: **Tier A/B** (Giao diện chính, Lịch giảng, Lịch coi thi, Thống kê, Ghi chú, Đa ngôn ngữ) được tải và xác minh nguyên tử 100% ngay khi cài đặt; **Tier C** (Các gói nặng ít dùng ngay như Engine xuất PDF, Font chữ PDF, Excel, DevTools ~2.35 MB) được chuyển sang cơ chế **Cache-on-Demand**.
+  - Giữ lại tối đa 1 bản cache liền kề trước đó (`N-1`) khi kích hoạt Service Worker mới để bảo vệ các tab đang mở dở không gặp lỗi `ChunkLoadError` khi tải lazy chunk lúc Offline.
 - **Tinh gọn Cây Phụ thuộc (-167 packages) & Nâng cấp Node.js 26 Active LTS:**
-  - Gỡ bỏ hoàn toàn `vite-plugin-pwa` và `workbox-window` khỏi `package.json` và `package-lock.json`, loại bỏ 167 gói phụ thuộc trung gian (`workbox-*`, `@babel/*`, `@rollup/plugin-*`...).
-  - Nâng cấp môi trường Node.js trên GitHub Actions (`.github/workflows/ci.yml`, `.github/workflows/audit.yml`) và cấu hình `.nvmrc` / `.node-version` lên **Node.js 26 (Active LTS)**, đồng thời mở rộng `engines.node` thành `>=22.0.0`.
+  - Gỡ bỏ hoàn toàn `vite-plugin-pwa` và `workbox-window` khỏi `package.json` và `package-lock.json`, loại bỏ 167 gói phụ thuộc trung gian.
+  - Nâng cấp môi trường Node.js trên GitHub Actions (`.github/workflows/ci.yml`, `.github/workflows/audit.yml`) và cấu hình `.nvmrc` / `.node-version` lên **Node.js 26 (Active LTS)**.
 
 ### Fixed
+- **Loại bỏ Forced Synchronous Reflow & Top-Level Sync API Calls:**
+  - Thay thế `window.innerWidth < 1024` bằng `window.matchMedia('(min-width: 1024px)')` trong `src/core/stores/ui.store.ts` và trì hoãn `Intl.DateTimeFormat().resolvedOptions().timeZone` vào hàm `getDefaultTimezone()` trong `src/core/stores/schedule.store.ts`.
 - **Khắc phục triệt để lỗi `npm ci` lệch Lockfile & Badge Phiên bản trên GitHub:**
-  - Đồng bộ chuẩn xác `package-lock.json` với `package.json`, bổ sung cơ chế fallback `npm ci || npm install` trên CI workflows và bài test khóa đồng bộ tự động trong `pwa-audit.test.ts`.
-  - Cập nhật badge phiên bản trong `README.md` sang endpoint Dynamic JSON của Shields.io để hiển thị chính xác định dạng CalVer (`v2026.11.09`) thay vì báo lỗi `invalid response data`.
+  - Đồng bộ chuẩn xác `package-lock.json` với `package.json`, bổ sung cơ chế fallback `npm ci || npm install` trên CI workflows và cập nhật badge phiên bản trong `README.md` sang endpoint Dynamic JSON của Shields.io hỗ trợ CalVer (`v2026.11.09`).
 
 ## [2026.11.05] - 2026-11-05
 

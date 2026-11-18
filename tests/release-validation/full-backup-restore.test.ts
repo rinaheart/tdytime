@@ -13,15 +13,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { backupService, BACKUP_FORMAT, BACKUP_FORMAT_VERSION, type BackupFile } from '@/core/backup/backup.service';
 import { useScheduleStore } from '@/core/stores/schedule.store';
-import { useNotesStore } from '@/core/stores/notes.store';
 import { historyService } from '@/core/schedule/history.service';
 import { CourseType, type ScheduleData } from '@/core/schedule/schedule.types';
-import * as fileSaver from 'file-saver';
-
-// Mock file-saver to capture blob and filename
-vi.mock('file-saver', () => ({
-    saveAs: vi.fn(),
-}));
 
 // In-memory mock for idb in Node/jsdom test runner
 const idbMemory = new Map<string, unknown>();
@@ -36,7 +29,6 @@ describe('PHASE 2 & 4: Full Backup Export & Atomic Restore Validation', () => {
         localStorage.clear();
         sessionStorage.clear();
         idbMemory.clear();
-        useNotesStore.getState().clearAllNotes();
         useScheduleStore.setState({
             data: null,
             sessionsIndex: [],
@@ -44,7 +36,7 @@ describe('PHASE 2 & 4: Full Backup Export & Atomic Restore Validation', () => {
             historyList: [],
             isInitialized: false,
         });
-        vi.clearAllMocks();
+        vi.restoreAllMocks();
     });
 
     const sampleVietnameseSchedule: ScheduleData = {
@@ -92,67 +84,58 @@ describe('PHASE 2 & 4: Full Backup Export & Atomic Restore Validation', () => {
         },
     };
 
-    it('1. Exports full backup with all 5 data tiers and valid schema', async () => {
-        // Populate initial user state
+    it('1. Exports full backup with all data tiers and valid schema', async () => {
+        const downloadSpy = vi.spyOn(backupService, 'triggerDownload').mockImplementation(() => {});
+
         localStorage.setItem('last_schedule_data', JSON.stringify(sampleVietnameseSchedule));
         localStorage.setItem('global_abbreviations', JSON.stringify({ 'Giải phẫu học': 'GPH' }));
         localStorage.setItem('tdytime_theme', 'dark');
         localStorage.setItem('accent-theme', 'theme-emerald');
+        localStorage.setItem(
+            'tdy_session_notes',
+            JSON.stringify({
+                state: { notes: { 'MED101-Mon-1-4': 'Nhắc sinh viên chuẩn bị găng tay y tế.' } },
+                version: 0,
+            }),
+        );
 
-        useNotesStore.getState().setNote('MED101-Mon-1-4', 'Nhắc sinh viên chuẩn bị găng tay y tế.');
         await historyService.save(sampleVietnameseSchedule);
 
         const result = await backupService.exportFullBackup();
 
-        // 1. Verify file structure
         expect(result.file.format).toBe(BACKUP_FORMAT);
         expect(result.file.formatVersion).toBe(BACKUP_FORMAT_VERSION);
         expect(result.file.data.activeSchedule?.metadata.teacher).toBe('GS.TS. Trần Quốc Hùng 🇻🇳');
         expect(result.file.data.history.length).toBe(1);
-        expect(result.file.data.notes['MED101-Mon-1-4']).toBe('Nhắc sinh viên chuẩn bị găng tay y tế.');
+        expect(result.file.data.notes?.['MED101-Mon-1-4']).toBe('Nhắc sinh viên chuẩn bị găng tay y tế.');
         expect(result.file.data.abbreviations['Giải phẫu học']).toBe('GPH');
         expect(result.file.data.preferences.theme).toBe('dark');
 
-        // 2. Verify summary
         expect(result.summary.hasActiveSchedule).toBe(true);
         expect(result.summary.historyCount).toBe(1);
         expect(result.summary.notesCount).toBe(1);
 
-        // 3. Verify fileSaver called with valid filename
-        expect(fileSaver.saveAs).toHaveBeenCalledTimes(1);
-        const saveAsMock = fileSaver.saveAs as unknown as { mock: { calls: Array<[Blob, string]> } };
-        const [, filename] = saveAsMock.mock.calls[0];
+        expect(downloadSpy).toHaveBeenCalledTimes(1);
+        const [, filename] = downloadSpy.mock.calls[0];
         expect(filename).toMatch(/^tdytime-backup-\d{4}-\d{2}-\d{2}\.json$/);
 
-        // 4. Verify last backup date recorded in localStorage
         expect(backupService.getLastBackupDate()).toBe(result.summary.exportedAt);
     });
 
     it('2. Rejects invalid backup files with accurate error keys', () => {
-        // Empty
         expect(backupService.validateBackupContent('').errorKey).toBe('backup.errors.emptyFile');
-
-        // Corrupted JSON
         expect(backupService.validateBackupContent('{ corrupt json ...').errorKey).toBe('backup.errors.invalidJson');
-
-        // Wrong format
         expect(backupService.validateBackupContent(JSON.stringify({ format: 'wrong-format' })).errorKey).toBe('backup.errors.unsupportedFormat');
-
-        // Wrong version
         expect(backupService.validateBackupContent(JSON.stringify({
             format: BACKUP_FORMAT,
             formatVersion: 999,
             data: {},
         })).errorKey).toBe('backup.errors.unsupportedVersion');
-
-        // Invalid history schema (e.g. not an array)
         expect(backupService.validateBackupContent(JSON.stringify({
             format: BACKUP_FORMAT,
             formatVersion: BACKUP_FORMAT_VERSION,
             data: { history: 'not-an-array' },
         })).errorKey).toBe('backup.errors.invalidHistorySchema');
-
-        // Invalid notes schema (e.g. array instead of object)
         expect(backupService.validateBackupContent(JSON.stringify({
             format: BACKUP_FORMAT,
             formatVersion: BACKUP_FORMAT_VERSION,
@@ -170,7 +153,7 @@ describe('PHASE 2 & 4: Full Backup Export & Atomic Restore Validation', () => {
         expect(validation.summary?.hasActiveSchedule).toBe(true);
     });
 
-    it('4. Atomic restore: completely restores all 5 data groups with roundtrip fidelity', async () => {
+    it('4. Atomic restore: completely restores all data groups with roundtrip fidelity', async () => {
         const backupToRestore: BackupFile = {
             format: BACKUP_FORMAT,
             formatVersion: BACKUP_FORMAT_VERSION,
@@ -207,38 +190,35 @@ describe('PHASE 2 & 4: Full Backup Export & Atomic Restore Validation', () => {
         const result = await backupService.restoreFromBackup(backupToRestore);
         expect(result.success).toBe(true);
 
-        // 1. Verify Active Schedule
         const activeRaw = localStorage.getItem('last_schedule_data');
         expect(activeRaw).not.toBeNull();
         const activeParsed = JSON.parse(activeRaw!);
         expect(activeParsed.metadata.teacher).toBe('GS.TS. Trần Quốc Hùng 🇻🇳');
 
-        // 2. Verify Notes
-        expect(useNotesStore.getState().getNote('NOTE_A')).toBe('Ghi chú tiếng Việt có dấu: Ứng dụng PWA 💯');
-        expect(useNotesStore.getState().getNote('NOTE_B')).toBe('Tiết học thứ Bảy phòng Lab 2');
+        const notesRaw = JSON.parse(localStorage.getItem('tdy_session_notes') || '{}');
+        expect(notesRaw.state.notes['NOTE_A']).toBe('Ghi chú tiếng Việt có dấu: Ứng dụng PWA 💯');
+        expect(notesRaw.state.notes['NOTE_B']).toBe('Tiết học thứ Bảy phòng Lab 2');
 
-        // 3. Verify Abbreviations
         const abbrRaw = localStorage.getItem('global_abbreviations');
         expect(abbrRaw).not.toBeNull();
         const abbrParsed = JSON.parse(abbrRaw!);
         expect(abbrParsed['Hóa sinh y học']).toBe('HSYH');
 
-        // 4. Verify History in IndexedDB
         const historyItems = await historyService.getAll();
         expect(historyItems.length).toBe(1);
         expect(historyItems[0].teacher).toBe('GS.TS. Trần Quốc Hùng 🇻🇳');
 
-        // 5. Verify Preferences
         expect(localStorage.getItem('tdytime_theme')).toBe('dark');
         expect(localStorage.getItem('accent-theme')).toBe('theme-violet');
     });
 
     it('5. Atomic rollback: restores previous state if an error occurs during restore', async () => {
-        // Setup initial state before failed restore
         localStorage.setItem('last_schedule_data', JSON.stringify({ metadata: { teacher: 'Original Teacher' } }));
-        useNotesStore.getState().setNote('ORIGINAL_NOTE', 'Dữ liệu gốc');
+        localStorage.setItem(
+            'tdy_session_notes',
+            JSON.stringify({ state: { notes: { ORIGINAL_NOTE: 'Dữ liệu gốc' } }, version: 0 }),
+        );
 
-        // Mock historyService.save to fail deliberately
         const originalSave = historyService.save;
         historyService.save = vi.fn().mockRejectedValueOnce(new Error('Simulated IndexedDB Write Failure'));
 
@@ -269,11 +249,10 @@ describe('PHASE 2 & 4: Full Backup Export & Atomic Restore Validation', () => {
         const result = await backupService.restoreFromBackup(faultyBackup);
         expect(result.success).toBe(false);
 
-        // Verify Rollback: Original state was restored
         expect(localStorage.getItem('last_schedule_data')).toContain('Original Teacher');
-        expect(useNotesStore.getState().getNote('ORIGINAL_NOTE')).toBe('Dữ liệu gốc');
+        const rolledBackNotes = JSON.parse(localStorage.getItem('tdy_session_notes') || '{}');
+        expect(rolledBackNotes.state.notes.ORIGINAL_NOTE).toBe('Dữ liệu gốc');
 
-        // Restore mock
         historyService.save = originalSave;
     });
 });

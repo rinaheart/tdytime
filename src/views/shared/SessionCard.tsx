@@ -1,12 +1,11 @@
-import React, { useState, useCallback } from 'react';
-import { Clock, StickyNote } from 'lucide-react';
+import React from 'react';
+import { Clock } from 'lucide-react';
 import { getPeriodTimes } from '@/core/constants';
 import { formatRoom, formatClassDisplay } from '@/core/schedule/schedule.utils';
 import type { CourseSession } from '@/core/schedule/schedule.types';
 import type { FlatSession } from '@/core/schedule/schedule.index';
 import { Badge } from '@/ui/primitives';
-import { TypeBadge, NoteModal } from '@/ui/composites';
-import { useNotesStore } from '@/core/stores/notes.store';
+import { TypeBadge } from '@/ui/composites';
 
 export type SessionCardData = CourseSession | FlatSession;
 
@@ -72,9 +71,6 @@ const WeeklyCard: React.FC<{
         startTimeStr,
         endTimeStr,
     });
-    const [isNoteOpen, setIsNoteOpen] = useState(false);
-    const handleCloseNote = useCallback(() => setIsNoteOpen(false), []);
-    const hasNote = useNotesStore((s) => Boolean(s.notes[session.id]));
 
     return (
         <div
@@ -99,45 +95,9 @@ const WeeklyCard: React.FC<{
             <div className="mt-auto text-[11px] text-slate-600 dark:text-slate-400 font-medium flex items-center justify-between gap-1 overflow-hidden min-w-0">
                 <div className="flex-1 min-w-0 truncate">{formatClassDisplay(session)}</div>
                 <div className="flex items-center gap-1">
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setIsNoteOpen(true);
-                        }}
-                        aria-label={
-                            hasNote
-                                ? `Ghi chú đã có cho ${displayName}`
-                                : `Thêm ghi chú cho ${displayName}`
-                        }
-                        title={hasNote ? 'Xem/Sửa ghi chú' : 'Thêm ghi chú'}
-                        className={`min-w-[26px] min-h-[26px] p-1 flex items-center justify-center rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
-                            hasNote
-                                ? 'bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400'
-                                : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
-                        }`}
-                    >
-                        <StickyNote
-                            size={13}
-                            fill={hasNote ? 'currentColor' : 'none'}
-                            strokeWidth={hasNote ? 2.5 : 1.75}
-                        />
-                    </button>
                     <TypeBadge type={session.type} compact={true} />
                 </div>
             </div>
-            {isNoteOpen && (
-                <NoteModal
-                    isOpen={isNoteOpen}
-                    sessionId={session.id}
-                    sessionTitle={displayName}
-                    onClose={handleCloseNote}
-                    date={'dateStr' in session ? session.dateStr : undefined}
-                    room={formatRoom(session.room)}
-                    className={formatClassDisplay(session)}
-                    time={`${startTime} - ${endTime}`}
-                />
-            )}
             {showTeacher && (
                 <div className="mt-2.5 -mx-2.5 -mb-2.5 px-2.5 py-1.5 bg-accent-50 dark:bg-accent-900/40 rounded-b-md text-[11px] font-bold border-t border-accent-100/50 dark:border-accent-800/30">
                     <span className="text-slate-900 dark:text-accent-100">{session.teacher}</span>
@@ -189,8 +149,6 @@ const TodayCard: React.FC<{
         startTimeStr,
         endTimeStr,
     });
-    const [isNoteOpen, setIsNoteOpen] = useState(false);
-    const hasNote = useNotesStore((s) => Boolean(s.notes[session.id]));
 
     return (
         <div
@@ -230,45 +188,9 @@ const TodayCard: React.FC<{
                     <span className="truncate">{formatClassDisplay(session)}</span>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setIsNoteOpen(true);
-                        }}
-                        aria-label={
-                            hasNote
-                                ? `Ghi chú đã có cho ${displayName}`
-                                : `Thêm ghi chú cho ${displayName}`
-                        }
-                        title={hasNote ? 'Xem/Sửa ghi chú' : 'Thêm ghi chú'}
-                        className={`min-w-[28px] min-h-[28px] p-1.5 flex items-center justify-center rounded transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
-                            hasNote
-                                ? 'bg-accent-100 dark:bg-accent-900/30 text-accent-600 dark:text-accent-400'
-                                : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400'
-                        }`}
-                    >
-                        <StickyNote
-                            size={13}
-                            fill={hasNote ? 'currentColor' : 'none'}
-                            strokeWidth={hasNote ? 2.5 : 1.75}
-                        />
-                    </button>
                     <TypeBadge type={session.type} compact={true} />
                 </div>
             </div>
-            {isNoteOpen && (
-                <NoteModal
-                    isOpen={isNoteOpen}
-                    sessionId={session.id}
-                    sessionTitle={displayName}
-                    onClose={() => setIsNoteOpen(false)}
-                    time={`${startTime} - ${endTime}`}
-                    room={formatRoom(session.room)}
-                    className={formatClassDisplay(session)}
-                    date={'dateStr' in session ? session.dateStr : undefined}
-                />
-            )}
         </div>
     );
 };

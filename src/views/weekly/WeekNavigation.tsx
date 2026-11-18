@@ -4,11 +4,9 @@
 
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, Zap, Columns, LayoutTemplate, Search, Download } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Zap, Columns, LayoutTemplate, Search } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores';
 import { isCurrentWeek, getCurrentWeekRange } from '@/core/schedule/schedule.utils';
-import { useNotesStore } from '@/core/stores/notes.store';
-import type { FlatSession } from '@/core/schedule/schedule.index';
 
 const DATE_RANGE_REGEX = /\d{2}\/\d{2}\/\d{4}/g;
 
@@ -18,13 +16,10 @@ interface WeekNavigationProps {
     isFilterOpen: boolean;
     onToggleFilter: () => void;
     hasActiveFilters: boolean;
-    sessions: FlatSession[];
-    teacherName: string;
 }
 
-const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewMode, isFilterOpen, onToggleFilter, hasActiveFilters, sessions, teacherName }) => {
+const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewMode, isFilterOpen, onToggleFilter, hasActiveFilters }) => {
     const { t } = useTranslation();
-    const [isExporting, setIsExporting] = React.useState(false);
     const data = useScheduleStore((s) => s.data);
     const currentWeekIndex = useScheduleStore((s) => s.currentWeekIndex);
     const setCurrentWeekIndex = useScheduleStore((s) => s.setCurrentWeekIndex);
@@ -43,85 +38,10 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
         return t('weekly.week', { number: currentWeekIndex + 1 });
     }, [currentWeekIndex, t]);
 
-    const weekNumber = useMemo(() => {
-        if (currentWeekIndex === -1) {
-            // Find current week index in weeks array if possible
-            const idx = weeks.findIndex(w => isCurrentWeek(w.dateRange, now));
-            return idx !== -1 ? idx + 1 : 'curr';
-        }
-        return currentWeekIndex + 1;
-    }, [currentWeekIndex, weeks, now]);
-
     const weekDateRange = useMemo(() => {
         if (week) return week.dateRange;
         return getCurrentWeekRange(now);
     }, [week, now]);
-
-    const reportTranslations = useMemo(() => ({
-        university: t('report.university'),
-        titleWeek: t('report.titleWeek'),
-        titleSemester: t('report.titleSemester'),
-        teacher: t('report.teacher'),
-        defaultReport: t('report.defaultReport'),
-        noSchedule: t('report.noSchedule'),
-        class: t('report.class'),
-        room: t('report.room'),
-        personalNote: t('report.personalNote'),
-        semesterTotal: t('report.semesterTotal'),
-        periods: t('report.periods'),
-        createdBy: t('report.createdBy'),
-        page: t('report.page'),
-        week: t('report.week'),
-        weekFrom: t('report.weekFrom'),
-        weekTo: t('report.weekTo'),
-        shifts: {
-            morning: t('shifts.morning'),
-            afternoon: t('shifts.afternoon'),
-            evening: t('shifts.evening'),
-            night: t('shifts.night'),
-        },
-        days: {
-            '0': t('days.0'),
-            '1': t('days.1'),
-            '2': t('days.2'),
-            '3': t('days.3'),
-            '4': t('days.4'),
-            '5': t('days.5'),
-            '6': t('days.6'),
-        }
-    }), [t]);
-
-    const handleExportPDF = async () => {
-        if (!sessions || sessions.length === 0) return;
-        
-        try {
-            setIsExporting(true);
-            const [{ pdf }, { ScheduleReport }, { saveAs }] = await Promise.all([
-                import('@react-pdf/renderer'),
-                import('../shared/ScheduleReport'),
-                import('file-saver'),
-            ]);
-            
-            const filename = `TdyTime_${teacherName.replace(/\s+/g, '_')}_T${weekNumber}.pdf`;
-            
-            const blob = await pdf(
-                <ScheduleReport 
-                    mode="week" 
-                    sessions={sessions} 
-                    weekRange={weekDateRange} 
-                    teacherName={teacherName} 
-                    notes={useNotesStore.getState().notes} 
-                    translations={reportTranslations}
-                />
-            ).toBlob();
-            
-            saveAs(blob, filename);
-        } catch (error) {
-            console.error('Export failed', error);
-        } finally {
-            setIsExporting(false);
-        }
-    };
 
     const formatDateRange = (range: string) => {
         const dates = range.match(DATE_RANGE_REGEX);
@@ -148,16 +68,6 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
             </div>
 
             <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full md:w-auto md:self-auto">
-                <button
-                    onClick={handleExportPDF}
-                    disabled={isExporting || (currentWeekIndex !== -1 && weeks.length === 0)}
-                    aria-label={isExporting ? t('common.loading') : t('weekly.exportPDF')}
-                    className="hidden md:flex items-center gap-2 h-11 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40 active:scale-95 transition-all shadow-sm disabled:opacity-50"
-                >
-                    <Download size={16} className={isExporting ? "animate-bounce text-accent-500" : "text-accent-500"} />
-                    <span className="hidden sm:inline">{isExporting ? t('common.loading') : t('weekly.exportPDF')}</span>
-                </button>
-
                 <button
                     onClick={() => data && jumpToCurrentWeek(data)}
                     aria-label={t('common.current')}

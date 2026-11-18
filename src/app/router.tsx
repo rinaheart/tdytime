@@ -19,20 +19,7 @@ const WeeklyView = lazy(() => import('../views/weekly/WeeklyView'));
 const SemesterView = lazy(() => import('../views/semester/SemesterView'));
 const StatisticsView = lazy(() => import('../views/statistics/StatisticsView'));
 const SettingsView = lazy(() => import('../views/settings/SettingsView'));
-const DevToolsView = lazy(() => import('../views/dev/DevToolsView'));
 const ExamView = lazy(() => import('../views/exam/ExamView'));
-
-const DevGuard = ({ children }: { children: React.ReactNode }) => {
-    const allowed = import.meta.env.DEV || localStorage.getItem('devtools_enabled') === 'true';
-    if (!allowed) {
-        if (window.location.hash.includes('/dev')) {
-            localStorage.removeItem('devtools_enabled');
-        }
-        return <Navigate to="/" replace />;
-    }
-    void loadLanguage(i18n.language || 'vi');
-    return <>{children}</>;
-};
 
 const RouteError = () => {
     const error = useRouteError();
@@ -88,21 +75,6 @@ export const router = createHashRouter([
         path: '/',
         errorElement: <RouteError />,
         element: <WelcomeView />,
-    },
-    {
-        path: '/demo',
-        element: <Navigate to="/dev" replace />,
-    },
-    {
-        path: '/dev',
-        errorElement: <RouteError />,
-        element: (
-            <DevGuard>
-                <Suspense fallback={<LoadingFallback />}>
-                    <DevToolsView />
-                </Suspense>
-            </DevGuard>
-        ),
     },
     {
         errorElement: <RouteError />,

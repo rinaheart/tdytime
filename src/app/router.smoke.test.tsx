@@ -21,7 +21,7 @@ describe('Hash Router — react-router-dom@7.18.2 regression smoke test', () => 
         window.location.hash = '';
     });
 
-    const ROUTES = ['/', '/today', '/week', '/semester', '/stats', '/settings', '/exam', '/dev', '/nonexistent-route'];
+    const ROUTES = ['/', '/today', '/week', '/semester', '/stats', '/settings', '/exam', '/nonexistent-route'];
 
     it('mounts RouterProvider without throwing', async () => {
         expect(() => render(<RouterProvider router={router} />)).not.toThrow();

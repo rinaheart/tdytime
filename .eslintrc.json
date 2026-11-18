@@ -13,6 +13,7 @@
       "version": "detect"
     }
   },
+  "ignorePatterns": ["dist/**", "archive/**"],
   "rules": {
     "react/react-in-jsx-scope": "off"
   }

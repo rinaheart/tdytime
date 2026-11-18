@@ -13,12 +13,8 @@ import {
     Search,
     ChevronUp,
     ChevronDown,
-    Printer,
-    Loader2,
-    FileSpreadsheet,
 } from 'lucide-react';
-import { useScheduleStore, useUIStore } from '@/core/stores';
-import { useNotesStore } from '@/core/stores/notes.store';
+import { useScheduleStore } from '@/core/stores';
 import { FilterBar } from '@/ui';
 import { LazyRender } from '@/ui/LazyRender';
 import { isCurrentWeek, getCurrentWeekRange } from '@/core/schedule/schedule.utils';
@@ -30,9 +26,7 @@ import type { FlatSession } from '@/core/schedule/schedule.index';
 const SemesterView: React.FC = () => {
     const { t } = useTranslation();
     const data = useScheduleStore((s) => s.data);
-    const sessionsIndex = useScheduleStore((s) => s.sessionsIndex);
     const abbreviations = useScheduleStore((s) => s.abbreviations);
-    const setToastGlobal = useUIStore((s) => s.setToast);
 
     const weeksMetadata = useMemo(() => data?.weeks || [], [data?.weeks]);
     const teacherName = data?.metadata?.teacher || '';
@@ -51,14 +45,13 @@ const SemesterView: React.FC = () => {
         now,
     } = useScheduleFilter(undefined, teacherName);
 
-    const { byWeek, rawSessions } = useSemesterData(filterFn as (s: FlatSession) => boolean);
+    const { byWeek } = useSemesterData(filterFn as (s: FlatSession) => boolean);
 
     const [viewMode, setViewMode] = useState<'horizontal' | 'vertical'>(
         window.innerWidth < 768 ? 'vertical' : 'horizontal',
     );
     const [expandedWeeks, setExpandedWeeks] = useState<Record<number, boolean>>({});
     const [toast, setToast] = useState<string | null>(null);
-    const [isExporting, setIsExporting] = useState(false);
 
     const visibleWeekIndices = useMemo(() => {
         return weeksMetadata
@@ -161,80 +154,6 @@ const SemesterView: React.FC = () => {
         setTimeout(() => setToast(null), 3500);
     };
 
-    const handleExportCSV = async () => {
-        try {
-            const { exportToCSV } = await import('@/utils/export-csv');
-            const filename = `tdytime-export-${new Date().toISOString().split('T')[0]}.csv`;
-            exportToCSV(sessionsIndex, filename);
-            setToastGlobal(t('settings.toast.csvExported'));
-        } catch {
-            setToastGlobal(t('common.error'));
-        }
-    };
-
-    const reportTranslations = useMemo(
-        () => ({
-            university: t('report.university'),
-            titleWeek: t('report.titleWeek'),
-            titleSemester: t('report.titleSemester'),
-            teacher: t('report.teacher'),
-            defaultReport: t('report.defaultReport'),
-            noSchedule: t('report.noSchedule'),
-            class: t('report.class'),
-            room: t('report.room'),
-            personalNote: t('report.personalNote'),
-            semesterTotal: t('report.semesterTotal'),
-            periods: t('report.periods'),
-            createdBy: t('report.createdBy'),
-            page: t('report.page'),
-            week: t('report.week'),
-            weekFrom: t('report.weekFrom'),
-            weekTo: t('report.weekTo'),
-            shifts: {
-                morning: t('shifts.morning'),
-                afternoon: t('shifts.afternoon'),
-                evening: t('shifts.evening'),
-            },
-            days: {
-                '0': t('days.0'),
-                '1': t('days.1'),
-                '2': t('days.2'),
-                '3': t('days.3'),
-                '4': t('days.4'),
-                '5': t('days.5'),
-                '6': t('days.6'),
-            },
-        }),
-        [t],
-    );
-
-    const handleExportPDF = async () => {
-        setIsExporting(true);
-        try {
-            const [{ pdf }, { ScheduleReport }, { saveAs }] = await Promise.all([
-                import('@react-pdf/renderer'),
-                import('../shared/ScheduleReport'),
-                import('file-saver'),
-            ]);
-            const filename = `tdytime-semester-report-${new Date().toISOString().split('T')[0]}.pdf`;
-            const blob = await pdf(
-                <ScheduleReport
-                    mode="semester"
-                    sessions={rawSessions}
-                    teacherName={teacherName}
-                    notes={useNotesStore.getState().notes}
-                    translations={reportTranslations}
-                />,
-            ).toBlob();
-            saveAs(blob, filename);
-        } catch (error) {
-            console.error('PDF generation failed:', error);
-            setToastGlobal(t('common.error'));
-        } finally {
-            setIsExporting(false);
-        }
-    };
-
     if (weeksMetadata.length === 0) {
         return <div className="p-8 text-center text-slate-400">{t('stats.today.noDataTitle')}</div>;
     }
@@ -252,31 +171,6 @@ const SemesterView: React.FC = () => {
                         </p>
                     </div>
                     <div className="flex items-center gap-2 flex-wrap justify-center sm:justify-end w-full md:w-auto md:self-auto print:hidden">
-                        <button
-                            onClick={handleExportCSV}
-                            aria-label={t('semester.exportCSV')}
-                            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                            title={t('semester.exportCSV')}
-                        >
-                            <FileSpreadsheet size={16} className="text-emerald-500" />
-                            <span className="hidden sm:inline">{t('semester.exportCSV')}</span>
-                        </button>
-                        <button
-                            onClick={handleExportPDF}
-                            disabled={isExporting}
-                            aria-label={isExporting ? t('common.loading') : t('semester.exportPDF')}
-                            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
-                            title={t('semester.exportPDF')}
-                        >
-                            {isExporting ? (
-                                <Loader2 size={16} className="animate-spin text-accent-500" />
-                            ) : (
-                                <Printer size={16} className="text-accent-500" />
-                            )}
-                            <span className="hidden sm:inline">
-                                {isExporting ? t('common.loading') : t('semester.exportPDF')}
-                            </span>
-                        </button>
                         <button
                             onClick={scrollToCurrentWeek}
                             aria-label={t('common.current')}

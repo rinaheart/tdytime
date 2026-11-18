@@ -447,14 +447,27 @@
         "changelog": "Changelog",
         "history": [
             {
+                "version": "v2026.11.18",
+                "date": "2026-11-18",
+                "changes": [
+                    "Lean Offline-First Mobile PWA (-65% Bundle Size): Tối giản hóa kiến trúc tập trung 100% vào theo dõi lịch giảng dạy, lịch coi thi và tiến độ học kỳ ngoại tuyến; giảm tổng dung lượng bản build từ 2.56 MB xuống 897 kB và tăng tốc độ build gấp 2.13 lần.",
+                    "100% Instant Offline Cache: Toàn bộ 32/32 file tài sản tĩnh (828 kB) được Service Worker lưu đệm trọn vẹn vào bộ nhớ thiết bị, đảm bảo mở ứng dụng tức thì ngay cả trong chế độ máy bay (Airplane Mode).",
+                    "Pure Stateless SessionCard & Lean AppLayout: Loại bỏ subscription và modal phụ trợ khỏi từng thẻ buổi học (giảm 48.2% dung lượng SessionCard) và tinh gọn khung điều hướng AppLayout (-51.2%).",
+                    "Enforced Atomic Zustand Store (createAtomicStore): Bắt buộc truy cập state qua selector nguyên tử ở cả cấp độ TypeScript và runtime kèm hệ thống lazy proxy .use.<field>().",
+                    "Native Backup Download & 7 Core Dependencies: Chuyển tải file sao lưu JSON sang cơ chế thuần trình duyệt (không cần file-saver), rút gọn từ 11 xuống 7 thư viện runtime cốt lõi và giữ tương thích ngược 100%.",
+                    "Post-Deploy Lighthouse Reporting: Tự động chạy kiểm định hiệu năng (Performance >= 95, TBT <= 150ms) sau mỗi lần deploy, xuất bảng báo cáo Markdown lên GitHub Actions Summary và lưu trữ lịch sử 90 ngày."
+                ]
+            },
+            {
                 "version": "v2026.11.09",
                 "date": "2026-11-09",
                 "changes": [
+                    "Mobile Lighthouse 100/100 (TBT 580ms ⟶ 50ms): Chia nhỏ chuỗi khởi tạo bằng scheduler.yield() + React.startTransition, giảm 94.9% kích thước entry chunk (73.6 kB ⟶ 3.74 kB) và triệt tiêu Forced Reflow khi hoán đổi font.",
+                    "Zustand Atomic Selectors & Architecture Guardrails: Chuẩn hóa 100% truy cập store qua selector nguyên tử trên toàn bộ 10 view/component, loại bỏ import qua barrel file trên đường dẫn khởi tạo và dọn sạch dead code.",
                     "PWA Zero-Dependency (Chuẩn TdyTripZ): Chuyển sang kiến trúc Service Worker thuần không phụ thuộc thư viện ngoài, gỡ bỏ 167 gói trung gian của vite-plugin-pwa & workbox.",
                     "Tiered Precache & Cache-on-Demand: Cài đặt PWA nhanh gấp 3 lần nhờ tách riêng gói PDF/Excel sang lưu đệm theo yêu cầu và giữ lại cache N-1 chống lỗi ChunkLoadError.",
-                    "Cập nhật/Đồng bộ (Update/Sync): Nâng cấp nút hành động trong Cài đặt giúp đồng bộ lại dữ liệu Lịch giảng, Coi thi, Ghi chú và kiểm tra bản cập nhật mới tức thì.",
-                    "Lighthouse CI & Node.js 26 LTS: Tích hợp kiểm toán tự động hiệu năng, khả năng truy cập trên GitHub Actions với chuẩn Node.js 26 Active LTS.",
-                    "PWA Icons & Cache-Busting: Chuẩn hóa bộ biểu tượng 8-bit PNG (any & maskable) kèm tham số ?v=2026.11 và bảo toàn đồng bộ Lockfile 100%."
+                    "Cập nhật/Đồng bộ chuẩn Offline-First: Nâng cấp nút hành động trong Cài đặt tự động nhận biết trạng thái mạng (làm mờ khi ngoại tuyến kèm thông báo thân thiện) và đồng bộ lại toàn bộ dữ liệu Lịch giảng, Coi thi, Ghi chú.",
+                    "Lighthouse CI & Performance Budget: Khóa ngưỡng bảo vệ hiệu năng tự động trên GitHub Actions (Performance >= 95/100, TBT <= 150ms) với chuẩn Node.js 26 Active LTS."
                 ]
             },
             {

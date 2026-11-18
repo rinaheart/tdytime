@@ -22,7 +22,7 @@ import { parseScheduleHTML, sanitizeScheduleData } from '../schedule/parser';
 import { DEFAULT_THRESHOLDS } from '../constants';
 import { yieldToMain } from '../utils/scheduler';
 import { useUIStore } from './ui.store';
-import { useNotesStore } from './notes.store';
+import { createAtomicStore } from './createAtomicStore';
 
 let cachedDefaultTimezone: string | null = null;
 function getDefaultTimezone(): string {
@@ -78,7 +78,7 @@ interface ScheduleState {
     setTimezone: (tz: string) => void;
 }
 
-export const useScheduleStore = create<ScheduleState>((set, get) => ({
+const scheduleStoreBase = create<ScheduleState>((set, get) => ({
     data: null,
     metrics: null,
     currentWeekIndex: 0,
@@ -398,7 +398,6 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         localStorage.removeItem('language');
         await historyService.clear();
         useUIStore.getState().resetAll();
-        useNotesStore.getState().clearAllNotes();
 
         set({
             data: null,
@@ -419,6 +418,8 @@ export const useScheduleStore = create<ScheduleState>((set, get) => ({
         });
     },
 }));
+
+export const useScheduleStore = createAtomicStore(scheduleStoreBase);
 
 /** Helper to calculate semester bounds (UTC timestamps) */
 function calculateSemesterBounds(sessions: FlatSession[]) {
