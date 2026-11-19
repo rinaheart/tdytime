@@ -139,10 +139,12 @@ export const PWAUpdateHandler: React.FC = () => {
         let idleTimerId: number | undefined;
         let idleCallbackId: number | undefined;
 
+        const hadControllerOnMount = Boolean(navigator.serviceWorker.controller);
+
         const handleControllerChange = () => {
-            // CRITICAL: Only reload when the user explicitly confirmed an update via handleUpdate().
-            // Never reload when a first-time Service Worker calls clients.claim() on an uncontrolled page.
-            if (!userConfirmedUpdateRef.current || refreshingRef.current) return;
+            // Reload when an already-controlled page transitions to a newly activated Service Worker
+            // (or when the user explicitly confirmed the update), while never reloading on first-time install.
+            if ((!hadControllerOnMount && !userConfirmedUpdateRef.current) || refreshingRef.current) return;
             refreshingRef.current = true;
             window.location.reload();
         };
@@ -241,6 +243,13 @@ export const PWAUpdateHandler: React.FC = () => {
                 (await navigator.serviceWorker.getRegistration());
             if (reg?.waiting) {
                 reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                // Safety fallback: if controllerchange does not fire within 1500ms, force reload
+                addTimeout(() => {
+                    if (!refreshingRef.current) {
+                        refreshingRef.current = true;
+                        window.location.reload();
+                    }
+                }, 1500);
                 return;
             }
         }

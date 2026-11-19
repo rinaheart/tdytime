@@ -167,6 +167,14 @@ self.addEventListener('fetch', (event) => {
           if (normCached) return normCached;
         }
         return fetch(request).then((response) => {
+          const contentType = (response && response.headers && response.headers.get('content-type')) || '';
+          // Prevent SPA HTML fallback responses from poisoning /assets/*.js or /assets/*.css cache entries
+          const isHtmlFallbackForAsset =
+            url.pathname.startsWith('/assets/') && contentType.toLowerCase().includes('text/html');
+          if (isHtmlFallbackForAsset) {
+            throw new Error(`Invalid HTML fallback received for asset: ${url.pathname}`);
+          }
+
           const isCacheable =
             response &&
             (response.status === 200 || response.status === 0) &&

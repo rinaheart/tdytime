@@ -57,7 +57,7 @@ function tdyTimePwaPlugin(): Plugin {
             const assetsDir = path.resolve(distDir, 'assets');
             if (!fs.existsSync(distSwPath) || !fs.existsSync(assetsDir)) return;
 
-            // Tier A (Core Entry Bundles — already in browser HTTP cache from initial load, 0ms force-cache install)
+            // Tier A (Core Entry & Bootstrap Bundles — required before first React root render)
             const TIER_A_CORE_ENTRY_PREFIXES = [
                 'index-',
                 'rolldown-runtime-',
@@ -65,6 +65,18 @@ function tdyTimePwaPlugin(): Plugin {
                 'vendor-router-',
                 'vendor-i18n-',
                 'vendor-utils-',
+                'App-',
+                'Monitoring-',
+                'config-',
+                'vi-',
+                'en-',
+                'useAnalytics-',
+                'analytics.store-',
+                'createAtomicStore-',
+                'exam.store-',
+                'exam.parser-',
+                'exam.utils-',
+                'ui-',
             ];
 
             // Tier C (Cache-on-Demand): Heavy optional chunks (~2.3MB combined) are cached on first use
@@ -109,6 +121,17 @@ function tdyTimePwaPlugin(): Plugin {
             if (tierBAssets.length > 0 && /const WARM_CACHE_URLS\s*=\s*\[[\s\S]*?\];/.test(swContent)) {
                 const formattedWarm = `const WARM_CACHE_URLS = [\n${tierBAssets.map((u) => `  '${u}',`).join('\n')}\n];`;
                 swContent = swContent.replace(/const WARM_CACHE_URLS\s*=\s*\[[\s\S]*?\];/, formattedWarm);
+            }
+
+            // Stamp deterministic build-asset hash into dist/sw.js CACHE_NAME so every deploy rotates Cache Storage
+            // even when package.json version was not manually bumped between hotfix deploys.
+            const indexAsset = allBuildAssets.find((f) => f.startsWith('index-') && f.endsWith('.js'));
+            const buildHashMatch = indexAsset?.match(/^index-([A-Za-z0-9_-]+)\.js$/);
+            if (buildHashMatch?.[1]) {
+                swContent = swContent.replace(
+                    /const CACHE_NAME\s*=\s*['"]([^'"]+)['"];/,
+                    (_m, baseName: string) => `const CACHE_NAME = '${baseName}-${buildHashMatch[1]}';`
+                );
             }
 
             fs.writeFileSync(distSwPath, swContent);
