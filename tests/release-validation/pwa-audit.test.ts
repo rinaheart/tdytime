@@ -157,6 +157,7 @@ describe('PWA & Lighthouse CI Audit Verification (Zero-Dependency TdyTripZ Archi
         const swCode = readFileSync(resolve(ROOT_DIR, 'public/sw.js'), 'utf-8');
         expect(swCode).toContain(`const CACHE_NAME = 'tdytime-pwa-v${pkg.version}';`);
         expect(swCode).toContain("event.data.type === 'SKIP_WAITING'");
+        expect(swCode).toContain("event.data.type === 'CLEAR_CACHE'");
         expect(swCode).toContain('oldKeys.length > 1 ? oldKeys.slice(0, oldKeys.length - 1) : []');
         expect(swCode).toContain('normalizeCacheUrl');
 
@@ -179,6 +180,8 @@ describe('PWA & Lighthouse CI Audit Verification (Zero-Dependency TdyTripZ Archi
         expect(handlerCode).toContain('useExamStore.persist?.rehydrate?.()');
         expect(handlerCode).toContain('await registration.update()');
         expect(handlerCode).toContain("postMessage({ type: 'SKIP_WAITING' })");
+        expect(handlerCode).toContain("postMessage({ type: 'CLEAR_CACHE' }");
+        expect(handlerCode).toContain('win.clearPWACache = clearCacheFn');
     });
 
     it('7. package.json and package-lock.json are strictly synchronized (prevents npm ci failures) and README badge supports CalVer', () => {

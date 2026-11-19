@@ -7,17 +7,29 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClipboardList } from 'lucide-react';
 
-const AboutCard: React.FC = () => {
+interface AboutCardProps {
+    hideHeader?: boolean;
+}
+
+const AboutCard: React.FC<AboutCardProps> = ({ hideHeader = false }) => {
     const { t } = useTranslation();
     const changeLog = t('about.history', { returnObjects: true }) as Array<{ version: string; date: string; changes: string[] }>;
 
     return (
         <div className="space-y-6">
             {/* Changelog */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 md:p-6">
-                <h2 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                    <ClipboardList size={16} className="text-accent-500" /> {t('about.changelog')}
-                </h2>
+            <div
+                className={
+                    hideHeader
+                        ? ''
+                        : 'bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 md:p-6'
+                }
+            >
+                {!hideHeader && (
+                    <h2 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <ClipboardList size={16} className="text-accent-500" /> {t('about.changelog')}
+                    </h2>
+                )}
                 <div className="space-y-6 max-h-[400px] overflow-y-auto custom-scrollbar pr-4" tabIndex={0} role="region" aria-label={t('settings.about.title')}>
                     {Array.isArray(changeLog) && changeLog.map((log) => (
                         <div key={log.version} className="relative pl-6 border-l border-slate-200 dark:border-slate-800">

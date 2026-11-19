@@ -18,6 +18,7 @@ import { APP_VERSION } from '@/core/constants';
 import { formatSemester } from '@/core/schedule';
 import ThemePicker from '@/ui/composites/ThemePicker';
 import { changeLanguage } from '@/i18n/config';
+import { useAnalytics } from '@/core/hooks/useAnalytics';
 
 // Navigation items for both Desktop Sidebar and Mobile BottomNav
 const NAV_ITEMS = [
@@ -37,8 +38,14 @@ const AppLayout: React.FC = () => {
     const darkMode = useUIStore((s) => s.darkMode);
     const toggleDarkMode = useUIStore((s) => s.toggleDarkMode);
     const metadata = useScheduleStore(useShallow(s => s.data?.metadata));
+    const { trackNavigation, trackInteraction } = useAnalytics();
     // eslint-disable-next-line react-hooks/purity
     const lastActiveRef = useRef<number>(Date.now());
+
+    // Track route views automatically on pathname changes
+    useEffect(() => {
+        trackNavigation(location.pathname);
+    }, [location.pathname, trackNavigation]);
 
     // Smart Session Auto-Reset Logic
     useEffect(() => {
@@ -62,13 +69,15 @@ const AppLayout: React.FC = () => {
     }, [location.pathname, navigate]);
 
     const handleReset = useCallback(() => {
+        trackInteraction('open_upload_screen');
         navigate('/', { state: { forceUpload: true } });
-    }, [navigate]);
+    }, [navigate, trackInteraction]);
 
     const toggleLanguage = useCallback(() => {
         const next = i18n.language === 'vi' ? 'en' : 'vi';
+        trackInteraction('switch_language', { to: next });
         changeLanguage(next);
-    }, [i18n]);
+    }, [i18n, trackInteraction]);
 
     return (
         <div className="min-h-dvh transition-colors duration-200 bg-white dark:bg-slate-950 selection:bg-accent-100 dark:selection:bg-accent-900/30">

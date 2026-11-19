@@ -327,10 +327,30 @@
         }
     },
     "settings": {
+        "title": "Cài đặt & Quản trị",
+        "subtitle": "Tùy chỉnh học phần, quản lý bộ nhớ đệm PWA Offline và sao lưu dữ liệu.",
+        "tabs": {
+            "courses": "Môn học",
+            "data": "Dữ liệu & PWA",
+            "info": "Thông tin"
+        },
+        "coursesEmptyTitle": "Chưa có dữ liệu học phần",
+        "coursesEmptyDesc": "Tải lên file lịch giảng hoặc tải dữ liệu mẫu để tùy chỉnh tên viết tắt và phân loại Lý thuyết (LT) / Thực hành (TH).",
+        "pwaCache": {
+            "title": "Bộ nhớ đệm PWA & Đồng bộ Offline",
+            "subtitle": "Làm mới giao diện đã lưu trong Service Worker mà vẫn giữ nguyên 100% lịch giảng dạy của bạn.",
+            "online": "Trực tuyến",
+            "offline": "Ngoại tuyến (100% Offline Ready)",
+            "clearBtn": "Xóa bộ nhớ đệm (Clear Cache)",
+            "confirmClear": "Bấm lần nữa để xóa Cache",
+            "clearing": "Đang xóa cache...",
+            "installed": "Đã cài đặt PWA"
+        },
         "abbreviations": {
             "title": "Viết tắt tên môn",
-            "description": "Viết tắt tên các môn học ở lịch giảng.",
+            "description": "Viết tắt tên các môn học và gán loại hình LT (45p) / TH (60p) cho từng nhóm lớp.",
             "suggest": "Đề xuất",
+            "autoSuggest": "Gợi ý viết tắt",
             "reset": "Mặc định",
             "save": "Lưu",
             "originalName": "Tên gốc",

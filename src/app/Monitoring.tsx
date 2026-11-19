@@ -1,12 +1,16 @@
 import React from 'react';
+import { useAnalytics } from '@/core/hooks/useAnalytics';
 
 /**
- * Monitoring Wrapper — Stripped platform-specific Vercel monitoring for AI Studio compatibility
+ * Monitoring Wrapper — Lazy-loaded post-hydration telemetry & Web Vitals observer.
+ * Zero impact on initial FCP/TBT.
  */
 interface MonitoringProps {
-    children: React.ReactNode;
+    children?: React.ReactNode;
 }
 
 export default function Monitoring({ children }: MonitoringProps) {
+    useAnalytics({ autoTrackPerformance: true, autoFlushOnReconnect: true });
     return <>{children}</>;
 }
+

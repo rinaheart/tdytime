@@ -7,14 +7,26 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Clock } from 'lucide-react';
 
-const PeriodStandardsCard: React.FC = () => {
+interface PeriodStandardsCardProps {
+    hideHeader?: boolean;
+}
+
+const PeriodStandardsCard: React.FC<PeriodStandardsCardProps> = ({ hideHeader = false }) => {
     const { t } = useTranslation();
 
     return (
-        <div className="bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <h2 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
-                <Clock size={16} className="text-accent-500" /> {t('about.periodStandards')}
-            </h2>
+        <div
+            className={
+                hideHeader
+                    ? ''
+                    : 'bg-white dark:bg-slate-900 p-4 md:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm'
+            }
+        >
+            {!hideHeader && (
+                <h2 className="text-xs font-black text-slate-800 dark:text-white uppercase tracking-widest mb-6 flex items-center gap-2">
+                    <Clock size={16} className="text-accent-500" /> {t('about.periodStandards')}
+                </h2>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {([
                     {

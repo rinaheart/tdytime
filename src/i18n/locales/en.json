@@ -328,10 +328,30 @@
         }
     },
     "settings": {
+        "title": "Settings & Management",
+        "subtitle": "Customize courses, manage Offline PWA cache, and backup schedule data.",
+        "tabs": {
+            "courses": "Courses",
+            "data": "Data & PWA",
+            "info": "About & Info"
+        },
+        "coursesEmptyTitle": "No Course Data Loaded",
+        "coursesEmptyDesc": "Upload a teaching schedule file or load demo data to customize subject short names and Theory (LT) / Practice (TH) types.",
+        "pwaCache": {
+            "title": "PWA Offline Cache & Sync",
+            "subtitle": "Refresh precached Service Worker assets while preserving 100% of your local teaching schedule data.",
+            "online": "Online",
+            "offline": "Offline (100% Offline Ready)",
+            "clearBtn": "Clear Cache",
+            "confirmClear": "Tap again to Clear Cache",
+            "clearing": "Clearing cache...",
+            "installed": "PWA Installed"
+        },
         "abbreviations": {
-            "title": "Abbreviate Subject Names",
-            "description": "Abbreviate subject names in the teaching schedule.",
+            "title": "Subject Abbreviations",
+            "description": "Abbreviate subject names and assign Theory (45m) or Practice (60m) for each class group.",
             "suggest": "Suggest",
+            "autoSuggest": "Auto-Suggest",
             "reset": "Reset",
             "save": "Save",
             "originalName": "Original",

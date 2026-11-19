@@ -25,16 +25,19 @@ archive/future-features/
 │       └── Roboto-Bold.ttf                     # Font tiếng Việt in đậm nhúng vào PDF (133.18 kB)
 ├── csv-export/                                 # 3. Module Xuất bảng tính CSV Desktop
 │   └── export-csv.ts                           # Tiện ích xuất CSV kèm UTF-8 BOM tương thích Microsoft Excel
-└── devtools/                                   # 4. Module Developer Sandbox & Time-Bending UI
-    └── dev/
-        ├── DevToolsView.tsx                    # Trang công cụ kiểm thử (/dev)
-        ├── components/
-        │   └── CollapsibleSection.tsx          # Panel thu gọn/mở rộng trong DevTools
-        ├── sections/
-        │   ├── ScheduleBuilderForm.tsx         # Bộ sinh dữ liệu lịch giảng giả lập (JSON & UMS HTML)
-        │   └── StateInspector.tsx              # Trình kiểm tra trạng thái Zustand store trực tiếp
-        └── utils/
-            └── snapshotGenerator.ts            # Xuất snapshot trạng thái phục vụ debug
+├── devtools/                                   # 4. Module Developer Sandbox & Time-Bending UI
+│   └── dev/
+│       ├── DevToolsView.tsx                    # Trang công cụ kiểm thử (/dev)
+│       ├── components/
+│       │   └── CollapsibleSection.tsx          # Panel thu gọn/mở rộng trong DevTools
+│       ├── sections/
+│       │   ├── ScheduleBuilderForm.tsx         # Bộ sinh dữ liệu lịch giảng giả lập (JSON & UMS HTML)
+│       │   └── StateInspector.tsx              # Trình kiểm tra trạng thái Zustand store trực tiếp
+│       └── utils/
+│           └── snapshotGenerator.ts            # Xuất snapshot trạng thái phục vụ debug
+└── thresholds/                                 # 5. Module Ngưỡng Cảnh Báo Thủ Công & Thẻ Loại Hình Rời
+    ├── ThresholdsCard.tsx                      # Thẻ tùy chỉnh ngưỡng cảnh báo quá tải (mặc định: 450/20/8 tiết)
+    └── CourseTypeCard.tsx                      # Thẻ phân loại LT/TH độc lập (đã gộp vào AbbreviationsCard)
 ```
 
 ---
@@ -87,3 +90,7 @@ archive/future-features/
    const DevToolsView = lazy(() => import('../views/dev/DevToolsView'));
    ```
 3. (Tùy chọn) Bật lại cử chỉ chạm 5 lần vào số phiên bản tại `WelcomeView.tsx` để điều hướng tới `/#/dev`.
+
+### 5. Khôi phục Module Ngưỡng Cảnh Báo Thủ Công (`thresholds/`)
+1. Di chuyển `archive/future-features/thresholds/ThresholdsCard.tsx` ⟶ `src/views/settings/ThresholdsCard.tsx`.
+2. Import và hiển thị `<ThresholdsCard />` trong Tab 1 (`courses`) hoặc Tab 2 (`data`) của `src/views/settings/SettingsView.tsx`.

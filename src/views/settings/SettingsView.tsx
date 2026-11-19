@@ -1,36 +1,78 @@
 /**
- * SettingsView — Full Settings Page
- * App identity header + settings cards + toast notification system.
+ * SettingsView — Option A: Segmented Bento Hub (3-tab segmented layout)
+ * Tab 1 (courses): Unified Course Abbreviations & LT/TH Course Type Table
+ * Tab 2 (data): System & PWA Offline Cache (Update/Sync, Clear Cache, Install) + BackupRestore + DangerZone
+ * Tab 3 (info): Compact App Identity + Modal Triggers for PeriodStandardsCard & AboutCard (Changelog)
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Check, ChevronDown, Settings2, Mail, Globe, RefreshCw, Download, X } from 'lucide-react';
-import CourseTypeCard from './CourseTypeCard';
+import { useNavigate } from 'react-router-dom';
+import {
+    BookOpen,
+    Database,
+    Info,
+    RefreshCw,
+    Download,
+    Trash2,
+    Clock,
+    Sparkles,
+    ChevronRight,
+    Mail,
+    Code2,
+    Globe,
+    Wifi,
+    WifiOff,
+    Check,
+    AlertTriangle,
+    Upload,
+    X,
+} from 'lucide-react';
+import { useScheduleStore, useUIStore } from '@/core/stores';
+import { useAnalytics } from '@/core/hooks/useAnalytics';
+import { Card, Badge } from '@/ui/primitives';
 import AbbreviationsCard from './AbbreviationsCard';
-import ThresholdsCard from './ThresholdsCard';
+import BackupRestoreCard from './BackupRestoreCard';
 import DangerZoneCard from './DangerZoneCard';
 import PeriodStandardsCard from './PeriodStandardsCard';
 import AboutCard from './AboutCard';
-import BackupRestoreCard from './BackupRestoreCard';
-import { APP_VERSION } from '@/core/constants';
+
+type SettingsTabId = 'courses' | 'data' | 'info';
+
+const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '2026.11.18';
 
 const SettingsView: React.FC = () => {
     const { t } = useTranslation();
-    const [toast, setToast] = useState<{ message: string; isError?: boolean } | null>(null);
-    const [showAdvanced, setShowAdvanced] = useState(false);
+    const navigate = useNavigate();
+    const { trackInteraction } = useAnalytics();
+    const hasCourses = useScheduleStore((s) => Boolean(s.data && s.data.allCourses.length > 0));
+
+    const [activeTab, setActiveTab] = useState<SettingsTabId>(() =>
+        hasCourses ? 'courses' : 'data'
+    );
     const [isOnline, setIsOnline] = useState<boolean>(() =>
         typeof navigator !== 'undefined' ? navigator.onLine : true
     );
-    const isStandalone = typeof window !== 'undefined' && (
-        window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as unknown as { standalone?: boolean }).standalone === true
+    const [isStandalone] = useState<boolean>(() =>
+        typeof window !== 'undefined' &&
+        ((typeof window.matchMedia === 'function' &&
+            window.matchMedia('(display-mode: standalone)').matches) ||
+            Boolean((window.navigator as unknown as { standalone?: boolean }).standalone))
     );
+    const [confirmClearCache, setConfirmClearCache] = useState(false);
+    const [isClearingCache, setIsClearingCache] = useState(false);
+    const [activeModal, setActiveModal] = useState<'periods' | 'changelog' | null>(null);
+    const setToast = useUIStore((s) => s.setToast);
+
+    const tabRefs = useRef<Record<SettingsTabId, HTMLButtonElement | null>>({
+        courses: null,
+        data: null,
+        info: null,
+    });
 
     useEffect(() => {
         const handleOnline = () => setIsOnline(true);
         const handleOffline = () => setIsOnline(false);
-
         window.addEventListener('online', handleOnline);
         window.addEventListener('offline', handleOffline);
         return () => {
@@ -40,132 +82,449 @@ const SettingsView: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (toast) {
-            const timer = setTimeout(() => setToast(null), 3500);
-            return () => clearTimeout(timer);
-        }
-    }, [toast]);
+        if (!activeModal) return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setActiveModal(null);
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [activeModal]);
 
-    const handleSuccess = (message: string) => setToast({ message, isError: false });
-    const handleError = (message: string) => setToast({ message, isError: true });
+    const showSuccessToast = (msg: string) => {
+        setToast(msg, 'success');
+    };
+
+    const tabs: { id: SettingsTabId; label: string; icon: React.ReactNode }[] = [
+        {
+            id: 'courses',
+            label: t('settings.tabs.courses', 'Môn học'),
+            icon: <BookOpen size={15} />,
+        },
+        {
+            id: 'data',
+            label: t('settings.tabs.data', 'Dữ liệu & PWA'),
+            icon: <Database size={15} />,
+        },
+        {
+            id: 'info',
+            label: t('settings.tabs.info', 'Thông tin'),
+            icon: <Info size={15} />,
+        },
+    ];
+
+    const handleTabChange = (tabId: SettingsTabId) => {
+        setActiveTab(tabId);
+        trackInteraction('settings_tab_change', { tab: tabId });
+    };
+
+    const handleTabKeyDown = (e: React.KeyboardEvent, index: number) => {
+        let nextIndex: number | null = null;
+        if (e.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
+        else if (e.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+        else if (e.key === 'Home') nextIndex = 0;
+        else if (e.key === 'End') nextIndex = tabs.length - 1;
+
+        if (nextIndex !== null) {
+            e.preventDefault();
+            const nextTab = tabs[nextIndex].id;
+            handleTabChange(nextTab);
+            tabRefs.current[nextTab]?.focus();
+        }
+    };
+
+    const handleTriggerClearCache = async () => {
+        if (!confirmClearCache) {
+            setConfirmClearCache(true);
+            window.setTimeout(() => setConfirmClearCache(false), 4500);
+            return;
+        }
+
+        setIsClearingCache(true);
+        trackInteraction('clear_pwa_cache', { source: 'settings_data_tab' });
+
+        const win = window as unknown as { clearPWACache?: () => Promise<void> };
+        if (win.clearPWACache) {
+            await win.clearPWACache();
+        } else {
+            if ('caches' in window) {
+                const keys = await window.caches.keys();
+                await Promise.all(keys.map((key) => window.caches.delete(key)));
+            }
+            window.location.reload();
+        }
+    };
+
+    const handleTriggerUpdateCheck = () => {
+        trackInteraction('manual_pwa_update_check', { source: 'settings_data_tab' });
+        const win = window as unknown as { checkPWAUpdate?: () => void };
+        if (win.checkPWAUpdate) {
+            win.checkPWAUpdate();
+        } else {
+            window.location.reload();
+        }
+    };
+
+    const handleTriggerInstall = () => {
+        trackInteraction('manual_pwa_install_click', { source: 'settings_data_tab' });
+        const win = window as unknown as { triggerPWAInstall?: () => void; installPWA?: () => void };
+        if (win.triggerPWAInstall) {
+            win.triggerPWAInstall();
+        } else if (win.installPWA) {
+            win.installPWA();
+        }
+    };
 
     return (
-        <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in duration-300 pb-6 relative">
-            {/* Toast */}
-            {toast && (
-                <div role="status" aria-live="polite" className="fixed top-20 right-4 z-[100] animate-in slide-in-from-right-10 fade-in duration-300">
-                    <div className="bg-slate-800 dark:bg-white text-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-lg flex items-center gap-3">
-                        <div className={`${toast.isError ? 'bg-red-500' : 'bg-green-500'} rounded-full p-1 text-white`}>
-                            {toast.isError ? <X size={14} strokeWidth={3} /> : <Check size={14} strokeWidth={3} />}
+        <div className="space-y-6 pb-8">
+            {/* Header + 3-Tab Segmented Bento Control */}
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                    <h1 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                        {t('settings.title')}
+                    </h1>
+                    <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1">
+                        {t('settings.subtitle')}
+                    </p>
+                </div>
+
+                <div
+                    role="tablist"
+                    aria-label={t('settings.title')}
+                    className="grid grid-cols-3 p-1 bg-slate-100/90 dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200/70 dark:border-slate-700/60 w-full sm:w-auto sm:min-w-[360px]"
+                >
+                    {tabs.map((tab, idx) => {
+                        const isSelected = activeTab === tab.id;
+                        return (
+                            <button
+                                key={tab.id}
+                                type="button"
+                                ref={(el) => {
+                                    tabRefs.current[tab.id] = el;
+                                }}
+                                role="tab"
+                                id={`settings-tab-${tab.id}`}
+                                aria-selected={isSelected}
+                                aria-controls={`settings-panel-${tab.id}`}
+                                tabIndex={isSelected ? 0 : -1}
+                                onClick={() => handleTabChange(tab.id)}
+                                onKeyDown={(e) => handleTabKeyDown(e, idx)}
+                                className={`min-h-[44px] px-2 sm:px-3 py-2 rounded-xl text-[11px] sm:text-xs font-bold flex items-center justify-center gap-1 sm:gap-1.5 transition-all select-none cursor-pointer whitespace-nowrap ${
+                                    isSelected
+                                        ? 'bg-white dark:bg-slate-900 text-accent-600 dark:text-accent-400 shadow-xs border border-slate-200/50 dark:border-slate-700/60'
+                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                                }`}
+                            >
+                                {tab.icon}
+                                <span>{tab.label}</span>
+                            </button>
+                        );
+                    })}
+                </div>
+            </div>
+
+            {/* TAB 1: MÔN HỌC (COURSES) */}
+            {activeTab === 'courses' && (
+                <div
+                    role="tabpanel"
+                    id="settings-panel-courses"
+                    aria-labelledby="settings-tab-courses"
+                    className="animate-in fade-in duration-200"
+                >
+                    {hasCourses ? (
+                        <AbbreviationsCard onSuccess={showSuccessToast} />
+                    ) : (
+                        <Card className="p-8 text-center flex flex-col items-center justify-center gap-3">
+                            <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">
+                                <BookOpen size={22} />
+                            </div>
+                            <div className="space-y-1 max-w-md">
+                                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                                    {t('settings.coursesEmptyTitle', 'Chưa có dữ liệu học phần')}
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                    {t(
+                                        'settings.coursesEmptyDesc',
+                                        'Tải lên file lịch giảng hoặc tải dữ liệu mẫu để tùy chỉnh tên viết tắt và phân loại Lý thuyết (LT) / Thực hành (TH).'
+                                    )}
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => navigate('/')}
+                                className="mt-1 px-4 h-10 bg-accent-600 hover:bg-accent-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer"
+                            >
+                                <Upload size={14} />
+                                {t('nav.changeFile', 'Đổi file lịch')}
+                            </button>
+                        </Card>
+                    )}
+                </div>
+            )}
+
+            {/* TAB 2: DỮ LIỆU & PWA (DATA & PWA) */}
+            {activeTab === 'data' && (
+                <div
+                    role="tabpanel"
+                    id="settings-panel-data"
+                    aria-labelledby="settings-tab-data"
+                    className="space-y-5 animate-in fade-in duration-200"
+                >
+                    {/* System & PWA Offline Cache Bento Card */}
+                    <Card className="p-5 sm:p-6">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 mb-4 border-b border-slate-100 dark:border-slate-800/60">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-accent-50 dark:bg-accent-900/20 text-accent-600 dark:text-accent-400 flex items-center justify-center shrink-0">
+                                    <RefreshCw size={20} strokeWidth={2.2} />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100">
+                                            {t('settings.pwaCache.title', 'Bộ nhớ đệm PWA & Đồng bộ Offline')}
+                                        </h3>
+                                        <Badge
+                                            variant={isOnline ? 'live' : 'morning'}
+                                            className="text-[10px] py-0.5 px-2 flex items-center gap-1"
+                                        >
+                                            {isOnline ? <Wifi size={10} /> : <WifiOff size={10} />}
+                                            {isOnline
+                                                ? t('settings.pwaCache.online', 'Trực tuyến')
+                                                : t('settings.pwaCache.offline', 'Ngoại tuyến (100% Offline Ready)')}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                        {t(
+                                            'settings.pwaCache.subtitle',
+                                            'Làm mới giao diện đã lưu trong Service Worker mà vẫn giữ nguyên 100% lịch giảng dạy của bạn.'
+                                        )}
+                                    </p>
+                                </div>
+                            </div>
+                            <span className="text-[11px] font-mono font-bold text-slate-400 dark:text-slate-500 shrink-0">
+                                SW v{APP_VERSION}
+                            </span>
                         </div>
-                        <span className="text-xs font-bold">{toast.message}</span>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                            {/* Update / Sync Button */}
+                            <button
+                                type="button"
+                                onClick={handleTriggerUpdateCheck}
+                                className="w-full min-h-[44px] px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2 text-xs font-bold transition-colors cursor-pointer"
+                            >
+                                <RefreshCw size={15} />
+                                {isOnline ? t('pwa.update_check', 'Cập nhật/Đồng bộ') : t('about.reloadApp', 'Tải lại ứng dụng')}
+                            </button>
+
+                            {/* Clear Cache Button (2-step safe confirmation) */}
+                            <button
+                                type="button"
+                                onClick={handleTriggerClearCache}
+                                disabled={isClearingCache}
+                                className={`w-full min-h-[44px] px-4 rounded-xl flex items-center justify-center gap-2 text-xs font-bold transition-all cursor-pointer disabled:opacity-50 ${
+                                    confirmClearCache
+                                        ? 'bg-red-600 hover:bg-red-700 text-white shadow-sm'
+                                        : 'text-amber-700 dark:text-amber-300 bg-amber-50/80 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-900/40 border border-amber-200/60 dark:border-amber-800/50'
+                                }`}
+                            >
+                                {confirmClearCache ? <AlertTriangle size={15} /> : <Trash2 size={15} />}
+                                {isClearingCache
+                                    ? t('settings.pwaCache.clearing', 'Đang xóa cache...')
+                                    : confirmClearCache
+                                      ? t('settings.pwaCache.confirmClear', 'Bấm lần nữa để xóa Cache')
+                                      : t('settings.pwaCache.clearBtn', 'Xóa bộ nhớ đệm (Clear Cache)')}
+                            </button>
+
+                            {/* Install PWA Button */}
+                            {!isStandalone ? (
+                                <button
+                                    type="button"
+                                    onClick={handleTriggerInstall}
+                                    className="w-full min-h-[44px] px-4 rounded-xl bg-accent-600 hover:bg-accent-700 text-white flex items-center justify-center gap-2 text-xs font-bold transition-colors shadow-sm cursor-pointer"
+                                >
+                                    <Download size={15} />
+                                    {t('pwa.install_app', 'Cài đặt ứng dụng')}
+                                </button>
+                            ) : (
+                                <div className="min-h-[44px] px-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/20 border border-emerald-200/60 dark:border-emerald-800/40 flex items-center justify-center gap-1.5 text-xs font-bold text-emerald-700 dark:text-emerald-300">
+                                    <Check size={15} />
+                                    {t('settings.pwaCache.installed', 'Đã cài đặt PWA')}
+                                </div>
+                            )}
+                        </div>
+                    </Card>
+
+                    {/* Backup/Restore & Danger Zone Bento Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-stretch">
+                        <BackupRestoreCard onSuccess={showSuccessToast} />
+                        <DangerZoneCard />
                     </div>
                 </div>
             )}
 
-            {/* App Identity Header */}
-            <div className="pt-1 pb-4 flex flex-col items-center text-center">
-                <img src="/favicon.svg" alt="App Logo" className="w-16 h-16 mb-4 drop-shadow-sm" />
+            {/* TAB 3: THÔNG TIN (INFO) */}
+            {activeTab === 'info' && (
+                <div
+                    role="tabpanel"
+                    id="settings-panel-info"
+                    aria-labelledby="settings-tab-info"
+                    className="space-y-4 animate-in fade-in duration-200"
+                >
+                    {/* Compact App Identity Bento Card */}
+                    <Card className="p-5 sm:p-6">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div className="flex items-center gap-3.5">
+                                <div className="w-12 h-12 rounded-2xl bg-accent-50 dark:bg-slate-800 border border-accent-100 dark:border-slate-700 flex items-center justify-center shadow-xs shrink-0">
+                                    <img src="/favicon.svg" alt="TdyTime Logo" className="w-8 h-8" />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                        <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                                            TdyTime
+                                        </h3>
+                                        <Badge variant="info" className="text-[10px] py-0.5 px-2">
+                                            v{APP_VERSION}
+                                        </Badge>
+                                    </div>
+                                    <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-0.5">
+                                        {t('about.tagline', 'Your Time Your Today')}
+                                    </p>
+                                </div>
+                            </div>
 
-                <h1 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight flex items-baseline gap-1.5">
-                    TdyTime <span className="text-slate-600 dark:text-slate-400 font-num text-xs font-bold">v{APP_VERSION}</span>
-                </h1>
-                <p className="text-xs text-accent-600 dark:text-accent-400 mt-0.5 font-medium tracking-wide">
-                    {t('app.tagline')}
-                </p>
-                <p className="text-xs text-slate-600 dark:text-slate-400 mt-3 max-w-xs mx-auto leading-relaxed">
-                    {t('about.description')}
-                </p>
-                <div className="flex justify-center gap-2.5 mt-3">
-                    <a href="mailto:tdyphan@gmail.com" aria-label="Email" className="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/20 transition-colors text-slate-600 dark:text-slate-300 hover:text-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
-                        <Mail size={16} />
-                    </a>
-                    <a href="https://github.com/tdyphan" target="_blank" rel="noopener noreferrer" aria-label="GitHub" className="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/20 transition-colors text-slate-600 dark:text-slate-300 hover:text-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></svg>
-                    </a>
-                    <a href="https://tdyphan.com" target="_blank" rel="noopener noreferrer" aria-label="Website" className="w-10 h-10 flex items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/20 transition-colors text-slate-600 dark:text-slate-300 hover:text-accent-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
-                        <Globe size={16} />
-                    </a>
+                            <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                                <a
+                                    href="mailto:uel.tdy@gmail.com"
+                                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-accent-50 dark:hover:bg-accent-900/20 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 transition-colors"
+                                >
+                                    <Mail size={14} />
+                                    <span>Email</span>
+                                </a>
+                                <a
+                                    href="https://github.com/kelvintran133"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-accent-50 dark:hover:bg-accent-900/20 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 transition-colors"
+                                >
+                                    <Code2 size={14} />
+                                    <span>GitHub</span>
+                                </a>
+                                <a
+                                    href="https://tdytime.lovable.app"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-accent-50 dark:hover:bg-accent-900/20 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 transition-colors"
+                                >
+                                    <Globe size={14} />
+                                    <span>Web</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800/60">
+                            {t('about.description')}
+                        </p>
+                    </Card>
+
+                    {/* Interactive Bento Modal Trigger Rows */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setActiveModal('periods');
+                                trackInteraction('open_settings_modal', { modal: 'periods' });
+                            }}
+                            className="min-h-[64px] p-4 rounded-2xl bg-white/95 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-accent-300 dark:hover:border-accent-700 shadow-xs flex items-center justify-between gap-3 text-left transition-all group cursor-pointer"
+                        >
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                                    <Clock size={19} strokeWidth={2.2} />
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
+                                        {t('about.periodStandards')}
+                                    </div>
+                                    <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                        {t('about.note')}
+                                    </div>
+                                </div>
+                            </div>
+                            <ChevronRight
+                                size={18}
+                                className="text-slate-400 group-hover:text-accent-600 dark:group-hover:text-accent-400 group-hover:translate-x-0.5 transition-all shrink-0"
+                            />
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setActiveModal('changelog');
+                                trackInteraction('open_settings_modal', { modal: 'changelog' });
+                            }}
+                            className="min-h-[64px] p-4 rounded-2xl bg-white/95 dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-accent-300 dark:hover:border-accent-700 shadow-xs flex items-center justify-between gap-3 text-left transition-all group cursor-pointer"
+                        >
+                            <div className="flex items-center gap-3 min-w-0">
+                                <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                                    <Sparkles size={19} strokeWidth={2.2} />
+                                </div>
+                                <div className="min-w-0">
+                                    <div className="text-xs font-bold text-slate-800 dark:text-slate-100 truncate">
+                                        {t('about.changelog')}
+                                    </div>
+                                    <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                                        v{APP_VERSION} • {t('about.tagline', 'Your Time Your Today')}
+                                    </div>
+                                </div>
+                            </div>
+                            <ChevronRight
+                                size={18}
+                                className="text-slate-400 group-hover:text-accent-600 dark:group-hover:text-accent-400 group-hover:translate-x-0.5 transition-all shrink-0"
+                            />
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
 
-            {/* PWA Update Check & Install Actions */}
-            <div className="flex flex-wrap justify-center gap-2.5 -mt-4">
-                <button
-                    type="button"
-                    aria-disabled={!isOnline}
-                    onClick={() => (window as unknown as { checkPWAUpdate?: () => void }).checkPWAUpdate?.()}
-                    className={`flex items-center gap-1.5 px-3.5 min-h-[36px] py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
-                        isOnline
-                            ? 'bg-accent-50 dark:bg-accent-900/10 text-accent-700 dark:text-accent-400 hover:bg-accent-100 dark:hover:bg-accent-900/20 active:scale-95 border-accent-100/50 dark:border-accent-900/20'
-                            : 'opacity-50 bg-slate-100 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 border-slate-200/60 dark:border-slate-700/60'
-                    }`}
+            {/* On-Demand Accessible Modal Dialog for Period Standards & Changelog */}
+            {activeModal && (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="settings-modal-title"
+                    onClick={() => setActiveModal(null)}
+                    className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
                 >
-                    <RefreshCw size={12} strokeWidth={2.5} />
-                    {t('pwa.update_check')}
-                </button>
-                {!isStandalone && (
-                    <button
-                        type="button"
-                        onClick={() => (window as unknown as { triggerPWAInstall?: () => void }).triggerPWAInstall?.()}
-                        className="flex items-center gap-1.5 px-3.5 min-h-[36px] py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 transition-all border border-slate-200/60 dark:border-slate-700 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-full max-w-3xl max-h-[85vh] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden flex flex-col animate-in zoom-in-95 duration-200"
                     >
-                        <Download size={12} strokeWidth={2.5} />
-                        {t('pwa.install_app')}
-                    </button>
-                )}
-            </div>
-
-            {/* Primary Settings */}
-            <AbbreviationsCard onSuccess={handleSuccess} />
-            <BackupRestoreCard onSuccess={handleSuccess} onError={handleError} />
-
-            {/* Advanced Settings Collapsible */}
-            <div className="space-y-4">
-                <button
-                    type="button"
-                    onClick={() => setShowAdvanced(!showAdvanced)}
-                    aria-expanded={showAdvanced}
-                    aria-controls={showAdvanced ? 'advanced-settings-panel' : undefined}
-                    className="w-full flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800/50 active:scale-[0.99] transition-all cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
-                >
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-slate-100 dark:bg-slate-800 rounded-xl text-slate-600 dark:text-slate-400 group-hover:text-accent-600 transition-colors">
-                            <Settings2 size={20} />
-                        </div>
-                        <div className="text-left">
-                            <h2 className="font-bold text-slate-800 dark:text-slate-100 text-sm">
-                                {t('settings.advanced.title')}
+                        <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                            <h2
+                                id="settings-modal-title"
+                                className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider"
+                            >
+                                {activeModal === 'periods'
+                                    ? t('about.periodStandards')
+                                    : `${t('about.changelog')} (v${APP_VERSION})`}
                             </h2>
-                            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-                                {t('settings.advanced.description')}
-                            </p>
+                            <button
+                                type="button"
+                                onClick={() => setActiveModal(null)}
+                                aria-label={t('common.close', 'Đóng')}
+                                className="p-1.5 rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <div className="p-5 sm:p-6 overflow-y-auto custom-scrollbar">
+                            {activeModal === 'periods' ? (
+                                <PeriodStandardsCard hideHeader />
+                            ) : (
+                                <AboutCard hideHeader />
+                            )}
                         </div>
                     </div>
-                    <div className={`text-slate-500 dark:text-slate-400 transition-transform duration-300 ${showAdvanced ? 'rotate-180' : ''}`}>
-                        <ChevronDown size={20} />
-                    </div>
-                </button>
-
-                {showAdvanced && (
-                    <div id="advanced-settings-panel" className="space-y-6 animate-in slide-in-from-top-4 fade-in duration-300">
-                        <CourseTypeCard onSuccess={handleSuccess} />
-                        <ThresholdsCard onSuccess={handleSuccess} />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <DangerZoneCard />
-                            <div className="hidden md:block" />
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Period Standards & Changelog */}
-            <PeriodStandardsCard />
-            <AboutCard />
-
-            <div className="text-center text-slate-600 dark:text-slate-400 text-xs mt-8">
-                {t('common.copyright')}
-            </div>
+                </div>
+            )}
         </div>
     );
 };

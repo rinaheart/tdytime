@@ -349,16 +349,51 @@ export const PWAUpdateHandler: React.FC = () => {
             }
         };
 
+        const clearCacheFn = async () => {
+            try {
+                if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
+                    const targetWorker =
+                        navigator.serviceWorker.controller ||
+                        registrationRef.current?.active ||
+                        registrationRef.current?.waiting;
+
+                    if (targetWorker) {
+                        await new Promise<void>((resolve) => {
+                            const channel = new MessageChannel();
+                            const timeout = window.setTimeout(() => resolve(), 1200);
+                            channel.port1.onmessage = () => {
+                                window.clearTimeout(timeout);
+                                resolve();
+                            };
+                            targetWorker.postMessage({ type: 'CLEAR_CACHE' }, [channel.port2]);
+                        });
+                    }
+                }
+
+                if (typeof window !== 'undefined' && 'caches' in window) {
+                    const keys = await window.caches.keys();
+                    await Promise.all(keys.map((key) => window.caches.delete(key)));
+                }
+            } catch (err) {
+                console.warn('Clear cache fallback warning:', err);
+            } finally {
+                window.location.reload();
+            }
+        };
+
         const win = window as unknown as {
             checkPWAUpdate?: () => Promise<void>;
             triggerPWAInstall?: () => Promise<void>;
+            clearPWACache?: () => Promise<void>;
         };
         win.checkPWAUpdate = checkFn;
         win.triggerPWAInstall = handleInstall;
+        win.clearPWACache = clearCacheFn;
 
         return () => {
             delete win.checkPWAUpdate;
             delete win.triggerPWAInstall;
+            delete win.clearPWACache;
         };
     }, [addTimeout, ensureServiceWorkerRegistered, handleInstall]);
 

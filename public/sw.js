@@ -81,6 +81,22 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+  if (event.data && event.data.type === 'CLEAR_CACHE') {
+    event.waitUntil(
+      caches.keys()
+        .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+        .then(() => {
+          if (event.ports && event.ports[0]) {
+            event.ports[0].postMessage({ type: 'CACHE_CLEARED', ok: true });
+          }
+        })
+        .catch(() => {
+          if (event.ports && event.ports[0]) {
+            event.ports[0].postMessage({ type: 'CACHE_CLEARED', ok: false });
+          }
+        })
+    );
+  }
 });
 
 self.addEventListener('activate', (event) => {
