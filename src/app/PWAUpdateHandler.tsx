@@ -9,10 +9,13 @@ import { useTranslation } from 'react-i18next';
 import { RefreshCw, Download, Check, X, WifiOff } from 'lucide-react';
 import { useScheduleStore } from '@/core/stores/schedule.store';
 import { useExamStore } from '@/core/stores/exam.store';
+import { API_ENDPOINTS, PWA_CONFIG, STORAGE_KEYS } from '@/core/config/constants';
+import { createLogger } from '@/core/utils/logger';
 
-const INSTALL_PROMPT_DISMISS_KEY = 'tdytime_install_prompt_dismissed';
-const PWA_DISMISS_KEY = 'tdytime_pwa_dismiss_date';
-const DISMISS_DURATION = 24 * 60 * 60 * 1000; // 24 hours in ms
+const log = createLogger('PWA');
+const INSTALL_PROMPT_DISMISS_KEY = STORAGE_KEYS.installPromptDismissed;
+const PWA_DISMISS_KEY = STORAGE_KEYS.pwaDismissDate;
+const DISMISS_DURATION = PWA_CONFIG.timeouts.installDismissDurationMs;
 
 interface BeforeInstallPromptEvent extends Event {
     prompt: () => Promise<void>;
@@ -242,14 +245,14 @@ export const PWAUpdateHandler: React.FC = () => {
                 (await ensureServiceWorkerRegistered()) ||
                 (await navigator.serviceWorker.getRegistration());
             if (reg?.waiting) {
-                reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-                // Safety fallback: if controllerchange does not fire within 1500ms, force reload
+                reg.waiting.postMessage({ type: PWA_CONFIG.messages.skipWaiting });
+                // Safety fallback: if controllerchange does not fire within timeout, force reload
                 addTimeout(() => {
                     if (!refreshingRef.current) {
                         refreshingRef.current = true;
                         window.location.reload();
                     }
-                }, 1500);
+                }, PWA_CONFIG.timeouts.updateReloadFallbackMs);
                 return;
             }
         }
@@ -306,7 +309,7 @@ export const PWAUpdateHandler: React.FC = () => {
                 // 2. Check remote version.json for any new deployed version
                 let remoteVersionDiffers = false;
                 try {
-                    const verRes = await fetch(`/version.json?t=${Date.now()}`, { cache: 'no-store' });
+                    const verRes = await fetch(`${API_ENDPOINTS.version}?t=${Date.now()}`, { cache: 'no-store' });
                     if (verRes.ok) {
                         const data = (await verRes.json()) as { version?: string };
                         if (data.version && typeof __APP_VERSION__ !== 'undefined' && data.version !== __APP_VERSION__) {
@@ -369,12 +372,18 @@ export const PWAUpdateHandler: React.FC = () => {
                     if (targetWorker) {
                         await new Promise<void>((resolve) => {
                             const channel = new MessageChannel();
-                            const timeout = window.setTimeout(() => resolve(), 1200);
+                            const timeout = window.setTimeout(
+                                () => resolve(),
+                                PWA_CONFIG.timeouts.clearCacheAckMs
+                            );
                             channel.port1.onmessage = () => {
                                 window.clearTimeout(timeout);
                                 resolve();
                             };
-                            targetWorker.postMessage({ type: 'CLEAR_CACHE' }, [channel.port2]);
+                            targetWorker.postMessage(
+                                { type: PWA_CONFIG.messages.clearCache },
+                                [channel.port2]
+                            );
                         });
                     }
                 }
@@ -384,7 +393,7 @@ export const PWAUpdateHandler: React.FC = () => {
                     await Promise.all(keys.map((key) => window.caches.delete(key)));
                 }
             } catch (err) {
-                console.warn('Clear cache fallback warning:', err);
+                log.warn('Clear cache fallback warning', err);
             } finally {
                 window.location.reload();
             }

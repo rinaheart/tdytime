@@ -15,6 +15,7 @@
   --color-accent-700: rgb(var(--accent-700));
   --color-accent-800: rgb(var(--accent-800));
   --color-accent-900: rgb(var(--accent-900));
+  --color-accent-950: rgb(var(--accent-950));
 
   --radius-sm: 6px;
   --radius-md: 8px;

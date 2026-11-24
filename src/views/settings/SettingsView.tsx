@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { useScheduleStore, useUIStore } from '@/core/stores';
 import { useAnalytics } from '@/core/hooks/useAnalytics';
+import { APP_LINKS } from '@/core/config/constants';
 import { Card, Badge } from '@/ui/primitives';
 import AbbreviationsCard from './AbbreviationsCard';
 import CourseTypeCard from './CourseTypeCard';
@@ -396,14 +397,16 @@ const SettingsView: React.FC = () => {
 
                             <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                                 <a
-                                    href="mailto:uel.tdy@gmail.com"
+                                    href={APP_LINKS.mailto}
+                                    title={APP_LINKS.email}
                                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-accent-50 dark:hover:bg-accent-900/20 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 transition-colors"
                                 >
                                     <Mail size={14} />
                                     <span>Email</span>
                                 </a>
                                 <a
-                                    href="https://github.com/kelvintran133"
+                                    href={APP_LINKS.github}
+                                    title={APP_LINKS.github}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-accent-50 dark:hover:bg-accent-900/20 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 transition-colors"
@@ -412,7 +415,8 @@ const SettingsView: React.FC = () => {
                                     <span>GitHub</span>
                                 </a>
                                 <a
-                                    href="https://tdytime.lovable.app"
+                                    href={APP_LINKS.web}
+                                    title={APP_LINKS.web}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-accent-50 dark:hover:bg-accent-900/20 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-accent-600 dark:hover:text-accent-400 transition-colors"

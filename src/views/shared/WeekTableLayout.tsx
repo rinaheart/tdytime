@@ -64,7 +64,7 @@ const WeekTableLayout: React.FC<WeekTableLayoutProps> = ({
                                         <th 
                                             key={`${weekRange}-${day}`} 
                                             style={colStyle}
-                                            className={`p-3 border border-slate-100 dark:border-slate-800 text-center transition-all ${isToday ? 'bg-accent-600 dark:bg-accent-600 z-10 relative ring-2 ring-accent-400 dark:ring-accent-500 shadow-[0_0_15px_rgba(37,99,235,0.3)]' : ''}`}
+                                            className={`p-3 border border-slate-100 dark:border-slate-800 text-center transition-all ${isToday ? 'bg-accent-600 dark:bg-accent-600 z-10 relative ring-2 ring-accent-400 dark:ring-accent-500 shadow-md shadow-accent-500/25' : ''}`}
                                         >
                                             <div className="flex flex-col items-center gap-0.5">
                                                 {isToday && <span className="text-[8px] font-black text-white uppercase tracking-widest mb-0.5">{t('weekly.today')}</span>}

@@ -162,10 +162,12 @@ describe('PWA & Lighthouse CI Audit Verification (Zero-Dependency TdyTripZ Archi
         expect(swCode).toContain('normalizeCacheUrl');
 
         const viteConfig = readFileSync(resolve(ROOT_DIR, 'vite.config.ts'), 'utf-8');
+        const constantsCode = readFileSync(resolve(ROOT_DIR, 'src/core/config/constants.ts'), 'utf-8');
         expect(viteConfig).not.toContain('vite-plugin-pwa');
         expect(viteConfig).toContain('tdyTimePwaPlugin');
-        expect(viteConfig).toContain('TIER_C_ON_DEMAND_PREFIXES');
-        expect(viteConfig).toContain("'exceljs-'");
+        expect(viteConfig).toContain('PWA_BUILD_CONFIG');
+        expect(constantsCode).toContain('tierCOnDemandPrefixes');
+        expect(constantsCode).toContain("'exceljs-'");
     });
 
     it('6. Update/Sync action re-fetches critical calendar data and forces a Native Service Worker update check', () => {
@@ -175,12 +177,15 @@ describe('PWA & Lighthouse CI Audit Verification (Zero-Dependency TdyTripZ Archi
         expect(enJson.pwa.update_check).toBe('Update/Sync');
 
         const handlerCode = readFileSync(resolve(ROOT_DIR, 'src/app/PWAUpdateHandler.tsx'), 'utf-8');
+        const constantsCode = readFileSync(resolve(ROOT_DIR, 'src/core/config/constants.ts'), 'utf-8');
         expect(handlerCode).not.toContain('virtual:pwa-register');
         expect(handlerCode).toContain('useScheduleStore.getState().initFromStorage()');
         expect(handlerCode).toContain('useExamStore.persist?.rehydrate?.()');
         expect(handlerCode).toContain('await registration.update()');
-        expect(handlerCode).toContain("postMessage({ type: 'SKIP_WAITING' })");
-        expect(handlerCode).toContain("postMessage({ type: 'CLEAR_CACHE' }");
+        expect(handlerCode).toContain('PWA_CONFIG.messages.skipWaiting');
+        expect(handlerCode).toContain('PWA_CONFIG.messages.clearCache');
+        expect(constantsCode).toContain("skipWaiting: 'SKIP_WAITING'");
+        expect(constantsCode).toContain("clearCache: 'CLEAR_CACHE'");
         expect(handlerCode).toContain('win.clearPWACache = clearCacheFn');
     });
 

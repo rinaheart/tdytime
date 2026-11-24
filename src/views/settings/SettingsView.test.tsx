@@ -152,6 +152,17 @@ describe('SettingsView — Segmented Bento Hub & Clear Cache Verification', () =
         const infoTab = screen.getByRole('tab', { name: /Thông tin|About & Info/i });
         fireEvent.click(infoTab);
 
+        // Verify updated official contact links
+        expect(screen.getByRole('link', { name: /Email/i }).getAttribute('href')).toBe(
+            'mailto:tdyphan@gmail.com'
+        );
+        expect(screen.getByRole('link', { name: /GitHub/i }).getAttribute('href')).toBe(
+            'https://github.com/rinaheart/tdytime'
+        );
+        expect(screen.getByRole('link', { name: /Web/i }).getAttribute('href')).toBe(
+            'https://time.tdy.io.vn/'
+        );
+
         // Open Period Standards modal
         const periodsTrigger = screen.getByRole('button', {
             name: /Quy chuẩn thời gian tiết giảng|Standard Period Times/i,

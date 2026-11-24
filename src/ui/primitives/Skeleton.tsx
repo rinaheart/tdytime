@@ -12,7 +12,7 @@ interface SkeletonProps {
 
 const Skeleton: React.FC<SkeletonProps> = ({ className = '', circle, width, height }) => (
     <div
-        className={`animate-shimmer bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200 dark:from-slate-800 dark:via-slate-700 dark:to-slate-800 bg-[length:200%_100%] ${circle ? 'rounded-full' : 'rounded-xl'} ${className}`}
+        className={`shimmer bg-slate-200/70 dark:bg-slate-800/70 ${circle ? 'rounded-full' : 'rounded-xl'} ${className}`}
         style={{ width, height }}
         aria-hidden="true"
     />

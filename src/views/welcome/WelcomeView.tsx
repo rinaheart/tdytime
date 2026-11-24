@@ -51,8 +51,16 @@ const HistoryCard = React.memo(({ item, isActive, onLoad, onDelete }: {
 
     return (
         <div
+            role="button"
+            tabIndex={0}
             onClick={() => onLoad(item)}
-            className={`group p-4 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer border shadow-sm
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onLoad(item);
+                }
+            }}
+            className={`group p-4 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer border shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500
                 ${isActive
                     ? 'bg-white dark:bg-slate-900 border-accent-500 dark:border-accent-400 shadow-accent-500/5'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-md hover:border-accent-200 dark:hover:border-accent-900'

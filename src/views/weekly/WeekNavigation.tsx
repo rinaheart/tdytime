@@ -59,7 +59,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
                         {weekLabel}
                     </h1>
                     {isCurrent && (
-                        <span className="px-2 py-0.5 rounded-full bg-blue-700 text-white text-[8px] font-black uppercase tracking-widest">
+                        <span className="px-2 py-0.5 rounded-full bg-accent-600 dark:bg-accent-500 text-white text-[8px] font-black uppercase tracking-widest">
                             {t('weekly.currentWeek')}
                         </span>
                     )}

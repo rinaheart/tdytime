@@ -6,16 +6,17 @@
 import { startTransition } from 'react';
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { APP_VERSION } from '@/core/constants';
+import { APP_VERSION, STORAGE_KEYS } from '@/core/config/constants';
+import { createLogger } from '@/core/utils/logger';
+
+const log = createLogger('i18n');
 
 // Detect saved language preference
 let defaultLanguage = 'vi';
 try {
-    defaultLanguage = localStorage.getItem('language') || 'vi';
+    defaultLanguage = localStorage.getItem(STORAGE_KEYS.language) || 'vi';
 } catch {
-    if (import.meta.env.DEV) {
-        console.warn('LocalStorage not accessible, falling back to "vi"');
-    }
+    log.debug('LocalStorage not accessible, falling back to "vi"');
 }
 
 /**
@@ -203,7 +204,7 @@ export const loadLanguage = async (lng: string) => {
             i18n.addResourceBundle(targetLng, 'translation', resources.default, true, true);
         });
     } catch (error) {
-        console.error(`Failed to load language: ${targetLng}`, error);
+        log.error(`Failed to load language: ${targetLng}`, error);
     }
 };
 
@@ -215,7 +216,12 @@ const shouldLoadFullLocaleImmediately = () => {
         if (typeof window === 'undefined') return true;
         const hash = window.location.hash;
         if (hash && hash !== '#' && hash !== '#/') return true;
-        if (localStorage.getItem('last_schedule_data') || localStorage.getItem('exam-storage')) return true;
+        if (
+            localStorage.getItem(STORAGE_KEYS.activeSchedule) ||
+            localStorage.getItem(STORAGE_KEYS.examStorage)
+        ) {
+            return true;
+        }
     } catch {
         return true;
     }
@@ -252,7 +258,7 @@ export const changeLanguage = async (lng: string) => {
     startTransition(() => {
         void i18n.changeLanguage(lng);
     });
-    localStorage.setItem('language', lng);
+    localStorage.setItem(STORAGE_KEYS.language, lng);
 };
 
 // Sync document lang attribute without forcing unnecessary root style invalidation

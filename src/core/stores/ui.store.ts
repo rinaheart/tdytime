@@ -5,6 +5,7 @@
 
 import { create } from 'zustand';
 import { type AccentTheme, DEFAULT_THEME, THEME_MIGRATION, isValidTheme } from '../themes/theme.registry';
+import { STORAGE_KEYS } from '../config/constants';
 import { createAtomicStore } from './createAtomicStore';
 
 // Re-export for convenience
@@ -50,7 +51,7 @@ export const useUIStore = createAtomicStore(
     create<UIState>((set) => ({
         darkMode: (() => {
             try {
-                const saved = localStorage.getItem('color-theme');
+                const saved = localStorage.getItem(STORAGE_KEYS.colorTheme);
                 if (saved) return saved === 'dark';
                 return typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
             } catch {
@@ -60,7 +61,7 @@ export const useUIStore = createAtomicStore(
 
         accentTheme: (() => {
             try {
-                return resolveTheme(localStorage.getItem('accent-theme'));
+                return resolveTheme(localStorage.getItem(STORAGE_KEYS.accentTheme));
             } catch {
                 return DEFAULT_THEME;
             }
@@ -74,14 +75,14 @@ export const useUIStore = createAtomicStore(
             set((state) => {
                 const newDark = !state.darkMode;
                 const theme = newDark ? 'dark' : 'light';
-                localStorage.setItem('color-theme', theme);
+                localStorage.setItem(STORAGE_KEYS.colorTheme, theme);
                 if (newDark) document.documentElement.classList.add('dark');
                 else document.documentElement.classList.remove('dark');
                 return { darkMode: newDark };
             }),
 
         setAccentTheme: (theme: AccentTheme) => {
-            localStorage.setItem('accent-theme', theme);
+            localStorage.setItem(STORAGE_KEYS.accentTheme, theme);
             applyAccentTheme(theme);
             set({ accentTheme: theme });
         },
@@ -95,8 +96,8 @@ export const useUIStore = createAtomicStore(
         clearToast: () => set({ toast: { message: null, type: 'success' } }),
 
         resetAll: () => {
-            localStorage.removeItem('color-theme');
-            localStorage.removeItem('accent-theme');
+            localStorage.removeItem(STORAGE_KEYS.colorTheme);
+            localStorage.removeItem(STORAGE_KEYS.accentTheme);
             const systemDark = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches;
             if (systemDark) document.documentElement.classList.add('dark');
             else document.documentElement.classList.remove('dark');
@@ -115,7 +116,7 @@ export const useUIStore = createAtomicStore(
 // Apply initial classes on load without forcing redundant DOM invalidation
 if (typeof window !== 'undefined') {
     try {
-        const savedDark = localStorage.getItem('color-theme');
+        const savedDark = localStorage.getItem(STORAGE_KEYS.colorTheme);
         const shouldBeDark =
             savedDark === 'dark' ||
             (!savedDark && typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -123,13 +124,13 @@ if (typeof window !== 'undefined') {
             document.documentElement.classList.add('dark');
         }
         
-        const rawAccent = localStorage.getItem('accent-theme');
+        const rawAccent = localStorage.getItem(STORAGE_KEYS.accentTheme);
         const accent = resolveTheme(rawAccent);
         applyAccentTheme(accent);
 
         // Only write to localStorage if migrated or missing
         if (rawAccent !== accent) {
-            localStorage.setItem('accent-theme', accent);
+            localStorage.setItem(STORAGE_KEYS.accentTheme, accent);
         }
     } catch {
         // Ignore

@@ -5,9 +5,12 @@
 
 import { ScheduleData } from './schedule.types';
 import { get, set, remove } from '../utils/idb';
+import { HISTORY_CONFIG, STORAGE_KEYS } from '../config/constants';
+import { createLogger } from '../utils/logger';
 
-const STORAGE_KEY = 'timetable_history_v1';
-const MAX_ITEMS = 10;
+const log = createLogger('History');
+const STORAGE_KEY = STORAGE_KEYS.history;
+const MAX_ITEMS = HISTORY_CONFIG.maxItems;
 
 export interface HistoryMetadata {
     id: string;
@@ -31,10 +34,10 @@ export const historyService = {
                 const history: HistoryItem[] = JSON.parse(oldData);
                 await set(STORAGE_KEY, history);
                 localStorage.removeItem(STORAGE_KEY);
-                console.log('Migrated history to IndexedDB');
+                log.info('Migrated history to IndexedDB');
             }
         } catch (e) {
-            console.error('Migration failed', e);
+            log.error('Migration failed', e);
         }
     },
 
@@ -67,7 +70,7 @@ export const historyService = {
 
             await set(STORAGE_KEY, history);
         } catch (error) {
-            console.error('Failed to save history:', error);
+            log.error('Failed to save history', error);
         }
     },
 
@@ -88,7 +91,7 @@ export const historyService = {
             history = history.filter((item) => item.id !== id);
             await set(STORAGE_KEY, history);
         } catch (error) {
-            console.error('Failed to remove history item:', error);
+            log.error('Failed to remove history item', error);
         }
     },
 
@@ -97,7 +100,7 @@ export const historyService = {
         try {
             await remove(STORAGE_KEY);
         } catch (error) {
-            console.error('Failed to clear history:', error);
+            log.error('Failed to clear history', error);
         }
     },
 };

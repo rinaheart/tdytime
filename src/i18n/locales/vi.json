@@ -475,6 +475,8 @@
                     "Tối ưu 2 bảng Môn học trên Mobile: Tách riêng bảng Viết tắt tên môn và bảng Tùy chỉnh LT/TH, gộp Mã/Lớp/Nhóm xuống dòng phụ trên màn hình nhỏ giúp dễ đọc không cần cuộn ngang.",
                     "Chống màn hình trắng (White Screen) sau Deploy PWA: Đưa toàn bộ bootstrap chunks vào Tier A precache, đóng dấu build-hash vào CACHE_NAME, chặn cache nhầm HTML cho /assets/* và bổ sung tự phục hồi vite:preloadError.",
                     "Analytics Offline-First (useAnalytics): Ghi nhận nhẹ chỉ số hiệu năng và tương tác người dùng cục bộ không ảnh hưởng tốc độ tải trang.",
+                    "Tập trung hóa Cấu hình & Structured Logger: Gom toàn bộ endpoints, storage keys, PWA/Theme constants vào src/core/config/constants.ts và chuẩn hóa log hệ thống qua createLogger() có tự động ẩn dữ liệu nhạy cảm.",
+                    "Cập nhật Thông tin & Tài liệu (About & DESIGN.md): Đồng bộ địa chỉ chính thức (tdyphan@gmail.com, github.com/rinaheart/tdytime, time.tdy.io.vn) và cập nhật DESIGN.md chuẩn v2026.11.24.",
                     "Đồng bộ lockfile đa nền tảng (Cloudflare CI): Tái tạo package-lock.json đầy đủ optionalDependencies cho Tailwind Oxide, LightningCSS và Rolldown giúp npm ci build ổn định."
                 ]
             },

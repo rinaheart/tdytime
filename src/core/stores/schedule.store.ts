@@ -19,7 +19,7 @@ import {
 } from '../schedule';
 import { historyService, type HistoryItem } from '../schedule/history.service';
 import { parseScheduleHTML, sanitizeScheduleData } from '../schedule/parser';
-import { DEFAULT_THRESHOLDS } from '../constants';
+import { DEFAULT_THRESHOLDS, STORAGE_KEYS } from '../config/constants';
 import { yieldToMain } from '../utils/scheduler';
 import { useUIStore } from './ui.store';
 import { createAtomicStore } from './createAtomicStore';
@@ -104,7 +104,7 @@ const scheduleStoreBase = create<ScheduleState>((set, get) => ({
         const historyList =
             fetchedHistory.length === 0 && prevHistory.length === 0 ? prevHistory : fetchedHistory;
 
-        const savedAbbrStr = localStorage.getItem('global_abbreviations');
+        const savedAbbrStr = localStorage.getItem(STORAGE_KEYS.abbreviations);
         let globalAbbr: Record<string, string> = {};
         if (savedAbbrStr) {
             try {
@@ -121,7 +121,7 @@ const scheduleStoreBase = create<ScheduleState>((set, get) => ({
                 : globalAbbr;
 
         const resolvedTz = getDefaultTimezone();
-        const saved = localStorage.getItem('last_schedule_data');
+        const saved = localStorage.getItem(STORAGE_KEYS.activeSchedule);
         if (saved) {
             try {
                 await yieldToMain();
@@ -202,7 +202,7 @@ const scheduleStoreBase = create<ScheduleState>((set, get) => ({
         sanitizedData.abbreviations = mergedAbbr;
 
         // Persist the newly sanitized data
-        localStorage.setItem('last_schedule_data', JSON.stringify(sanitizedData));
+        localStorage.setItem(STORAGE_KEYS.activeSchedule, JSON.stringify(sanitizedData));
         await historyService.save(sanitizedData);
 
         const sessions = buildScheduleIndex(sanitizedData, { timezone: get().userTimezone });
@@ -296,7 +296,7 @@ const scheduleStoreBase = create<ScheduleState>((set, get) => ({
         set({ overrides });
         if (data) {
             const updatedData = { ...data, overrides, abbreviations };
-            localStorage.setItem('last_schedule_data', JSON.stringify(updatedData));
+            localStorage.setItem(STORAGE_KEYS.activeSchedule, JSON.stringify(updatedData));
             const sessions = buildScheduleIndex(updatedData, { timezone: get().userTimezone });
             set({ 
                 data: updatedData, 
@@ -311,10 +311,10 @@ const scheduleStoreBase = create<ScheduleState>((set, get) => ({
     setAbbreviations: (abbreviations) => {
         const { data, overrides } = get();
         set({ abbreviations });
-        localStorage.setItem('global_abbreviations', JSON.stringify(abbreviations));
+        localStorage.setItem(STORAGE_KEYS.abbreviations, JSON.stringify(abbreviations));
         if (data) {
             const updatedData = { ...data, overrides, abbreviations };
-            localStorage.setItem('last_schedule_data', JSON.stringify(updatedData));
+            localStorage.setItem(STORAGE_KEYS.activeSchedule, JSON.stringify(updatedData));
             const sessions = buildScheduleIndex(updatedData, { timezone: get().userTimezone });
             set({ 
                 data: updatedData, 
@@ -339,7 +339,7 @@ const scheduleStoreBase = create<ScheduleState>((set, get) => ({
         const mergedAbbr = { ...currentAbbr, ...(sanitizedData.abbreviations || {}) };
         sanitizedData.abbreviations = mergedAbbr;
 
-        localStorage.setItem('last_schedule_data', JSON.stringify(sanitizedData));
+        localStorage.setItem(STORAGE_KEYS.activeSchedule, JSON.stringify(sanitizedData));
 
         const sessions = buildScheduleIndex(sanitizedData, { timezone: get().userTimezone });
 
@@ -364,7 +364,7 @@ const scheduleStoreBase = create<ScheduleState>((set, get) => ({
     },
 
     goToUpload: () => {
-        localStorage.removeItem('last_schedule_data');
+        localStorage.removeItem(STORAGE_KEYS.activeSchedule);
         set({
             data: null,
             metrics: null,
@@ -394,8 +394,8 @@ const scheduleStoreBase = create<ScheduleState>((set, get) => ({
     },
 
     resetAll: async () => {
-        localStorage.removeItem('last_schedule_data');
-        localStorage.removeItem('language');
+        localStorage.removeItem(STORAGE_KEYS.activeSchedule);
+        localStorage.removeItem(STORAGE_KEYS.language);
         await historyService.clear();
         useUIStore.getState().resetAll();
 

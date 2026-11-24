@@ -3,6 +3,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import {
+    API_ENDPOINTS,
+    PWA_BUILD_CONFIG,
+    PWA_CONFIG,
+} from './src/core/config/constants.ts';
 
 const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
@@ -39,7 +44,7 @@ function tdyTimePwaPlugin(): Plugin {
                 const swContent = fs.readFileSync(swPath, 'utf-8');
                 const nextSw = swContent.replace(
                     /const CACHE_NAME\s*=\s*['"][^'"]+['"];/,
-                    `const CACHE_NAME = 'tdytime-pwa-v${version}';`
+                    `const CACHE_NAME = '${PWA_CONFIG.cachePrefix}${version}';`
                 );
                 if (swContent !== nextSw) {
                     fs.writeFileSync(swPath, nextSw);
@@ -57,41 +62,10 @@ function tdyTimePwaPlugin(): Plugin {
             const assetsDir = path.resolve(distDir, 'assets');
             if (!fs.existsSync(distSwPath) || !fs.existsSync(assetsDir)) return;
 
-            // Tier A (Core Entry & Bootstrap Bundles — required before first React root render)
-            const TIER_A_CORE_ENTRY_PREFIXES = [
-                'index-',
-                'rolldown-runtime-',
-                'vendor-react-',
-                'vendor-router-',
-                'vendor-i18n-',
-                'vendor-utils-',
-                'App-',
-                'Monitoring-',
-                'config-',
-                'vi-',
-                'en-',
-                'useAnalytics-',
-                'analytics.store-',
-                'createAtomicStore-',
-                'exam.store-',
-                'exam.parser-',
-                'exam.utils-',
-                'ui-',
-            ];
-
-            // Tier C (Cache-on-Demand): Heavy optional chunks (~2.3MB combined) are cached on first use
-            // via Cache-First in sw.js, making initial PWA install 3x faster.
-            const TIER_C_ON_DEMAND_PREFIXES = [
-                'vendor-pdf-',
-                'react-pdf.browser-',
-                'ScheduleReport-',
-                'Roboto-',
-                'DevToolsView-',
-                'exceljs-',
-                'vendor-monitoring-',
-                'FileSaver.min-',
-                'export-csv-',
-            ];
+            const {
+                tierACoreEntryPrefixes: TIER_A_CORE_ENTRY_PREFIXES,
+                tierCOnDemandPrefixes: TIER_C_ON_DEMAND_PREFIXES,
+            } = PWA_BUILD_CONFIG;
 
             const allBuildAssets = fs
                 .readdirSync(assetsDir)
@@ -166,7 +140,7 @@ export default defineConfig(({ command, mode }) => {
     },
 
     server: {
-        port: 3000,
+        port: PWA_BUILD_CONFIG.serverPort,
         host: '0.0.0.0',
         allowedHosts: true,
         forwardConsole: false,
@@ -175,7 +149,7 @@ export default defineConfig(({ command, mode }) => {
     },
 
     preview: {
-        port: 3000,
+        port: PWA_BUILD_CONFIG.serverPort,
         host: '0.0.0.0',
     },
 
@@ -186,7 +160,11 @@ export default defineConfig(({ command, mode }) => {
             name: 'dev-sw-cleanup',
             configureServer(server) {
                 server.middlewares.use((req, res, next) => {
-                    if (req.url && (req.url.startsWith('/dev-sw.js') || req.url.startsWith('/sw.js'))) {
+                    if (
+                        req.url &&
+                        (req.url.startsWith(API_ENDPOINTS.devServiceWorker) ||
+                            req.url.startsWith(API_ENDPOINTS.serviceWorker))
+                    ) {
                         res.setHeader('Content-Type', 'application/javascript');
                         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
                         res.end(`
@@ -267,7 +245,7 @@ self.addEventListener('activate', (event) => {
             },
         },
 
-        chunkSizeWarningLimit: 500,
+        chunkSizeWarningLimit: PWA_BUILD_CONFIG.chunkSizeWarningLimit,
 
         modulePreload: {
             polyfill: true,

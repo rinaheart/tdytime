@@ -10,14 +10,17 @@
  * - User preferences: theme, accent color, font size
  */
 
-import { APP_VERSION } from '@/core/constants';
+import { APP_VERSION, BACKUP_CONFIG, STORAGE_KEYS } from '@/core/config/constants';
+import { createLogger } from '@/core/utils/logger';
 import { historyService, type HistoryItem } from '@/core/schedule/history.service';
 import { useScheduleStore } from '@/core/stores/schedule.store';
 import type { ScheduleData } from '@/core/schedule/schedule.types';
 
-export const BACKUP_FORMAT = 'tdytime-backup';
-export const BACKUP_FORMAT_VERSION = 1;
-export const LAST_BACKUP_STORAGE_KEY = 'tdytime_last_backup_date';
+const log = createLogger('Backup');
+
+export const BACKUP_FORMAT = BACKUP_CONFIG.format;
+export const BACKUP_FORMAT_VERSION = BACKUP_CONFIG.formatVersion;
+export const LAST_BACKUP_STORAGE_KEY = STORAGE_KEYS.lastBackupDate;
 
 export interface BackupPreferences {
     theme?: string | null;
@@ -101,12 +104,12 @@ export class BackupService {
         // 1. Collect Active Schedule
         let activeSchedule: ScheduleData | null = null;
         try {
-            const rawSchedule = localStorage.getItem('last_schedule_data');
+            const rawSchedule = localStorage.getItem(STORAGE_KEYS.activeSchedule);
             if (rawSchedule) {
                 activeSchedule = JSON.parse(rawSchedule) as ScheduleData;
             }
         } catch (e) {
-            console.warn('Failed to parse active schedule from localStorage:', e);
+            log.warn('Failed to parse active schedule from localStorage', e);
         }
 
         // 2. Collect History from IndexedDB
@@ -114,14 +117,14 @@ export class BackupService {
         try {
             history = await historyService.getAll();
         } catch (e) {
-            console.error('Failed to read history from IndexedDB:', e);
+            log.error('Failed to read history from IndexedDB', e);
             throw new Error('backup.errors.historyReadFailed');
         }
 
         // 3. Preserve any legacy notes in localStorage for backward compatibility
         let notes: Record<string, string> = {};
         try {
-            const rawNotes = localStorage.getItem('tdy_session_notes');
+            const rawNotes = localStorage.getItem(STORAGE_KEYS.legacySessionNotes);
             if (rawNotes) {
                 const parsedNotes = JSON.parse(rawNotes) as { state?: { notes?: Record<string, string> } };
                 notes = parsedNotes?.state?.notes || {};
@@ -133,17 +136,17 @@ export class BackupService {
         // 4. Collect Global Abbreviations
         let abbreviations: Record<string, string> = {};
         try {
-            const rawAbbr = localStorage.getItem('global_abbreviations');
+            const rawAbbr = localStorage.getItem(STORAGE_KEYS.abbreviations);
             if (rawAbbr) abbreviations = JSON.parse(rawAbbr);
         } catch (e) {
-            console.warn('Failed to parse abbreviations from localStorage:', e);
+            log.warn('Failed to parse abbreviations from localStorage', e);
         }
 
         // 5. Collect Preferences
         const preferences: BackupPreferences = {
-            theme: localStorage.getItem('tdytime_theme') || localStorage.getItem('theme'),
-            accentTheme: localStorage.getItem('accent-theme') || localStorage.getItem('color-theme'),
-            fontSize: localStorage.getItem('tdytime_font_size'),
+            theme: localStorage.getItem(STORAGE_KEYS.legacyTheme) || localStorage.getItem(STORAGE_KEYS.legacyThemeAlt),
+            accentTheme: localStorage.getItem(STORAGE_KEYS.accentTheme) || localStorage.getItem(STORAGE_KEYS.colorTheme),
+            fontSize: localStorage.getItem(STORAGE_KEYS.legacyFontSize),
         };
 
         const exportedAt = new Date().toISOString();
@@ -305,21 +308,21 @@ export class BackupService {
     ): Promise<{ success: boolean; summary: BackupSummary; error?: string }> {
         // Step 1: Create a safety rollback snapshot of current state
         const rollbackSnapshot = {
-            activeScheduleRaw: localStorage.getItem('last_schedule_data'),
-            notesRaw: localStorage.getItem('tdy_session_notes'),
-            abbrRaw: localStorage.getItem('global_abbreviations'),
+            activeScheduleRaw: localStorage.getItem(STORAGE_KEYS.activeSchedule),
+            notesRaw: localStorage.getItem(STORAGE_KEYS.legacySessionNotes),
+            abbrRaw: localStorage.getItem(STORAGE_KEYS.abbreviations),
             historyItems: await historyService.getAll(),
         };
 
         try {
             // 1. Restore Abbreviations
             const abbreviations = backup.data.abbreviations || {};
-            localStorage.setItem('global_abbreviations', JSON.stringify(abbreviations));
+            localStorage.setItem(STORAGE_KEYS.abbreviations, JSON.stringify(abbreviations));
 
             // 2. Restore legacy Notes in localStorage if present in backup
             const notes = backup.data.notes || {};
             localStorage.setItem(
-                'tdy_session_notes',
+                STORAGE_KEYS.legacySessionNotes,
                 JSON.stringify({
                     state: { notes },
                     version: 0,
@@ -341,10 +344,10 @@ export class BackupService {
             // 4. Restore Active Schedule & Reload in ScheduleStore
             const activeSchedule = backup.data.activeSchedule;
             if (activeSchedule) {
-                localStorage.setItem('last_schedule_data', JSON.stringify(activeSchedule));
+                localStorage.setItem(STORAGE_KEYS.activeSchedule, JSON.stringify(activeSchedule));
                 await useScheduleStore.getState().initFromStorage();
             } else {
-                localStorage.removeItem('last_schedule_data');
+                localStorage.removeItem(STORAGE_KEYS.activeSchedule);
                 useScheduleStore.setState({
                     data: null,
                     metrics: null,
@@ -358,10 +361,10 @@ export class BackupService {
             // 5. Restore Preferences if available
             if (backup.data.preferences) {
                 if (backup.data.preferences.theme) {
-                    localStorage.setItem('tdytime_theme', backup.data.preferences.theme);
+                    localStorage.setItem(STORAGE_KEYS.legacyTheme, backup.data.preferences.theme);
                 }
                 if (backup.data.preferences.accentTheme) {
-                    localStorage.setItem('accent-theme', backup.data.preferences.accentTheme);
+                    localStorage.setItem(STORAGE_KEYS.accentTheme, backup.data.preferences.accentTheme);
                 }
             }
 
@@ -378,24 +381,24 @@ export class BackupService {
 
             return { success: true, summary };
         } catch (err: unknown) {
-            console.error('Failed to restore backup, performing atomic rollback:', err);
+            log.error('Failed to restore backup, performing atomic rollback', err);
 
             // Rollback everything
             try {
                 if (rollbackSnapshot.activeScheduleRaw) {
-                    localStorage.setItem('last_schedule_data', rollbackSnapshot.activeScheduleRaw);
+                    localStorage.setItem(STORAGE_KEYS.activeSchedule, rollbackSnapshot.activeScheduleRaw);
                 } else {
-                    localStorage.removeItem('last_schedule_data');
+                    localStorage.removeItem(STORAGE_KEYS.activeSchedule);
                 }
 
                 if (rollbackSnapshot.notesRaw) {
-                    localStorage.setItem('tdy_session_notes', rollbackSnapshot.notesRaw);
+                    localStorage.setItem(STORAGE_KEYS.legacySessionNotes, rollbackSnapshot.notesRaw);
                 } else {
-                    localStorage.removeItem('tdy_session_notes');
+                    localStorage.removeItem(STORAGE_KEYS.legacySessionNotes);
                 }
 
                 if (rollbackSnapshot.abbrRaw) {
-                    localStorage.setItem('global_abbreviations', rollbackSnapshot.abbrRaw);
+                    localStorage.setItem(STORAGE_KEYS.abbreviations, rollbackSnapshot.abbrRaw);
                 }
 
                 await historyService.clear();
@@ -405,7 +408,7 @@ export class BackupService {
 
                 await useScheduleStore.getState().initFromStorage();
             } catch (rollbackErr) {
-                console.error('Fatal: Rollback failed:', rollbackErr);
+                log.error('Fatal: Rollback failed', rollbackErr);
             }
 
             const msg = err instanceof Error ? err.message : 'Unknown restore error';

@@ -10,6 +10,9 @@ import { useExamStore } from '../core/stores/exam.store';
 import { SessionCardSkeleton } from '../ui/primitives/Skeleton';
 import WelcomeView from '../views/welcome/WelcomeView';
 import i18n, { loadLanguage } from '../i18n/config';
+import { createLogger } from '../core/utils/logger';
+
+const log = createLogger('Router');
 
 /** Global Error Boundary for Router */
 
@@ -23,7 +26,7 @@ const ExamView = lazy(() => import('../views/exam/ExamView'));
 
 const RouteError = () => {
     const error = useRouteError();
-    console.error('RouteError caught:', error);
+    log.error('RouteError caught', error);
     return (
         <div className="min-h-dvh flex flex-col items-center justify-center p-6 text-center bg-white dark:bg-slate-950">
             <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-full flex items-center justify-center mb-4">

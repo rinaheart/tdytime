@@ -6,6 +6,7 @@
 
 import { create } from 'zustand';
 import { createAtomicStore } from './createAtomicStore';
+import { ANALYTICS_CONFIG, STORAGE_KEYS } from '../config/constants';
 
 export type AnalyticsEventType = 'performance' | 'interaction' | 'navigation';
 
@@ -49,8 +50,8 @@ export interface AnalyticsState {
     clearAnalytics: () => void;
 }
 
-const STORAGE_KEY = 'tdytime_analytics_v1';
-const MAX_EVENTS = 100;
+const STORAGE_KEY = STORAGE_KEYS.analytics;
+const MAX_EVENTS = ANALYTICS_CONFIG.maxEvents;
 
 function isDeviceOffline(): boolean {
     if (typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean') {
@@ -84,7 +85,7 @@ function persistSnapshotToStorage(state: Pick<AnalyticsState, 'performance' | 'r
 async function sendPayloadToEndpoint(endpoint: string, events: AnalyticsEvent[]): Promise<boolean> {
     if (!endpoint || events.length === 0) return false;
     const body = JSON.stringify({
-        app: 'tdytime',
+        app: ANALYTICS_CONFIG.appId,
         sentAt: Date.now(),
         events,
     });

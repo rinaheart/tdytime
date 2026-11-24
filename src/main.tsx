@@ -6,24 +6,26 @@
 // Global styles
 import './styles/global.css';
 import { yieldToMain } from './core/utils/scheduler';
+import { PWA_CONFIG, STORAGE_KEYS } from './core/config/constants';
+import { createLogger } from './core/utils/logger';
 
-const PRELOAD_RELOAD_KEY = '__tdytime_preload_reload_ts__';
+const log = createLogger('Bootstrap');
 
 async function recoverFromStaleChunkError(): Promise<boolean> {
     if (typeof window === 'undefined') return false;
     try {
-        const lastReload = Number(sessionStorage.getItem(PRELOAD_RELOAD_KEY) || '0');
-        // Prevent reload loops: only auto-recover once every 15 seconds
-        if (Date.now() - lastReload < 15000) {
+        const lastReload = Number(sessionStorage.getItem(STORAGE_KEYS.preloadReloadTs) || '0');
+        // Prevent reload loops: only auto-recover once every cooldown interval
+        if (Date.now() - lastReload < PWA_CONFIG.timeouts.preloadRecoveryCooldownMs) {
             return false;
         }
-        sessionStorage.setItem(PRELOAD_RELOAD_KEY, String(Date.now()));
+        sessionStorage.setItem(STORAGE_KEYS.preloadReloadTs, String(Date.now()));
 
         // Tell any waiting Service Worker to activate immediately
         if ('serviceWorker' in navigator) {
             const reg = await navigator.serviceWorker.getRegistration();
             if (reg?.waiting) {
-                reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                reg.waiting.postMessage({ type: PWA_CONFIG.messages.skipWaiting });
             }
         }
 
@@ -60,7 +62,7 @@ function renderFatalBootstrapFallback() {
       </div>
     `;
     document.getElementById('tdy-recover-btn')?.addEventListener('click', () => {
-        sessionStorage.removeItem(PRELOAD_RELOAD_KEY);
+        sessionStorage.removeItem(STORAGE_KEYS.preloadReloadTs);
         void recoverFromStaleChunkError();
     });
 }
@@ -105,7 +107,7 @@ async function bootstrap() {
             );
         });
     } catch (err) {
-        console.error('Bootstrap error:', err);
+        log.error('Bootstrap error', err);
         const recovered = await recoverFromStaleChunkError();
         if (!recovered) {
             renderFatalBootstrapFallback();

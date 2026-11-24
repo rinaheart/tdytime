@@ -476,6 +476,8 @@
                     "Mobile-Friendly Split Course Tables: Separated Subject Abbreviations and Course Type (LT/TH) tables with compact inline code/class/group metadata on small screens to eliminate horizontal crowding.",
                     "Post-Deploy PWA White Screen Fix: Included all critical bootstrap chunks in Tier A precache, stamped deterministic build-hashes onto CACHE_NAME, blocked HTML SPA fallbacks from poisoning /assets/* cache, and added vite:preloadError self-recovery.",
                     "Lightweight Offline Analytics (useAnalytics): Tracks Core Web Vitals and user interactions locally with zero main-thread overhead.",
+                    "Centralized Config & Structured Logger: Consolidated endpoints, storage keys, PWA & theme constants into src/core/config/constants.ts and standardized boundary logging via createLogger() with automatic secret/inline-data sanitization.",
+                    "Updated About Links & Architecture Docs: Updated official contact links (tdyphan@gmail.com, github.com/rinaheart/tdytime, time.tdy.io.vn) and synced DESIGN.md to v2026.11.24.",
                     "Cross-Platform Lockfile Sync (Cloudflare CI): Regenerated package-lock.json with full resolved/integrity metadata and cross-platform optional bindings for Tailwind Oxide, LightningCSS, and Rolldown."
                 ]
             },

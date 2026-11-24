@@ -14,11 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Chuyển **Quy chuẩn thời gian tiết giảng** (`PeriodStandardsCard`) và **Changelog** (`AboutCard`) thành Modal mở theo nhu cầu nhằm tinh gọn chiều cao trang Cài đặt; lưu trữ `ThresholdsCard` vào `/archive/future-features/thresholds/`.
 - **Hook Phân tích Hiệu năng & Tương tác Ngoại tuyến (`src/core/hooks/useAnalytics.ts`, `src/core/stores/analytics.store.ts`):**
   - Thu thập nhẹ chỉ số Core Web Vitals và sự kiện tương tác người dùng vào store cục bộ theo hướng Offline-First, hỗ trợ theo dõi hành vi sử dụng mà không làm nặng luồng chính.
+- **Tập trung hóa Cấu hình & Structured Scoped Logger (`src/core/config/constants.ts`, `src/core/utils/logger.ts`):**
+  - Gom toàn bộ hằng số ứng dụng & build (`API_ENDPOINTS`, `APP_LINKS`, `STORAGE_KEYS`, `PWA_CONFIG`, `PWA_BUILD_CONFIG`, `THEMES`, `PERIOD_TIMES`, `DEFAULT_THRESHOLDS`) về một nguồn sự thật duy nhất (tree-shake sạch cấu hình build khỏi bundle trình duyệt).
+  - Thay toàn bộ 15 lời gọi `console.*` bằng logger có cấu trúc `createLogger(scope)` hỗ trợ tự động ẩn khóa nhạy cảm (`[REDACTED]`), lược bỏ dữ liệu nhị phân/base64 và tắt log `debug` trên production.
 
 ### Changed
 - **Tối ưu Mobile-First cho Tab `Môn học` (`AbbreviationsCard.tsx` & `CourseTypeCard.tsx`):**
   - Tách riêng lại 2 bảng **Viết tắt tên môn** (3 cột gọn gàng theo môn học duy nhất) và **Tùy chỉnh hình thức giảng dạy (LT/TH)** (theo từng mã nhóm lớp) giúp thao tác dễ đọc trên màn hình điện thoại.
   - Gộp thông tin `Mã nhóm`, `Lớp`, `Nhóm` thành dòng phụ ngay dưới tên môn ở viewport di động (`< 640px`), triệt tiêu tình trạng chen chúc và cuộn ngang khó nhìn.
+- **Cập nhật Thông tin Liên hệ & Tài liệu Kiến trúc (`SettingsView.tsx`, `DESIGN.md`):**
+  - Cập nhật thông tin chính thức tại mục Thông tin (About): Email (`tdyphan@gmail.com`), GitHub (`https://github.com/rinaheart/tdytime`), và Web (`https://time.tdy.io.vn/`).
+  - Cập nhật `DESIGN.md` đồng bộ đầy đủ kiến trúc và tính năng phiên bản `v2026.11.24`.
 
 ### Fixed
 - **Khắc phục triệt để lỗi Màn hình trắng (White Screen) sau khi Deploy PWA (`vite.config.ts`, `public/sw.js`, `src/main.tsx`, `PWAUpdateHandler.tsx`):**
