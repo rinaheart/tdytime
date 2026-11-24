@@ -57,12 +57,11 @@ Tài liệu này ghi nhận kết quả đối chiếu trực tiếp giữa mã 
 3. **Hợp nhất Nguồn Dữ liệu Bảng màu (`THEME_PALETTES` trong `src/core/config/constants.ts`) & Đối chiếu `:root` Fallback**:
    - Thiết lập `THEME_PALETTES` tại `src/core/config/constants.ts` (và re-export qua `src/core/themes/theme.registry.ts`) chứa đầy đủ 16 token RGB cho mỗi chủ đề (`50..950`, `actionBg`, `actionHover`, `onAction`, `focusLight`, `focusDark`).
    - Cập nhật `scripts/check-design-system.mjs` đối chiếu 1:1 cả khối `:root` fallback (khớp 16/16 token với `THEME_PALETTES.themeBlue`) lẫn cả 7 khối `[data-accent="theme..."]`.
-4. **Bộ Quét Tương phản 3 Tầng (Text / Non-Text / Semantic Exceptions) & Kiểm chứng Selector CSS Biên dịch**:
-   - Nâng cấp `scripts/check-design-system.mjs` thành bộ quét tương phản WCAG 2.2 3 tầng trên toàn bộ `src/`:
-     - **Text Contrast (`>= 4.5:1`)**: Kiểm tra cả token chủ đề lẫn mọi cặp màu Tailwind cố định `bg-<color>-<shade>` đi kèm `text-white`.
-     - **Non-Text Focus Contrast (`>= 3.0:1`)**: Kiểm tra cả `ring-accent-focus` lẫn mọi vòng tiêu điểm màu cố định `(?:focus|focus-visible):ring-<color>-<shade>` trên cả bề mặt Sáng (`#FFFFFF`, `slate-50`) và Tối (`slate-900`, `slate-950`).
-     - **Semantic Exceptions**: Xác minh có định lượng toàn bộ các ngoại lệ màu ngữ nghĩa cố định (Amber 700, Red 600/500, Green 700, Slate 600/800/900).
-   - Xác minh chính xác selector và khai báo trong CSS biên dịch qua PostCSS + `@tailwindcss/postcss` (bao gồm `.hover\:shadow-card-hover:hover`, `.focus-visible\:ring-accent-focus:focus-visible`, `.focus\:ring-accent-focus:focus`) và cấu hình `SKIP_DESIGN_SYSTEM_CHECK=1` ở bước `Build` trong `.github/workflows/ci.yml` để tránh chạy trùng lặp 2 lần trong cùng một lượt CI.
+4. **Bộ Quét Tương phản Đa dòng 3 Tầng, Bảng 22 Họ Màu Tailwind (`TAILWIND_COLOR_RGB`) & Manifest Đối chiếu 2 Chiều (`SEMANTIC_COLOR_EXCEPTIONS`)**:
+   - Tích hợp đầy đủ **22 họ màu chính thức của Tailwind CSS** (`slate`, `gray`, `zinc`, `neutral`, `stone`, `red`, `orange`, `amber`, `yellow`, `lime`, `green`, `emerald`, `teal`, `cyan`, `sky`, `blue`, `indigo`, `violet`, `purple`, `fuchsia`, `pink`, `rose` × 11 sắc độ `50..950`, chuẩn hóa `yellow-800` = `133 77 14` / `#854D0E`) kèm cơ chế **fail-closed** báo lỗi ngay nếu gặp bất kỳ tên màu hoặc sắc độ lạ nào.
+   - Phân tích theo ngữ cảnh `className="..."`, `className={...}` đa dòng (hỗ trợ cả chuỗi tĩnh ngoài `${...}` kết hợp với từng nhánh toán tử 3 ngôi bên trong) và object literal `{ bg, text }` đa dòng; tự động tính toán pha trộn kênh alpha (`/0..100`) trên các bề mặt Sáng/Tối cho cả trạng thái nền gốc, `hover:bg-*`, `dark:bg-*`, vòng tiêu điểm sáng (`focus-visible:ring-*`) và vòng tiêu điểm tối độc lập (`dark:focus-visible:ring-*`).
+   - Thiết lập danh mục chuẩn **`SEMANTIC_COLOR_EXCEPTIONS`** (30 mục: 24 cặp nền+chữ trắng bao gồm cả `hover:`/`dark:` và 6 vòng focus màu cố định) với cơ chế đối chiếu 2 chiều nghiêm ngặt (báo lỗi nếu thiếu mục trong manifest hoặc phát sinh ngoại lệ chưa đăng ký) cùng bộ **negative test fixtures** trong `src/core/themes/designSystem.test.ts`.
+   - Xác minh chính xác selector và khai báo trong CSS biên dịch qua PostCSS + `@tailwindcss/postcss` (bao gồm `.hover\:shadow-card-hover:hover`, `.focus-visible\:ring-accent-focus:focus-visible`, `.focus\:ring-accent-focus:focus`) và cấu hình `SKIP_DESIGN_SYSTEM_CHECK=1` ở bước `Build` trong `.github/workflows/ci.yml`.
 
 ---
 

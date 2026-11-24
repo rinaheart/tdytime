@@ -206,11 +206,11 @@
   --accent-500: 234 179 8;
   --accent-600: 202 138 4;
   --accent-700: 161 98 7;
-  --accent-800: 133 77 9;
+  --accent-800: 133 77 14;
   --accent-900: 113 63 18;
   --accent-950: 66 32 6;
   --accent-action-bg: 161 98 7;       /* #A16207 / accent-700 (4.69:1) */
-  --accent-action-hover: 133 77 9;    /* #854D09 / accent-800 (6.36:1) */
+  --accent-action-hover: 133 77 14;   /* #854D0E / accent-800 (6.33:1) */
   --accent-on-action: 255 255 255;
   --accent-focus-light: 161 98 7;     /* #A16207 / accent-700 (4.32:1 vs slate-50) */
   --accent-focus-dark: 250 204 21;    /* #FACC15 / accent-400 (11.42:1 vs slate-900) */
