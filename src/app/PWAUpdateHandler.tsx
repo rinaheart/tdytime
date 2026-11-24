@@ -1,5 +1,5 @@
 /**
- * PWAUpdateHandler — Zero-Dependency PWA Lifecycle Manager (TdyTripZ Architecture)
+ * PWAUpdateHandler — Zero-Dependency PWA Lifecycle Manager
  * Manages Native Service Worker (`/sw.js`) Registration, Prompt-to-Update (`SKIP_WAITING`),
  * "Update/Sync" (`Cập nhật/Đồng bộ`), In-App Install Prompt, iOS Install Guide, and Offline Status.
  */

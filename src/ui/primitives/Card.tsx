@@ -16,7 +16,7 @@ interface CardProps {
 }
 
 const Card: React.FC<CardProps> = ({ children, className = '', title, description, headerAction, noPadding, interactive }) => (
-    <div className={`bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm transition-all duration-200 ${interactive ? 'hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 cursor-pointer' : ''} ${noPadding ? '' : 'p-4 md:p-5'} ${className}`}>
+    <div className={`bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-card shadow-card transition-all duration-200 ${interactive ? 'hover:shadow-card-hover hover:border-slate-300 dark:hover:border-slate-600 cursor-pointer' : ''} ${noPadding ? '' : 'p-4 md:p-5'} ${className}`}>
         {title && (
             <div className={`flex items-start justify-between gap-3 ${noPadding ? 'px-4 pt-4 md:px-5 md:pt-5' : ''} mb-3`}>
                 <div>

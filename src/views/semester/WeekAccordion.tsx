@@ -108,7 +108,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
                             <div
                                 className={`rounded-full flex items-center justify-center font-black transition-all shrink-0 w-8 h-8 text-sm ${
                                     isCurrent
-                                        ? 'bg-accent-600 text-white shadow-sm'
+                                        ? 'bg-accent-action text-accent-on-action shadow-sm'
                                         : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                                 }`}
                             >
@@ -120,7 +120,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
                         <div
                             className={`rounded-full flex items-center justify-center font-black transition-all shrink-0 w-10 h-10 md:w-12 md:h-12 text-lg md:text-xl ${
                                 isCurrent
-                                    ? 'bg-accent-600 text-white shadow-sm'
+                                    ? 'bg-accent-action text-accent-on-action shadow-sm'
                                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                             }`}
                         >
@@ -141,7 +141,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
                                 {t('weekly.week', { number: weekNumber })}
                             </h2>
                             {isCurrent && (
-                                <span className="px-1.5 py-0.5 rounded-full bg-accent-600 dark:bg-accent-500 text-white text-[9px] font-black uppercase tracking-widest">
+                                <span className="px-1.5 py-0.5 rounded-full bg-accent-action text-accent-on-action text-[9px] font-black uppercase tracking-widest">
                                     {t('common.current')}
                                 </span>
                             )}

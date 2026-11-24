@@ -1,12 +1,33 @@
 import React from 'react';
 
-type BadgeVariant = 'live' | 'pending' | 'completed' | 'morning' | 'afternoon' | 'evening' | 'theory' | 'practice' | 'warning' | 'danger' | 'info' | 'default';
+/**
+ * BadgeVariant categories:
+ * - Session Status: 'live' | 'pending' | 'completed'
+ * - Academic Shift (Domain): 'morning' | 'afternoon' | 'evening'
+ * - Course Modality (Domain): 'theory' | 'practice'
+ * - System Status: 'warning' | 'danger' | 'info' | 'default'
+ */
+export type BadgeVariant =
+    | 'live'
+    | 'pending'
+    | 'completed'
+    | 'morning'
+    | 'afternoon'
+    | 'evening'
+    | 'theory'
+    | 'practice'
+    | 'warning'
+    | 'danger'
+    | 'info'
+    | 'default';
 
-interface BadgeProps {
+export interface BadgeProps {
     variant?: BadgeVariant;
-    children: React.ReactNode;
+    children?: React.ReactNode;
     className?: string;
-    /** Show pulsing dot indicator */
+    /** Explicitly show or hide the static semantic dot indicator (overrides default variant behavior when false) */
+    showDot?: boolean;
+    /** Legacy alias for showDot (supports dot={false} to suppress automatic semantic dot) */
     dot?: boolean;
 }
 
@@ -29,17 +50,17 @@ const SEMANTIC_DOTS: Partial<Record<BadgeVariant, { from: string; to: string }>>
     morning: { from: 'var(--semantic-morning-from)', to: 'var(--semantic-morning-to)' },
     afternoon: { from: 'var(--semantic-afternoon-from)', to: 'var(--semantic-afternoon-to)' },
     evening: { from: 'var(--semantic-evening-from)', to: 'var(--semantic-evening-to)' },
-    live: { from: 'rgb(16 185 129)', to: 'rgb(5 150 105)' }, // emerald-500 -> 600
+    live: { from: 'var(--semantic-success-from)', to: 'var(--semantic-success-to)' },
     warning: { from: 'var(--semantic-warning-from)', to: 'var(--semantic-warning-to)' },
     danger: { from: 'var(--semantic-danger-from)', to: 'var(--semantic-danger-to)' },
 };
 
-const Badge: React.FC<BadgeProps> = ({ variant = 'default', children, className = '', dot }) => {
+const Badge: React.FC<BadgeProps> = ({ variant = 'default', children, className = '', showDot, dot }) => {
     const dotColors = SEMANTIC_DOTS[variant];
-    const hasDot = dot || !!dotColors;
+    const hasDot = showDot ?? dot ?? Boolean(dotColors);
 
     return (
-        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border rounded-lg ${VARIANT_CLASSES[variant]} ${className}`}>
+        <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border rounded-badge ${VARIANT_CLASSES[variant]} ${className}`}>
             {hasDot && (
                 <span 
                     className="h-1.5 w-1.5 rounded-full shrink-0 shadow-sm"

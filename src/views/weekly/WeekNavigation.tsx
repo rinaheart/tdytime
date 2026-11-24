@@ -59,7 +59,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
                         {weekLabel}
                     </h1>
                     {isCurrent && (
-                        <span className="px-2 py-0.5 rounded-full bg-accent-600 dark:bg-accent-500 text-white text-[8px] font-black uppercase tracking-widest">
+                        <span className="px-2 py-0.5 rounded-full bg-accent-action text-accent-on-action text-[8px] font-black uppercase tracking-widest">
                             {t('weekly.currentWeek')}
                         </span>
                     )}
@@ -73,7 +73,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
                     aria-label={t('common.current')}
                     className={`flex items-center gap-2 h-11 px-4 rounded-xl text-xs font-bold transition-all shadow-sm ${isCurrent
                         ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold cursor-default'
-                        : 'bg-accent-600 dark:bg-accent-500 text-white hover:bg-accent-700 active:scale-95 shadow-accent-500/20'
+                        : 'bg-accent-action text-accent-on-action hover:bg-accent-action-hover active:scale-95 shadow-accent-500/20'
                         }`}
                 >
                     <Zap size={16} className="fill-current" />
@@ -92,7 +92,7 @@ const WeekNavigation: React.FC<WeekNavigationProps> = ({ viewMode, onToggleViewM
                 <button
                     onClick={onToggleFilter}
                     aria-label={t('common.filter')}
-                    className={`flex items-center gap-2 h-11 px-4 border rounded-xl text-xs font-bold transition-all shadow-sm relative ${isFilterOpen ? 'bg-accent-600 border-accent-600 text-white' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'}`}
+                    className={`flex items-center gap-2 h-11 px-4 border rounded-xl text-xs font-bold transition-all shadow-sm relative ${isFilterOpen ? 'bg-accent-action border-accent-action text-accent-on-action' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'}`}
                 >
                     <Search size={16} className={isFilterOpen ? 'text-white' : 'text-accent-500'} />
                     <span className="hidden sm:inline">{t('common.filter')}</span>

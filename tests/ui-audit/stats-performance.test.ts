@@ -549,15 +549,19 @@ describe('StatisticsView — Data Integrity, Edge Cases & Legacy Equivalence', (
         expect(statsHeaderToggle.getAttribute('aria-expanded')).toBe('true');
         expect(container.querySelector('[role="tablist"]')).not.toBeNull();
 
-        // 6. Verify TdyTripZ border-radius tokens in src/styles/tokens.css & src/styles/global.css
-        for (const cssPath of [TOKENS_CSS_FILE, GLOBAL_CSS_FILE]) {
-            const cssContent = readFileSync(cssPath, 'utf-8');
-            expect(cssContent).toContain('--radius-sm: 6px;');
-            expect(cssContent).toContain('--radius-md: 8px;');
-            expect(cssContent).toContain('--radius-lg: 8px;');
-            expect(cssContent).toContain('--radius-xl: 8px;');
-            expect(cssContent).toContain('--radius-2xl: 10px;');
-            expect(cssContent).toContain('--radius-3xl: 12px;');
-        }
+        // 6. Verify TdyTime semantic border-radius tokens in src/styles/tokens.css & wired aliases in src/styles/global.css
+        const tokensCssContent = readFileSync(TOKENS_CSS_FILE, 'utf-8');
+        expect(tokensCssContent).toContain('--radius-badge: 6px;');
+        expect(tokensCssContent).toContain('--radius-control: 8px;');
+        expect(tokensCssContent).toContain('--radius-card: 10px;');
+        expect(tokensCssContent).toContain('--radius-dialog: 12px;');
+
+        const globalCssContent = readFileSync(GLOBAL_CSS_FILE, 'utf-8');
+        expect(globalCssContent).toContain('--radius-sm: var(--radius-badge);');
+        expect(globalCssContent).toContain('--radius-md: var(--radius-control);');
+        expect(globalCssContent).toContain('--radius-lg: var(--radius-control);');
+        expect(globalCssContent).toContain('--radius-xl: var(--radius-control);');
+        expect(globalCssContent).toContain('--radius-2xl: var(--radius-card);');
+        expect(globalCssContent).toContain('--radius-3xl: var(--radius-dialog);');
     });
 });

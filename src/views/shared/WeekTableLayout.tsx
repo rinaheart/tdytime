@@ -64,12 +64,12 @@ const WeekTableLayout: React.FC<WeekTableLayoutProps> = ({
                                         <th 
                                             key={`${weekRange}-${day}`} 
                                             style={colStyle}
-                                            className={`p-3 border border-slate-100 dark:border-slate-800 text-center transition-all ${isToday ? 'bg-accent-600 dark:bg-accent-600 z-10 relative ring-2 ring-accent-400 dark:ring-accent-500 shadow-md shadow-accent-500/25' : ''}`}
+                                            className={`p-3 border border-slate-100 dark:border-slate-800 text-center transition-all ${isToday ? 'bg-accent-action dark:bg-accent-action z-10 relative ring-2 ring-accent-400 dark:ring-accent-500 shadow-md shadow-accent-500/25' : ''}`}
                                         >
                                             <div className="flex flex-col items-center gap-0.5">
-                                                {isToday && <span className="text-[8px] font-black text-white uppercase tracking-widest mb-0.5">{t('weekly.today')}</span>}
-                                                <h2 className={`text-[11px] font-black uppercase tracking-widest ${isToday ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`}>{t(`days.${idx}`)}</h2>
-                                                <p className={`text-xs font-num font-bold ${isToday ? 'text-white' : 'text-slate-600 dark:text-slate-400'}`}>{weekRange ? getDayDateString(weekRange, idx) : '—'}</p>
+                                                {isToday && <span className="text-[8px] font-black text-accent-on-action uppercase tracking-widest mb-0.5">{t('weekly.today')}</span>}
+                                                <h2 className={`text-[11px] font-black uppercase tracking-widest ${isToday ? 'text-accent-on-action' : 'text-slate-500 dark:text-slate-400'}`}>{t(`days.${idx}`)}</h2>
+                                                <p className={`text-xs font-num font-bold ${isToday ? 'text-accent-on-action' : 'text-slate-600 dark:text-slate-400'}`}>{weekRange ? getDayDateString(weekRange, idx) : '—'}</p>
                                             </div>
                                         </th>
                                     );

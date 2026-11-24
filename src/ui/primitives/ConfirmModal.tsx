@@ -108,7 +108,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 aria-modal="true"
                 aria-labelledby="primitive-confirm-title"
                 aria-describedby="primitive-confirm-desc"
-                className="relative w-full max-w-[320px] bg-white dark:bg-slate-900 rounded-3xl shadow-lg border border-slate-200 dark:border-slate-800 p-6 animate-in zoom-in-95 fade-in duration-200"
+                className="relative w-full max-w-[320px] bg-white dark:bg-slate-900 rounded-dialog shadow-modal border border-slate-200 dark:border-slate-800 p-6 animate-in zoom-in-95 fade-in duration-200"
             >
                 <div className="flex flex-col items-center text-center">
                     <div
@@ -139,7 +139,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                             className={`w-full h-11 rounded-2xl font-bold text-sm transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 ${
                                 resolvedIsDanger
                                     ? 'bg-red-600 hover:bg-red-700 text-white shadow-sm'
-                                    : 'bg-accent-600 hover:bg-accent-700 text-white shadow-sm'
+                                    : 'bg-accent-action hover:bg-accent-action-hover text-accent-on-action shadow-sm'
                             }`}
                         >
                             {confirmLabel || confirmText || t('common.confirm') || 'Xác nhận'}

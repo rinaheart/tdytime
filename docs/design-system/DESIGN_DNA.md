@@ -1,79 +1,56 @@
-# Project Design DNA — TdyTime (`v2026.11.24`)
+# TdyTime Design DNA — Compact Academic Utility
 
-Tài liệu này đúc kết **Design DNA (Bộ gen thiết kế cốt lõi)** của dự án **TdyTime**, được trích xuất trực tiếp từ quá trình kiểm toán toàn diện mã nguồn (`src/`). Mọi quyết định về thị giác, bố cục và tương tác trong sản phẩm đều xoay quanh bản sắc này.
-
----
-
-## 1. Visual Identity & Design Philosophy
-
-### 1.1. Định hướng Thị giác Tổng thể (Overall Visual Direction)
-TdyTime mang ngôn ngữ thiết kế **"TdyTripZ Compact Flat Architecture"** — một biến thể hiện đại của phong cách **Bento Utility Dashboard** kết hợp với **Neo-Brutalist Swiss Typography** được tinh chỉnh riêng cho môi trường học thuật Việt Nam:
-- **Phẳng và Sắc nét (Flat & Crisp 1px Hairline Surfaces)**: Không sử dụng hiệu ứng kính mờ nặng nề (heavy glassmorphism) trên các thẻ dữ liệu lặp lại. Mọi bề mặt thẻ (`Card`, `SessionCard`, `StatsHeader`) đều dùng nền đặc (`bg-white` / `dark:bg-slate-900`) kết hợp viền mảnh 1px (`border-slate-100` hoặc `border-slate-200`, `dark:border-slate-800`) và đổ bóng cực nhẹ (`shadow-sm`).
-- **Tương phản Điển hình (High-Contrast Typographic Hierarchy)**: Sử dụng độ đậm chữ cực đại (`font-black` / `800` của `Montserrat`) cho các con số, mã phòng, khung giờ và nhãn phân mục (`uppercase tracking-wider`), đối lập rõ nét với phần tên môn học và thông tin phụ bằng `Be Vietnam Pro`.
-- **Phân cấp Mật độ Thông minh (Adaptive Information Density)**:
-  - **Chế độ Quét nhanh (`TodayView`, `ExamView`)**: Mật độ thoáng, tập trung vào trạng thái thời gian thực (`LIVE`, `UPCOMING`, `COMPLETED`) và đếm ngược buổi dạy kế tiếp.
-  - **Chế độ Tra cứu Ma trận (`WeeklyView`, `SemesterView`)**: Mật độ cao, thu gọn khoảng cách đệm (`p-2.5`), gộp dòng thông minh và dùng bảng 2 chiều có cột cố định (`sticky left-0`).
-  - **Chế độ Phân tích & Quản trị (`StatisticsView`, `SettingsView`)**: Tổ chức theo mô hình **3-Tab Segmented Bento Hub**, chỉ nạp (lazy-mount) nhóm thông tin người dùng đang chọn để tránh quá tải thị giác trên màn hình dọc.
-
-### 1.2. Cá tính Thị giác & Biểu đạt Thương hiệu (Visual Personality & Brand Expression)
-- **Đáng tin cậy & Tức thì (Reliable & Instantaneous)**: Giao diện phản ánh triết lý **100% Offline-First**. Không có trạng thái chờ mạng mơ hồ; mọi thao tác lọc, chuyển tuần, đổi chủ đề đều phản hồi dưới 100ms.
-- **Thân thiện với Giảng viên Việt Nam (Vietnamese Academic Native)**: Tối ưu hóa cho các thuật ngữ học thuật đặc thù: Lý thuyết (`LT` - 45 phút/tiết), Thực hành (`TH` - 60 phút/tiết), Ca Sáng/Chiều/Tối (`S`/`C`/`T`), Mã học phần, Nhóm lớp và Giảng viên dạy cùng.
-- **Cá nhân hóa Cao nhưng Có Kỷ luật (Disciplined Personalization)**: Cho phép người dùng chọn 1 trong **7 chủ đề màu nhấn (`AccentTheme`)** và **2 chế độ Sáng/Tối**, nhưng hệ thống tự động điều chỉnh màu ngữ nghĩa (Smart Semantic Shift) để không bao giờ xảy ra xung đột độ tương phản.
+Tài liệu này định nghĩa bản sắc thiết kế cốt lõi (**Design DNA**) và các nguyên tắc thiết kế thị giác của **TdyTime (`v2026.11.24`)**, được đúc kết từ bằng chứng triển khai thực tế trong codebase.
 
 ---
 
-## 2. Hệ thống Điểm neo Thị giác (Visual Anchors DNA)
+## 1. Nguyên tắc Nền tảng của Hệ thống Thiết kế
 
-Một đặc trưng không thể trộn lẫn trong DNA của TdyTime là việc sử dụng các **Điểm neo Thị giác (Visual Anchors)** nhỏ gọn nhưng giàu ngữ nghĩa để dẫn dắt mắt người dùng trong < 1 giây:
-
-### 2.1. Adaptive Semantic Gradient Dots (Chấm chuyển sắc ngữ nghĩa)
-- Trong `Badge.tsx` và cột trái của `WeekTableLayout.tsx`, thời gian trong ngày và trạng thái không chỉ hiển thị bằng màu đơn sắc mà bằng **dải chuyển sắc (Linear Gradient)** được tính toán theo chủ đề:
-  - **Ca Sáng (`morning`)**: `var(--semantic-morning-from)` → `var(--semantic-morning-to)` (Cyan/Teal).
-  - **Ca Chiều (`afternoon`)**: `var(--semantic-afternoon-from)` → `var(--semantic-afternoon-to)` (Orange/Amber).
-  - **Ca Tối (`evening`)**: `var(--semantic-evening-from)` → `var(--semantic-evening-to)` (Indigo/Cyan).
-  - **Đang diễn ra (`live`)**: Emerald gradient (`rgb(16 185 129)` → `rgb(5 150 105)`).
-
-### 2.2. Visual Anchors 2.0 (STT + Ring + Dot trong `ExamView`)
-- Trong danh sách coi thi (`ExamView.tsx`), mỗi dòng có chiều cao cố định 2 tầng (`min-h-[52px]`) để chống dịch chuyển bố cục (Zero CLS).
-- Cột số thứ tự (`STT_COL_CLASS`: `w-7 h-7`) đóng vai trò là điểm neo trạng thái:
-  - **Ca thi đã qua / bình thường**: Hiển thị số thứ tự dạng chữ `01.`, `02.` (`font-black text-slate-500 font-num`).
-  - **Ca thi sắp tới kế tiếp (`isNext`)**: Chuyển thành vòng tròn nền `bg-accent-100 dark:bg-accent-950/40 text-accent-700 ring-1 ring-accent-200`.
-  - **Ca thi đang diễn ra (`isOngoing`)**: Vòng tròn `bg-accent-500 text-white animate-pulse ring-2 ring-accent-500 ring-offset-2` kèm chấm nhỏ ở góc trên bên phải (`-top-0.5 -right-0.5 w-2 h-2 rounded-full`).
-
-### 2.3. Section Header Play Indicator (Mũi tên tiêu đề phân mục)
-- Tại `SessionList.tsx`, `NextTeachingSection.tsx` và `ExamView.tsx`, các tiêu đề phân mục danh sách đều bắt đầu bằng icon `<Play size={12} fill="currentColor" />` kết hợp chữ in hoa `text-xs font-black uppercase tracking-wider`.
-- Khi phân mục đang có hoạt động (`!isTodayFinished` hoặc `showHighlight`), cả icon `<Play />` và tiêu đề đều mang màu `text-accent-600 dark:text-accent-400`; khi đã hoàn tất toàn bộ trong ngày, chúng chuyển sang màu trung tính `text-slate-500` / `text-slate-700`.
-
-### 2.4. Active Focus Ring & Border Highlight
-- Các thẻ có tính chất tiêu điểm (như buổi học đang `LIVE` trong `SessionCard`, tuần hiện tại trong `WeeklyView`/`WeekAccordion`, thẻ `ProgressCard` trong `StatisticsView`, hoặc `NextTeachingSection` khi hết ca dạy hôm nay) luôn được đánh dấu bằng công thức:
-  - Viền đậm màu nhấn: `border-accent-500` hoặc `border-2 border-accent-600 dark:border-accent-500`.
-  - Vòng sáng bao ngoài nhẹ: `ring-1 ring-accent-500/20` hoặc `ring-2 ring-accent-500/20`.
-  - Đổ bóng màu nhấn: `shadow-lg shadow-accent-500/10` hoặc `shadow-sm`.
+> **Foundational Rule**: *Design System phải phản ánh chính xác sản phẩm đang vận hành, không phải một hình mẫu lý tưởng được mô tả trong tài liệu. Không duy trì token, component, pattern hoặc quy tắc nếu chúng không có giá trị sử dụng thực tế. Mọi quy chuẩn bắt buộc phải có bằng chứng triển khai hoặc cơ chế kiểm chứng tương ứng.*
 
 ---
 
-## 3. TdyTripZ Compact Radius Scale (DNA Hình khối)
+## 2. Định danh Bản sắc: Compact Academic Utility
 
-Khác với cấu hình mặc định của Tailwind CSS (vốn có `rounded-2xl = 16px` và `rounded-3xl = 24px`), TdyTime định nghĩa lại hoàn toàn thang đo bo góc trong `@theme` (`src/styles/global.css`) và `:root` (`src/styles/tokens.css`) theo chuẩn **TdyTripZ Compact Flat Architecture**:
+TdyTime là một ứng dụng tiện ích học thuật chuyên biệt phục vụ giảng viên và sinh viên theo dõi lịch giảng dạy, lịch coi thi và thống kê tiến độ học kỳ. Bản sắc thiết kế của TdyTime được định danh là **Compact Academic Utility** với 8 đặc trưng cốt lõi:
 
-| Tailwind Class | Token CSS | Giá trị Thực tế | Vai trò trong Giao diện |
-| :--- | :--- | :--- | :--- |
-| `rounded-[2px]` | *(Inline)* | `2px` | Ô vuông ma trận Heatmap (`HeatmapChart`). |
-| `rounded-sm` | `--radius-sm` | **`6px`** | Badges nhỏ, tags phụ. |
-| `rounded-md` | `--radius-md` | **`8px`** | Thẻ lịch tuần (`WeeklyCard`), bảng lịch thi (`ExamView`), nút trong thanh Segmented. |
-| `rounded-lg` | `--radius-lg` | **`8px`** | Badge chuẩn (`Badge.tsx`), hộp quy chuẩn tiết học (`PeriodStandardsCard`). |
-| `rounded-xl` | `--radius-xl` | **`8px`** | Buttons (`Button.tsx`), Inputs, Selects (`FilterBar`), Toast, Icon badges. |
-| `rounded-2xl` | `--radius-2xl` | **`10px`** | Toàn bộ thẻ chính (`Card.tsx`, `TodayCard`, `StatsHeader`, `WeekAccordion`, `EmptyState`). |
-| `rounded-3xl` | `--radius-3xl` | **`12px`** | Hộp thoại xác nhận (`ConfirmModal.tsx`). |
-| `rounded-full` | *(Built-in)* | `9999px` | Nút tròn, Avatar chữ cái đầu, thanh tiến độ (Progress bar), chấm trạng thái. |
-
-> **Insight quan trọng**: Nhờ việc ánh xạ `--radius-md`, `--radius-lg`, `--radius-xl` về cùng mức **`8px`** và `--radius-2xl` về **`10px`**, toàn bộ giao diện đạt được độ phẳng, gọn gàng, cứng cáp như một công cụ chuyên nghiệp, tiết kiệm diện tích hiển thị trên màn hình điện thoại 390px mà không bị cảm giác "bong bóng" (bubbly/toy-like) của các giao diện bo tròn 16px–24px thông thường.
+1. **Information-first (Thông tin là trung tâm)**:
+   - Mọi màn hình ưu tiên hiển thị trực diện chuỗi thông tin nghiệp vụ quan trọng nhất: *Tiết học / Khung giờ → Phòng học → Tên học phần → Lớp / Nhóm → Giảng viên*.
+2. **Compact but readable (Gọn gàng nhưng dễ đọc)**:
+   - Tối ưu mật độ hiển thị trên màn hình di động (`360px–430px`) và màn hình máy tính qua bán kính bo góc vừa phải (`6px–12px`), khoảng đệm hợp lý (`p-3.5` đến `p-5`) và phân cấp cỡ chữ rõ ràng.
+3. **Flat and structured surfaces (Bề mặt phẳng có cấu trúc)**:
+   - Sử dụng bề mặt thẻ phẳng (`bg-white dark:bg-slate-900`) kết hợp đường viền mảnh `1px` (`border-slate-100 dark:border-slate-800` hoặc `border-slate-200/80`) và bóng đổ nhẹ một tầng (`--shadow-card`). Không lạm dụng hiệu ứng kính mờ (heavy glassmorphism) hay đổ bóng nhiều lớp trên các thẻ dữ liệu lặp lại.
+4. **Clear typographic hierarchy (Phân cấp chữ rõ ràng)**:
+   - Kết hợp `Be Vietnam Pro` (`--font-body`) cho văn bản học thuật tiếng Việt có dấu phức tạp và `Montserrat` (`--font-heading`, `--font-num` kèm `tabular-nums`) cho tiêu đề và toàn bộ dữ liệu số.
+5. **Stable semantic color language (Ngôn ngữ màu ngữ nghĩa ổn định)**:
+   - Tách bạch rõ ràng giữa màu cá nhân hóa giao diện (**7 Accent Themes**) với màu trạng thái hệ thống (**Status Colors**: Success, Warning, Danger, Info) và màu nghiệp vụ thời khóa biểu (**Domain Colors**: Sáng, Chiều, Tối, Lý thuyết, Thực hành). Khi người dùng đổi chủ đề giao diện, ý nghĩa màu của các ca học và cảnh báo vẫn giữ nguyên tính ổn định.
+6. **Consistent component behavior (Hành vi component nhất quán)**:
+   - Các thành phần cơ bản (`Button`, `Card`, `Badge`, `TypeBadge`, `ConfirmModal`, `SessionCard`) có API gọn nhẹ, phản hồi xúc giác đồng nhất và đạt chuẩn tương phản trên mọi chủ đề.
+7. **Responsive by task, not merely screen size (Thích ứng theo tác vụ)**:
+   - Không chỉ co giãn kích thước theo màn hình mà chuyển đổi cấu trúc trình bày theo ngữ cảnh sử dụng: trên Desktop dùng bảng ma trận 7 ngày (`WeekTableLayout`) để đối chiếu toàn tuần; trên Mobile chuyển sang danh sách thẻ dọc theo ngày/buổi (`WeekCardLayout`) để cuộn nhanh bằng một ngón tay cái.
+8. **Minimal decorative effects (Tối giản hiệu ứng trang trí)**:
+   - Chuyển động và hiệu ứng thị giác chỉ phục vụ mục đích phản hồi trạng thái (như thanh tiến độ tiết đang giảng, shimmer khi đang tải, hoặc viền cảnh báo trùng lịch).
 
 ---
 
-## 4. Kiến trúc Hiệu năng Gắn liền với Giao diện (Performance-Driven UI DNA)
+## 3. Phân tách Nguyên tắc Thiết kế Thị giác & Kiến trúc Sản phẩm
 
-Trong TdyTime, thiết kế giao diện không tách rời khỏi kiến trúc kỹ thuật:
-1. **Stateless Pure `SessionCard`**: Thẻ buổi học được thiết kế thuần trình bày (stateless), không tự đăng ký store hay chứa modal ẩn bên trong, giúp danh sách hàng trăm buổi học trong `SemesterView` cuộn mượt ở 60fps.
-2. **Custom Lightweight SVG Charts**: Thay vì nạp thư viện biểu đồ nặng hàng trăm KB (như Recharts hay Chart.js), `DailyBarChart`, `WeeklyTrendChart` và `HeatmapChart` được vẽ bằng SVG/DOM thuần với `viewBox="0 0 320 168"`, đường nét đứt `strokeDasharray="4 4"` và màu `var(--color-accent-600)`.
-3. **Viewport Virtualization (`LazyRender`)**: Các danh sách dài (`SemesterView`, `ExamView`) sử dụng `IntersectionObserver` với `rootMargin="1000px"` để chỉ dựng DOM cho các tuần/ngày nằm gần vùng nhìn thấy.
+Để tránh pha trộn giữa quy chuẩn giao diện và kiến trúc kỹ thuật, các nguyên tắc của TdyTime được phân định rõ ràng:
+
+### 3.1. Nguyên tắc Thiết kế Thị giác & UX (Thuộc Design System)
+
+| Nguyên tắc | Cấp độ | Quy định & Phạm vi áp dụng |
+| :--- | :---: | :--- |
+| **1. WCAG 2.2 AA Action Contrast** | **Mandatory** | Mọi nút hành động chính (`Button` primary) và ô tiêu đề ngày hiện tại phải sử dụng token `--accent-action-bg` / `--accent-on-action`, đảm bảo độ tương phản `>= 4.5:1` trên toàn bộ 7 Accent Themes. |
+| **2. Single-Elevation Flat Hierarchy** | **Mandatory** | Thẻ nội dung (`Card`, `SessionCard`) chỉ dùng một lớp nền đặc kèm viền `1px` và `--shadow-card`. Chỉ dùng `backdrop-blur-md` cho thanh điều hướng nổi (`AppLayout`) và lớp phủ hộp thoại (`ConfirmModal`). |
+| **3. Tabular Numerals for Temporal & Quantitative Data** | **Mandatory** | Toàn bộ khung giờ (`07:00 - 09:30`), số tiết, bộ đếm ngược, phần trăm tiến độ và bảng số liệu phải áp dụng lớp `.font-num` (`font-variant-numeric: tabular-nums`). |
+| **4. Safe Destructive Actions** | **Mandatory** | Các thao tác xóa lịch, đặt lại cài đặt hoặc xóa bộ nhớ đệm PWA bắt buộc đi qua bước xác nhận rõ ràng (`ConfirmModal` hoặc nút xác nhận 2 bước có bộ đếm tự hủy). |
+| **5. Scoped Progressive Disclosure (Segmented Focus & Bento)** | **Recommended Pattern** | Sử dụng thanh chuyển đổi phân đoạn (`Segmented Tabs`) hoặc lưới Bento cho các màn hình tổng hợp nhiều nhóm thông tin như `StatisticsView` và `SettingsView`. **Không** ép buộc mọi màn hình đơn nhiệm phải chia thành 3 tab. |
+| **6. Mobile Scannability & Touch Targets** | **Mandatory** | Các nút điều khiển tương tác chính trên di động phải đảm bảo vùng chạm tối thiểu `44×44px` (`h-11` / `min-h-[44px]`) và `touch-action: manipulation`. |
+
+### 3.2. Nguyên tắc Sản phẩm & Kiến trúc Kỹ thuật (Tham chiếu `ARCHITECTURE.md`)
+
+Các nguyên tắc kỹ thuật sau đây hỗ trợ trải nghiệm người dùng nhưng được quản lý và kiểm chứng trong [`ARCHITECTURE.md`](../../ARCHITECTURE.md):
+- **Core Offline-First Functionality**: Toàn bộ luồng nghiệp vụ cốt lõi (đọc lịch HTML/JSON, xem lịch Hôm nay/Tuần/Học kỳ, Lịch coi thi, Thống kê, Sao lưu/Khôi phục) và 100% bundle JS/CSS được precache bởi Service Worker để hoạt động ngoại tuyến hoàn toàn. Các tài nguyên bên ngoài như Google Fonts trong `index.html` được nạp bất đồng bộ (progressive enhancement) và luôn có chuỗi font hệ thống dự phòng (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`).
+- **Enforced Atomic Zustand Selectors**: Ngăn chặn re-render dây chuyền qua `createAtomicStore`.
+- **No Barrel Imports on Critical Startup Path**: Giữ entry chunk siêu nhẹ bằng cách import trực tiếp module trong `main.tsx`, `App.tsx`, `router.tsx`, `AppLayout.tsx`.

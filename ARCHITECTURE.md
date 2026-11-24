@@ -21,6 +21,7 @@ tdytime/
 ├── README.md                           # Project overview
 │
 ├── docs/
+│   ├── design-system/                  # Canonical Design System SSOT (7 core documents)
 │   ├── audits/                         # Báo cáo audit, patch, và roadmap
 │   └── changelogs/                     # Chi tiết cập nhật từng phase (Kỹ thuật)
 │
@@ -31,6 +32,7 @@ tdytime/
 │   └── robots.txt                      # Crawler rules
 │
 ├── scripts/
+│   ├── check-design-system.mjs         # Script verify Design System integrity & WCAG AA contrast
 │   └── check-i18n-parity.mjs           # Script verify i18n parity
 │
 ├── tests/
@@ -84,17 +86,17 @@ tdytime/
     │       └── en.json                  # English translations (~33KB)
     │
     ├── styles/                          # ── Design Tokens & Global CSS ──
-    │   ├── tokens.css                   # CSS custom properties: accent colors per theme, spacing
-    │   └── global.css                   # Tailwind directives, base resets, utility classes
+    │   ├── tokens.css                   # CSS custom properties: accent colors per theme, semantic radii, shadows
+    │   └── global.css                   # Tailwind directives, @theme token wiring, base resets, utility classes
     │
     ├── ui/                              # ── Reusable UI Components ──
     │   ├── index.ts                     # UI barrel (primitives + composites)
     │   ├── ui.types.ts                  # UI-only types (ChangeLogEntry)
     │   ├── primitives/
     │   │   ├── index.ts                 # Primitives barrel
-    │   │   ├── Button.tsx               # Button component with variants
-    │   │   ├── Card.tsx                 # Card container with glass effect
-    │   │   ├── Badge.tsx                # Badge with color variants
+    │   │   ├── Button.tsx               # Button component with 4 variants (WCAG AA action tokens)
+    │   │   ├── Card.tsx                 # Structured flat surface card container
+    │   │   ├── Badge.tsx                # Badge with 4 functional variant categories & dot control
     │   │   ├── Skeleton.tsx             # Loading skeleton + SessionCardSkeleton
     │   │   └── Toast.tsx                # Toast notification component
     │   └── composites/

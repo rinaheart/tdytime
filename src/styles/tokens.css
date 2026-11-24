@@ -1,19 +1,20 @@
 /* ============================================
- * Design Tokens — TdyTime v2
- * Single source of truth for colors, spacing, shadows
+ * Design Tokens — TdyTime (Compact Academic Utility)
+ * Canonical source of truth for colors, typography, radii, and elevation.
  *
- * COLOR CATEGORIES:
- *   Theme-aware (changes with accent):  --accent-50..950
- *   Semantic (fixed):                   --color-morning/afternoon/evening, --color-success/warning/danger
+ * COLOR ARCHITECTURE:
+ *   A. Accent Colors (Theme-aware):  --accent-50..950, --accent-action-bg/hover/on-action
+ *   B. Status Colors (Fixed):        --semantic-success/warning/danger/info
+ *   C. Domain Colors (Fixed):        --semantic-morning/afternoon/evening
  * ============================================ */
 
 :root {
-  /* Typography */
-  --font-heading: 'Montserrat', sans-serif;
-  --font-body: 'Be Vietnam Pro', sans-serif;
-  --font-num: 'Montserrat', sans-serif;
+  /* ── Typography Tokens ── */
+  --font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-body: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-num: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
-  /* ── Accent Theme System (RGB channels for Tailwind opacity) ── */
+  /* ── A. Accent Theme System (RGB channels for Tailwind opacity) ── */
   /* Default: themeBlue */
   --accent-50: 239 246 255;   /* blue-50 */
   --accent-100: 219 234 254;  /* blue-100 */
@@ -27,29 +28,36 @@
   --accent-900: 30 58 138;    /* blue-900 */
   --accent-950: 23 37 84;     /* blue-950 */
 
-  /* ── Adaptive Semantic System (Default Fallbacks) ── */
-  --semantic-morning-from: #22d3ee;   /* cyan-400 */
-  --semantic-morning-to: #0891b2;     /* cyan-600 */
-  --semantic-afternoon-from: #fb923c; /* orange-400 */
-  --semantic-afternoon-to: #ea580c;   /* orange-600 */
-  --semantic-evening-from: #818cf8;   /* indigo-400 */
-  --semantic-evening-to: #4f46e5;     /* indigo-600 */
+  /* Primary Action Contrast Tokens (WCAG 2.2 AA >= 4.5:1 verified) */
+  --accent-action-bg: 37 99 235;      /* #2563EB (5.17:1 vs white) */
+  --accent-action-hover: 29 78 216;   /* #1D4ED8 (6.70:1 vs white) */
+  --accent-on-action: 255 255 255;    /* #FFFFFF */
+
+  /* ── B. Status Colors (Fixed & Stable across all themes) ── */
   --semantic-success-from: #34d399;   /* emerald-400 */
   --semantic-success-to: #059669;     /* emerald-600 */
   --semantic-warning-from: #fbbf24;   /* amber-400 */
   --semantic-warning-to: #d97706;     /* amber-600 */
   --semantic-danger-from: #f87171;    /* red-400 */
   --semantic-danger-to: #dc2626;      /* red-600 */
+  --semantic-info-from: #38bdf8;      /* sky-400 */
+  --semantic-info-to: #0284c7;        /* sky-600 */
 
-  /* Radii (Synced with TdyTripZ compact architectural scale) */
-  --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 8px;
-  --radius-xl: 8px;
-  --radius-2xl: 10px;
-  --radius-3xl: 12px;
+  /* ── C. Domain Colors (Fixed Academic Schedule Shifts) ── */
+  --semantic-morning-from: #22d3ee;   /* cyan-400 */
+  --semantic-morning-to: #0891b2;     /* cyan-600 */
+  --semantic-afternoon-from: #fb923c; /* orange-400 */
+  --semantic-afternoon-to: #ea580c;   /* orange-600 */
+  --semantic-evening-from: #818cf8;   /* indigo-400 */
+  --semantic-evening-to: #4f46e5;     /* indigo-600 */
 
-  /* Shadows */
+  /* ── D. TdyTime Semantic Radius Scale (Single Source of Truth) ── */
+  --radius-badge: 6px;
+  --radius-control: 8px;
+  --radius-card: 10px;
+  --radius-dialog: 12px;
+
+  /* ── E. Elevation & Shadow Tokens ── */
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.15);
@@ -70,10 +78,9 @@
   --accent-800: 30 64 175;
   --accent-900: 30 58 138;
   --accent-950: 23 37 84;
-
-  /* Smart Semantic: Shift Morning to Cyan/Teal to avoid Blue clash */
-  --semantic-morning-from: #22d3ee;   /* cyan-400 */
-  --semantic-morning-to: #0d9488;     /* teal-600 */
+  --accent-action-bg: 37 99 235;      /* #2563EB (5.17:1) */
+  --accent-action-hover: 29 78 216;   /* #1D4ED8 (6.70:1) */
+  --accent-on-action: 255 255 255;
 }
 
 /* 🌲 Forest Green */
@@ -89,10 +96,9 @@
   --accent-800: 6 95 70;
   --accent-900: 6 78 59;
   --accent-950: 2 44 34;
-
-  /* Smart Semantic: Shift Success to Lime/Emerald to avoid Green clash */
-  --semantic-success-from: #a3e635;   /* lime-400 */
-  --semantic-success-to: #059669;     /* emerald-600 */
+  --accent-action-bg: 4 120 87;       /* #047857 / accent-700 (5.48:1) */
+  --accent-action-hover: 6 95 70;     /* #065F46 / accent-800 (7.59:1) */
+  --accent-on-action: 255 255 255;
 }
 
 /* 🪨 Slate Grey */
@@ -108,6 +114,9 @@
   --accent-800: 30 41 59;
   --accent-900: 15 23 42;
   --accent-950: 2 6 23;
+  --accent-action-bg: 71 85 105;      /* #475569 (7.58:1) */
+  --accent-action-hover: 51 65 85;    /* #334155 (10.37:1) */
+  --accent-on-action: 255 255 255;
 }
 
 /* 🌸 Sakura Pink */
@@ -123,8 +132,9 @@
   --accent-800: 157 23 77;
   --accent-900: 131 24 67;
   --accent-950: 80 7 36;
-
-  /* Smart Semantic: Keep defaults, pink palette is safe */
+  --accent-action-bg: 219 39 119;     /* #DB2777 (4.60:1) */
+  --accent-action-hover: 190 24 93;   /* #BE185D (6.34:1) */
+  --accent-on-action: 255 255 255;
 }
 
 /* 🍎 Crimson Red */
@@ -140,10 +150,9 @@
   --accent-800: 153 27 27;
   --accent-900: 127 29 29;
   --accent-950: 69 10 10;
-
-  /* Smart Semantic: Shift Danger to Rose/Maroon to avoid Red clash */
-  --semantic-danger-from: #fb7185;   /* rose-400 */
-  --semantic-danger-to: #9f1239;     /* rose-800 */
+  --accent-action-bg: 220 38 38;      /* #DC2626 (4.83:1) */
+  --accent-action-hover: 185 28 28;   /* #B91C1C (6.47:1) */
+  --accent-on-action: 255 255 255;
 }
 
 /* 💜 Lavender Violet */
@@ -159,10 +168,9 @@
   --accent-800: 91 33 182;
   --accent-900: 76 29 149;
   --accent-950: 46 16 101;
-
-  /* Smart Semantic: Shift Evening to Indigo/Cyan to avoid Violet clash */
-  --semantic-evening-from: #818cf8;   /* indigo-400 */
-  --semantic-evening-to: #0891b2;     /* cyan-600 */
+  --accent-action-bg: 124 58 237;     /* #7C3AED (5.70:1) */
+  --accent-action-hover: 109 40 217;  /* #6D28D9 (7.18:1) */
+  --accent-on-action: 255 255 255;
 }
 
 /* 🍯 Honey Yellow */
@@ -178,8 +186,7 @@
   --accent-800: 133 77 9;
   --accent-900: 113 63 18;
   --accent-950: 66 32 6;
-
-  /* Smart Semantic: Shift Warning to Orange/Amber for depth */
-  --semantic-warning-from: #fb923c;   /* orange-400 */
-  --semantic-warning-to: #d97706;     /* amber-600 */
+  --accent-action-bg: 161 98 7;       /* #A16207 / accent-700 (4.69:1) */
+  --accent-action-hover: 133 77 9;    /* #854D09 / accent-800 (6.36:1) */
+  --accent-on-action: 255 255 255;
 }

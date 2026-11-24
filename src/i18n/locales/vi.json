@@ -470,6 +470,7 @@
                 "version": "v2026.11.24",
                 "date": "2026-11-24",
                 "changes": [
+                    "Chuẩn hóa Design System (Compact Academic Utility SSOT): Thiết lập bộ 7 tài liệu chuẩn trong docs/design-system/, bổ sung token tương phản hành động (--accent-action-*) đạt chuẩn WCAG 2.2 AA (>= 4.5:1) trên cả 7 chủ đề, hợp nhất semantic radius/font/shadow tokens và tích hợp kiểm chứng tự động vào CI.",
                     "Cài đặt Segmented Bento Hub & Tab mặc định Dữ liệu/PWA: Sắp xếp lại Cài đặt thành 3 tab phân tầng (mở mặc định Dữ liệu & PWA để kiểm tra cập nhật nhanh), chuyển Khung giờ tiết & Changelog sang Modal theo nhu cầu.",
                     "Nút Xóa bộ nhớ đệm (Clear Cache) 2 bước: Gửi lệnh CLEAR_CACHE tới Service Worker giúp làm sạch bản dựng cũ và tự tải lại trang trong khi giữ nguyên 100% lịch giảng dạy.",
                     "Tối ưu 2 bảng Môn học trên Mobile: Tách riêng bảng Viết tắt tên môn và bảng Tùy chỉnh LT/TH, gộp Mã/Lớp/Nhóm xuống dòng phụ trên màn hình nhỏ giúp dễ đọc không cần cuộn ngang.",
@@ -498,7 +499,7 @@
                 "changes": [
                     "Mobile Lighthouse 100/100 (TBT 580ms ⟶ 50ms): Chia nhỏ chuỗi khởi tạo bằng scheduler.yield() + React.startTransition, giảm 94.9% kích thước entry chunk (73.6 kB ⟶ 3.74 kB) và triệt tiêu Forced Reflow khi hoán đổi font.",
                     "Zustand Atomic Selectors & Architecture Guardrails: Chuẩn hóa 100% truy cập store qua selector nguyên tử trên toàn bộ 10 view/component, loại bỏ import qua barrel file trên đường dẫn khởi tạo và dọn sạch dead code.",
-                    "PWA Zero-Dependency (Chuẩn TdyTripZ): Chuyển sang kiến trúc Service Worker thuần không phụ thuộc thư viện ngoài, gỡ bỏ 167 gói trung gian của vite-plugin-pwa & workbox.",
+                    "PWA Zero-Dependency: Chuyển sang kiến trúc Service Worker thuần không phụ thuộc thư viện ngoài, gỡ bỏ 167 gói trung gian của vite-plugin-pwa & workbox.",
                     "Tiered Precache & Cache-on-Demand: Cài đặt PWA nhanh gấp 3 lần nhờ tách riêng gói PDF/Excel sang lưu đệm theo yêu cầu và giữ lại cache N-1 chống lỗi ChunkLoadError.",
                     "Cập nhật/Đồng bộ chuẩn Offline-First: Nâng cấp nút hành động trong Cài đặt tự động nhận biết trạng thái mạng (làm mờ khi ngoại tuyến kèm thông báo thân thiện) và đồng bộ lại toàn bộ dữ liệu Lịch giảng, Coi thi, Ghi chú.",
                     "Lighthouse CI & Performance Budget: Khóa ngưỡng bảo vệ hiệu năng tự động trên GitHub Actions (Performance >= 95/100, TBT <= 150ms) với chuẩn Node.js 26 Active LTS."
@@ -510,7 +511,7 @@
                 "changes": [
                     "Segmented Focus: Thiết kế lại toàn bộ Thống kê thành 3 tab phân tầng (Tổng quan, Xu hướng, Lớp & Phòng) với cơ chế Lazy-Mount, giảm 55% DOM nodes.",
                     "Tiến độ theo Nhóm/Lớp: Bổ sung thẻ thống kê tiến độ từng nhóm học phần (GroupProgressCard) với tiêu đề chuẩn hóa và dòng tiến độ màu theme nhạt.",
-                    "Bo cong TdyTripZ: Chuẩn hóa hệ thống border-radius theo ngôn ngữ TdyTripZ (card 10px, modal 12px, badge 6-8px).",
+                    "Thang Bo góc TdyTime: Chuẩn hóa hệ thống border-radius gọn gàng theo chức năng (card 10px, modal 12px, badge 6-8px).",
                     "Heatmap cuộn ngang: Tối ưu thanh cuộn ngang hiển thị rõ ràng trên thiết bị di động, chống cắt mép trái tuần học.",
                     "Hiệu năng & Bảo mật: Tối ưu thuật toán O(N) single-pass tính tiến độ, đạt chuẩn WCAG 2.2 AA và 0 lỗ hổng bảo mật."
                 ]

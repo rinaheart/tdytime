@@ -1,97 +1,68 @@
-# Comprehensive Design Audit, Standardization Plan & Implementation Report — TdyTime
+# TdyTime Design System Integrity Audit & Standardization Report
 
-Tài liệu này ghi lại toàn bộ kết quả kiểm toán thiết kế (Phase 1 & 2), danh sách các điểm thiếu nhất quán đã phát hiện (Inconsistency Audit), kế hoạch chuẩn hóa theo mức độ ưu tiên (Standardization Plan), báo cáo các thay đổi thực tế đã triển khai trong codebase (Implementation Report) và Checklist kiểm soát tuân thủ (Compliance Checklist).
-
----
-
-## 1. Phạm vi Kiểm toán Codebase (Audit Coverage Inventory)
-
-Cuộc kiểm toán đã rà soát **100% các tệp liên quan đến giao diện, cấu hình và kiến trúc** trong repository:
-
-- **Global Styles & Tokens**: `index.html`, `src/styles/tokens.css`, `src/styles/global.css`.
-- **Configuration & Theme Engine**: `src/core/config/constants.ts`, `src/core/themes/theme.registry.ts`, `src/core/stores/ui.store.ts`.
-- **App Shell & Routing**: `src/main.tsx`, `src/app/App.tsx`, `src/app/router.tsx`, `src/app/PWAUpdateHandler.tsx`, `src/app/layout/AppLayout.tsx`.
-- **UI Primitives (`src/ui/primitives/`)**: `Badge.tsx`, `Button.tsx`, `Card.tsx`, `ConfirmModal.tsx`, `Skeleton.tsx`, `Toast.tsx`.
-- **UI Composites (`src/ui/composites/`)**: `EmptyState.tsx`, `FilterBar.tsx`, `ThemePicker.tsx`, `TypeBadge.tsx`, `LazyRender.tsx`.
-- **All 7 Feature Views (`src/views/`)**:
-  1. `welcome/WelcomeView.tsx` (`HistoryCard`, `PasteInput`, Upload Zone).
-  2. `today/TodayView.tsx`, `TodayHeader.tsx`, `SessionList.tsx`, `NextTeachingSection.tsx`.
-  3. `weekly/WeeklyView.tsx`, `WeekNavigation.tsx`.
-  4. `semester/SemesterView.tsx`, `WeekAccordion.tsx`.
-  5. `exam/ExamView.tsx` (`ExamHeader`, `ExamRow`, `CompletedExamRow`).
-  6. `statistics/StatisticsView.tsx`, 7 cards (`StatsHeader`, `ProgressCard`, `GroupProgressCard`, `InsightCard`, `TeachingStructureCard`, `TopSubjectsCard`, `CoTeachersTable`) & 3 charts (`HeatmapChart`, `WeeklyTrendChart`, `DailyBarChart`).
-  7. `settings/SettingsView.tsx` & 6 sub-cards (`AbbreviationsCard`, `CourseTypeCard`, `BackupRestoreCard`, `DangerZoneCard`, `PeriodStandardsCard`, `AboutCard`).
-  8. `shared/SessionCard.tsx`, `WeekCardLayout.tsx`, `WeekTableLayout.tsx`.
+Tài liệu này ghi nhận kết quả đối chiếu trực tiếp giữa mã nguồn **TdyTime (`v2026.11.24`)** và hệ thống tài liệu Design System, cùng biên bản thực thi 3 đợt chuẩn hóa (Batch 1 P0, Batch 2 P1, Batch 3 P2) nhằm thiết lập một **Single Source of Truth (SSOT)** đáng tin cậy và có kiểm chứng tự động trên CI.
 
 ---
 
-## 2. Báo cáo Phát hiện Điểm Thiếu Nhất Quán (Inconsistency Audit)
+## 1. Tổng hợp 9 Phát hiện từ Đợt Đối chiếu Trực tiếp Codebase
 
-Quá trình phân tích đã phân loại rõ **Sự khác biệt có chủ đích (Intentional Variations)** và **Các sai lệch do thiếu quy chuẩn / di sản mã cũ (Unintentional Inconsistencies / Defects)**:
-
-### 2.1. Sự khác biệt có chủ đích (Được giữ nguyên & chuẩn hóa vào DNA)
-1. **Biến thể bo góc của `SessionCard`**:
-   - Ở `TodayView` (`TodayCard`), thẻ dùng `rounded-2xl` (`10px`) và `p-3.5` để tạo cảm giác thoáng đãng khi chỉ có vài buổi học trong ngày.
-   - Ở `WeeklyView` (`WeeklyCard`), thẻ dùng `rounded-md` (`8px`) và `p-2.5` để tối ưu diện tích bên trong ô lưới 7 cột của `WeekTableLayout`.
-2. **Nút Coi thi thích ứng theo độ gần thời gian (`TodayHeader.tsx`)**:
-   - Khi kỳ thi còn xa (`distant`): Hiển thị nút tròn nhỏ gọn `w-10 h-10 rounded-full` chỉ có icon.
-   - Khi kỳ thi sắp diễn ra trong 7 ngày (`upcoming`) hoặc ngay hôm nay (`today`): Mở rộng thành nút pill có chữ `Coi thi` / `Đang thi` kèm số lượng buổi thi.
-3. **Nút trên thanh `BottomNav` tắt hiệu ứng `transition` (`transition-none`)**:
-   - Chủ đích giúp phản hồi chuyển tab chính trên di động diễn ra tức thì (0ms visual lag).
-
-### 2.2. Các điểm thiếu nhất quán & lỗi vi phạm Design DNA đã phát hiện
-
-| Mã lỗi | Mức độ | Vị trí Tệp | Mô tả Chi tiết Điểm Thiếu Nhất Quán | Nguyên nhân |
-| :--- | :--- | :--- | :--- | :--- |
-| **INC-01** | **High** | `src/core/config/constants.ts` (dòng 176) | Trong `THEME_MIGRATION`, khóa `'themeViolet'` bị ánh xạ sai sang `'themeGrey'` (`themeViolet: 'themeGrey'`), dù `'themeViolet'` là một chủ đề hợp lệ trong `THEME_IDS`. | Sót lại từ đợt refactor tên chủ đề trước đây. |
-| **INC-02** | **High** | `src/styles/global.css` vs `src/styles/tokens.css` | `tokens.css` định nghĩa đầy đủ 11 sắc độ từ `--accent-50` đến `--accent-950`, nhưng khối `@theme` trong `global.css` chỉ đăng ký từ `--color-accent-50` đến `--color-accent-900`, **bỏ sót `--color-accent-950`**. Trong khi đó, `AppLayout.tsx`, `WelcomeView.tsx`, `ThemePicker.tsx`, `ExamView.tsx`, `WeekNavigation.tsx`, `SemesterView.tsx`, `CourseTypeCard.tsx` đều đang sử dụng class `dark:bg-accent-950/40` hoặc `bg-accent-950/50`. | Quên khai báo `--color-accent-950: rgb(var(--accent-950));` trong `@theme` của Tailwind v4 khiến các class `*-accent-950` không nhận biến CSS động! |
-| **INC-03** | **High** | `src/ui/primitives/Badge.tsx` vs `DESIGN.md` / `tokens.css` | Trong `DESIGN.md` và `tokens.css`, ca **Morning (Sáng)** được định nghĩa là tông **Cyan/Blue** (`#22d3ee` → `#0891b2`), và chấm gradient của `Badge` variant `morning` cũng dùng `--semantic-morning-from` (Cyan). Tuy nhiên, màu nền và chữ của `VARIANT_CLASSES.morning` trong `Badge.tsx` lại bị gán nhầm thành `bg-amber-50 text-amber-700 border-amber-200` (màu Vàng Hổ phách của Warning), gây xung đột thị giác giữa chấm tròn màu Xanh Cyan và nền thẻ màu Vàng Amber. | Nhầm lẫn giữa màu mặt trời buổi sáng (Amber) và quy ước Smart Semantic (Morning = Cyan/Sky, Afternoon = Orange/Amber). |
-| **INC-04** | **Medium** | `src/views/weekly/WeekNavigation.tsx` (dòng 62) & `src/views/semester/WeekAccordion.tsx` (dòng 144) | Huy hiệu **"Tuần hiện tại" (`currentWeek`)** bị hardcode class `bg-blue-700 text-white` thay vì dùng token màu chủ đề `bg-accent-600` (hoặc `bg-accent-700`), trong khi ở `WeekCardLayout.tsx` (dòng 41) huy hiệu `Today` lại dùng đúng `bg-accent-600`. Khi người dùng chọn chủ đề Hồng/Xanh lá/Đỏ, huy hiệu này vẫn giữ màu xanh dương cố định. | Hardcode màu Tailwind trực tiếp thay vì dùng semantic token `accent-*`. |
-| **INC-05** | **Medium** | `src/views/shared/WeekTableLayout.tsx` (dòng 67) | Ô tiêu đề của ngày hôm nay (`isToday`) trong bảng lịch tuần sử dụng bóng đổ hardcode màu xanh dương `shadow-[0_0_15px_rgba(37,99,235,0.3)]` thay vì dùng biến màu nhấn `shadow-md shadow-accent-500/30`. | Hardcode giá trị RGB của `blue-600` (`37, 99, 235`). |
-| **INC-06** | **Medium** | `src/ui/primitives/Skeleton.tsx` vs `src/styles/global.css` | `Skeleton.tsx` sử dụng class `animate-shimmer` (không được định nghĩa trong `@theme` của Tailwind v4), trong khi `global.css` định nghĩa class tiện ích là `.shimmer` với `@keyframes shimmer`. | Lệch tên class giữa file CSS toàn cục và component primitive. |
-| **INC-07** | **Low** | `src/views/welcome/WelcomeView.tsx` (dòng 53) | `HistoryCard` sử dụng `<div onClick={() => onLoad(item)}>` không có `role="button"`, `tabIndex={0}` hay xử lý bàn phím `Enter`/`Space`, làm giảm khả năng tiếp cận qua bàn phím trên màn hình chào mừng. | Thiếu thuộc tính hỗ trợ điều hướng bàn phím cho thẻ phức hợp chứa nút xóa bên trong. |
-| **INC-08** | **Low** | `src/core/config/constants.ts` (dòng 185–202) | Các hằng số di sản `SESSION_COLORS`, `SESSION_ACCENT_COLORS`, `COURSE_TYPE_COLORS` trong `constants.ts` không còn được bất kỳ component nào import (do đã chuyển sang `SessionCard`, `Badge`, `TypeBadge` và `tokens.css`), hoặc chứa định nghĩa cũ (`border-l-4`) trái với kiến trúc phẳng hiện tại. | Mã di sản từ phiên bản v1 chưa được đánh dấu `@deprecated` hoặc đồng bộ. |
+| Mã | Mức ưu tiên | Phát hiện thực tế trong Codebase | Quyết định & Trạng thái Xử lý |
+| :--- | :---: | :--- | :--- |
+| **F-01** | **P0** | **Định danh `TdyTripZ` xuất hiện trong Design DNA, CSS, Script và i18n**: Tên dự án khác xuất hiện trong `tokens.css`, `global.css`, `PWAUpdateHandler.tsx`, `DESIGN.md`, `docs/design-system/*`, `scripts/check-design-system.mjs` và release notes `vi.json` / `en.json`. | **Đã xử lý triệt để**: Loại bỏ toàn bộ thương hiệu `TdyTripZ` khỏi quy chuẩn hiện hành và nội dung hiển thị; xác lập định danh **Compact Academic Utility** và **TdyTime Radius Scale** (giữ nguyên giá trị `6px`, `8px`, `10px`, `12px`). |
+| **F-02** | **P0** | **Lỗi tương phản WCAG AA trên 2/7 Accent Themes**: `Button.tsx` và `WeekTableLayout.tsx` dùng cứng `bg-accent-600 text-white`, khiến `themeYellow` chỉ đạt **2.94:1** và `themeGreen` chỉ đạt **3.77:1** (< ngưỡng 4.5:1 của WCAG AA). | **Đã xử lý triệt để**: Thiết lập bộ token `--accent-action-bg`, `--accent-action-hover`, `--accent-on-action` theo từng theme (`themeGreen` dùng `#047857` đạt **5.48:1**, `themeYellow` dùng `#A16207` đạt **4.69:1**) và tích hợp công thức kiểm tra tương phản WCAG tự động vào CI. |
+| **F-03** | **P0** | **Phân tán đầu mối SSOT**: Cả `DESIGN.md`, `docs/design-system/README.md` và `ARCHITECTURE.md` cùng chứa các quy định chồng lấn; bộ 13 tài liệu bị chia nhỏ quá mức. | **Đã xử lý triệt để**: Tinh gọn `DESIGN.md` thành Root Entry Point; gom 13 tài liệu về **7 tài liệu chuẩn** trong `docs/design-system/`; phân quyền rõ kiến trúc kỹ thuật về `ARCHITECTURE.md`. |
+| **F-04** | **P1** | **Radius Scale bị định nghĩa trùng lặp 2 lần**: Các giá trị `6px..12px` được viết cứng ở cả `tokens.css` và `@theme` trong `global.css`, đồng thời ghi đè tên utility mặc định của Tailwind. | **Đã xử lý triệt để**: Định nghĩa một lần duy nhất theo chức năng trong `tokens.css` (`--radius-badge: 6px`, `--radius-control: 8px`, `--radius-card: 10px`, `--radius-dialog: 12px`); đấu nối qua `var(--radius-*)` trong `global.css` và áp dụng lên các primitive cốt lõi. |
+| **F-05** | **P1** | **Token Debt (Token Font và Shadow khai báo nhưng bỏ không)**: `--font-heading`, `--font-body`, `--font-num` và `--shadow-card`, `--shadow-card-hover`, `--shadow-modal` trong `tokens.css` chưa được tham chiếu trong `global.css` hay component. | **Đã xử lý triệt để**: Đấu nối trực tiếp `var(--font-*)` vào `body`, `h1..h4`, `.font-num` trong `global.css`; đăng ký `--shadow-*` vào `@theme` và sử dụng `shadow-card`, `hover:shadow-card-hover`, `shadow-modal` trong `Card.tsx` và `ConfirmModal.tsx`. |
+| **F-06** | **P1** | **Mâu thuẫn trong Smart Semantic Colors**: Header `tokens.css` ghi semantic colors là cố định nhưng bên dưới lại biến đổi màu `morning`, `evening`, `success`, `warning`, `danger` theo theme. | **Đã xử lý triệt để**: Phân tách rõ 3 tầng màu: **A. Accent Colors** (đổi theo theme), **B. Status Colors** (cố định trên mọi theme), **C. Domain Colors** (Sáng/Chiều/Tối cố định trên mọi theme). |
+| **F-07** | **P1** | **Quản lý Typography & Tuyên bố Offline-First**: Code thực tế dùng `9px–10px` cho micro-badges (`TypeBadge compact`, `Badge`), và `index.html` nạp Google Fonts bất đồng bộ. | **Đã xử lý triệt để**: Quy định rõ thang cỡ chữ (`>= 12px` cho nội dung đọc, `9px–10px` chỉ dành cho micro-badges viết tắt ngắn) và chuẩn hóa mô tả Offline-First (luồng cốt lõi và precached assets hoạt động 100% offline; tài nguyên ngoài có fallback font hệ thống). |
+| **F-08** | **P1** | **Sai lệch giữa Tài liệu Component và Code thực tế**: Báo cáo cũ mô tả `Card` có 5 biến thể và `ARCHITECTURE.md` mô tả `Card` có glass effect; `Badge.tsx` có comment sai về pulsing dot và lỗi `hasDot = dot \|\| !!dotColors` không tắt được dot khi truyền `dot={false}`. | **Đã xử lý triệt để**: Đồng bộ tài liệu khớp 100% với `Card.tsx` (1 surface phẳng + `noPadding`, `interactive`); sửa `Badge.tsx` hỗ trợ `showDot` / `dot={false}` (`showDot ?? dot ?? Boolean(dotColors)`), sửa comment và phân loại 4 nhóm variant. |
+| **F-09** | **P2** | **Script kiểm tra chưa sâu và chưa tích hợp vào CI**: `check-design-system.mjs` chưa kiểm tra đủ 11 sắc độ cho từng theme, chưa kiểm tra tương phản WCAG, có cờ `--dry-run` thừa và chưa được gọi trong `.github/workflows/ci.yml`. | **Đã xử lý triệt để**: Viết lại toàn diện `scripts/check-design-system.mjs` (loại bỏ `--dry-run`, kiểm tra từng khối theme, đối chiếu RGB với `constants.ts`, tính toán tương phản WCAG AA `>= 4.5:1`, kiểm tra đấu nối token), thêm `npm run check:design-system` vào `package.json` và tích hợp vào `.github/workflows/ci.yml`. |
 
 ---
 
-## 3. Kế hoạch Chuẩn hóa & Báo cáo Thực thi (Standardization Plan & Implementation Report)
+## 2. Báo cáo Thực thi 3 Đợt Chuẩn hóa (Implementation Log)
 
-Mọi thay đổi trong Phase 6 được thực hiện theo nguyên tắc **Surgical & Non-Destructive Refinement** (chỉnh sửa chính xác, không phá vỡ bất kỳ logic hay bài kiểm thử hiện có nào):
+### Đợt 1 — Design System Integrity (P0)
+1. **Xóa bỏ định danh ngoại lai & Xác lập `Compact Academic Utility`**:
+   - Cập nhật `src/styles/tokens.css`, `src/styles/global.css`, `src/app/PWAUpdateHandler.tsx`, `src/i18n/locales/vi.json`, `src/i18n/locales/en.json`, `DESIGN.md` và bộ tài liệu `docs/design-system/`.
+2. **Khắc phục Tương phản Màu sắc WCAG 2.2 AA trên 7 Accent Themes**:
+   - Bổ sung `--accent-action-bg`, `--accent-action-hover`, `--accent-on-action` vào `:root` và cả 7 khối `[data-accent="theme..."]` trong `src/styles/tokens.css`.
+   - Đăng ký `--color-accent-action`, `--color-accent-action-hover`, `--color-accent-on-action` trong `src/styles/global.css`.
+   - Áp dụng trên `Button.tsx`, `ConfirmModal.tsx`, `WeekTableLayout.tsx`, `WeekNavigation.tsx` và `WeekAccordion.tsx`.
+3. **Hợp nhất Đầu mối SSOT (7 Tài liệu Cốt lõi)**:
+   - Chuyển đổi từ 13 tệp rời rạc sang 7 tài liệu chuẩn trong `docs/design-system/` (`README.md`, `DESIGN_DNA.md`, `DESIGN_TOKENS.md`, `COMPONENT_GUIDELINES.md`, `LAYOUT_AND_RESPONSIVE.md`, `INTERACTION_AND_ACCESSIBILITY.md`, `DESIGN_AUDIT_REPORT.md`).
 
-### 3.1. Các Hạng mục Đã Triển khai trong Codebase (Completed Implementations)
+### Đợt 2 — Design System Simplification (P1)
+1. **Xóa bỏ Token Debt & Khai báo Trùng lặp**:
+   - Hợp nhất nguồn khai báo bo góc về 4 token chức năng trong `tokens.css` (`--radius-badge`, `--radius-control`, `--radius-card`, `--radius-dialog`) và tham chiếu qua `var(--radius-*)` trong `global.css`.
+   - Đấu nối `var(--font-body)`, `var(--font-heading)`, `var(--font-num)` trong `global.css`.
+   - Đấu nối `shadow-card`, `hover:shadow-card-hover`, `shadow-modal` vào `Card.tsx` và `ConfirmModal.tsx`.
+2. **Ổn định Hệ màu Status & Domain**:
+   - Giữ cố định các biến `--semantic-morning-*`, `--semantic-afternoon-*`, `--semantic-evening-*`, `--semantic-success-*`, `--semantic-warning-*`, `--semantic-danger-*`, `--semantic-info-*` giữa mọi chủ đề.
+3. **Chuẩn hóa `Badge.tsx` & Tài liệu Component**:
+   - Sửa lỗi logic `hasDot = showDot ?? dot ?? Boolean(dotColors)` cho phép tắt chấm tròn mặc định bằng `showDot={false}` hoặc `dot={false}`.
 
-1. **[FIX INC-02] Đăng ký `--color-accent-950` vào `@theme` trong `src/styles/global.css` & sửa hiệu ứng `.shimmer`**:
-   - Bổ sung `--color-accent-950: rgb(var(--accent-950));` vào khối `@theme` trong `src/styles/global.css`. Nhờ đó, toàn bộ các trạng thái hover và nền tối tinh tế (`dark:hover:bg-accent-950/40`, `dark:bg-accent-950/50`) trên khắp 7 màn hình hoạt động chuẩn xác với cả 7 chủ đề màu.
-2. **[FIX INC-01] Chuẩn hóa `THEME_MIGRATION` trong `src/core/config/constants.ts`**:
-   - Cập nhật `themeViolet: 'themeViolet'` và đánh dấu `@deprecated` rõ ràng cho các hằng số màu cũ không còn dùng trong v2 để tránh nhầm lẫn cho developer sau này.
-3. **[FIX INC-03] Đồng bộ màu `morning` và `warning` trong `src/ui/primitives/Badge.tsx`**:
-   - Chuyển `VARIANT_CLASSES.morning` sang hệ màu Cyan/Sky (`bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-800`) để khớp hoàn toàn với chấm gradient `--semantic-morning-from` (`#22d3ee`) và `DESIGN.md`.
-   - Chuyển `VARIANT_CLASSES.warning` sang hệ màu Amber (`bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800`) để khớp với chấm gradient `--semantic-warning-from` (`#fbbf24`) và phân biệt rõ với `danger` (Red).
-4. **[FIX INC-04 & INC-05] Loại bỏ màu `blue` hardcode trong `WeekNavigation.tsx`, `WeekAccordion.tsx` và `WeekTableLayout.tsx`**:
-   - Thay thế `bg-blue-700` bằng `bg-accent-600 dark:bg-accent-500` trên huy hiệu "Tuần hiện tại" trong `WeekNavigation.tsx` và `WeekAccordion.tsx`.
-   - Thay thế `shadow-[0_0_15px_rgba(37,99,235,0.3)]` bằng `shadow-md shadow-accent-500/25` trên cột ngày hôm nay trong `WeekTableLayout.tsx`.
-5. **[FIX INC-06] Đồng bộ hiệu ứng Shimmer trên `src/ui/primitives/Skeleton.tsx`**:
-   - Kết nối chuẩn xác hiệu ứng shimmer để khung tải `Skeleton` hiển thị chuyển động mượt mà ở cả Light và Dark mode.
-6. **[FIX INC-07] Bổ sung Khả năng Tiếp cận Bàn phím cho `HistoryCard` trong `src/views/welcome/WelcomeView.tsx`**:
-   - Bổ sung `role="button"`, `tabIndex={0}`, `onKeyDown` (kích hoạt khi nhấn `Enter` hoặc `Space`) và `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500` cho `HistoryCard`.
-7. **[ENFORCEMENT] Thiết lập Công cụ Kiểm toán Tự động & Unit Tests**:
-   - Tạo script `scripts/check-design-system.mjs` (hỗ trợ cờ `--dry-run`) để tự động kiểm tra tính toàn vẹn của Design Tokens, `@custom-variant dark`, bộ 7 `AccentTheme`, và quét các lỗi hardcode hoặc thiếu tài liệu.
-   - Tạo bộ Unit Test `src/core/themes/designSystem.test.ts` kiểm chứng toàn bộ hợp đồng `THEME_IDS`, `THEMES`, `THEME_MIGRATION`, `getTheme`, `isValidTheme`, và `getPeriodTimes` (`LT`/`TH`).
-   - Cập nhật tài liệu gốc `/DESIGN.md` để liên kết trực tiếp tới bộ tài liệu chi tiết tại `/docs/design-system/`.
+### Đợt 3 — Enforcement & CI Integration (P2)
+1. **Nâng cấp `scripts/check-design-system.mjs`**:
+   - Kiểm tra 11 sắc độ + 3 action tokens bên trong từng khối theme (`7 themes × 14 tokens`).
+   - Đối chiếu giá trị RGB trong `tokens.css` với mã màu HEX preview trong `src/core/config/constants.ts`.
+   - Tính toán trực tiếp tỷ lệ tương phản WCAG 2.2 AA (`>= 4.5:1`) cho cả 7 chủ đề.
+   - Kiểm tra sự đấu nối thực tế của font, radius, shadow tokens và component guardrails.
+2. **Tích hợp vào `package.json`, Vitest & GitHub Actions CI**:
+   - Bổ sung script `"check:design-system": "node scripts/check-design-system.mjs"` vào `package.json`.
+   - Tích hợp bước `Check Design System integrity` vào `.github/workflows/ci.yml`.
+   - Mở rộng bộ kiểm thử Vitest tại `src/core/themes/designSystem.test.ts`.
 
 ---
 
-## 4. Checklist Tuân thủ Bắt buộc (Mandatory UI Compliance Checklist)
+## 3. Checklist Tuân thủ Bắt buộc (Compliance Checklist)
 
-Mọi Pull Request hoặc thay đổi giao diện do Developer hay AI Agent thực hiện trong tương lai **bắt buộc** phải vượt qua 10 mục kiểm tra sau trước khi hoàn tất:
+Mọi thay đổi giao diện trong tương lai phải vượt qua các chốt chặn sau:
 
-- [ ] **1. Token-First Colors**: Không sử dụng màu tĩnh (`blue-*`, `indigo-*`) cho các thành phần mang tính nhấn/chủ đề; luôn dùng `accent-50` .. `accent-950`.
-- [ ] **2. Complete Light/Dark Pairing**: Mọi class nền (`bg-white`), chữ (`text-slate-800`) và viền (`border-slate-200`) đều có cặp `dark:*` tương ứng (`dark:bg-slate-900`, `dark:text-slate-100`, `dark:border-slate-800`).
-- [ ] **3. TdyTripZ Compact Radii**: Sử dụng `rounded-2xl` (`10px`) cho thẻ chính, `rounded-xl` (`8px`) cho nút bấm/ô nhập liệu, `rounded-lg` (`8px`) cho Badge, `rounded-3xl` (`12px`) cho Modal.
-- [ ] **4. Tabular Numerals (`font-num`)**: Mọi con số (giờ học, số tiết, phần trăm, ngày tháng, STT) đều gắn class `font-num` (hoặc `font-num tabular-nums`).
-- [ ] **5. Text Overflow Protection**: Các vùng chứa tên môn học, tên lớp, tên giảng viên hoặc phòng học trong flex/grid đều có `min-w-0` và `truncate` (hoặc `line-clamp-2`).
-- [ ] **6. Touch Target & Focus Ring**: Mọi nút bấm trên mobile đạt kích thước tối thiểu `44×44px` (`h-11` / `min-h-[44px]` / `w-11 h-11`) và có `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500`.
-- [ ] **7. Semantic HTML & ARIA**: Sử dụng `<button type="button">` cho mọi thao tác bấm; cung cấp `aria-label` và `title` cho mọi nút chỉ có icon.
-- [ ] **8. Single-Elevation Architecture**: Không lồng thẻ có bóng đổ và viền dày bên trong một thẻ khác; phân tách nội dung con bằng đường kẻ mảnh `divide-y divide-slate-100 dark:divide-slate-800`.
-- [ ] **9. Performance & Store Guardrails**: Chỉ dùng Atomic Selectors `useStore((s) => s.field)` với Zustand; không import qua barrel files trong `main.tsx`, `App.tsx`, `router.tsx`, `AppLayout.tsx`.
-- [ ] **10. Automated Verification Passed**: Chạy thành công `node scripts/check-design-system.mjs --dry-run`, `node scripts/check-i18n-parity.mjs`, unit tests và build không có lỗi.
+- [ ] **1. Bản sắc & Thuật ngữ**: Sử dụng đúng định danh **Compact Academic Utility** và các token chức năng của TdyTime; không đưa tên dự án khác vào code, tài liệu hoặc chuỗi đa ngôn ngữ.
+- [ ] **2. Tương phản Hành động Chính (WCAG 2.2 AA >= 4.5:1)**: Sử dụng `bg-accent-action hover:bg-accent-action-hover text-accent-on-action` cho nút chính và các bề mặt màu nhấn có chữ trắng.
+- [ ] **3. Không tạo Dead Tokens hoặc Khai báo Trùng lặp**: Mọi CSS variable thêm vào `tokens.css` phải được tham chiếu bằng `var(--...)` trong `global.css` hoặc component.
+- [ ] **4. Ổn định Ngữ nghĩa Màu**: Không ghi đè màu Status (`success`, `warning`, `danger`, `info`) và Domain (`morning`, `afternoon`, `evening`) bên trong các khối `[data-accent]`.
+- [ ] **5. Tabular Numerals (`font-num`)**: Áp dụng `.font-num` cho toàn bộ khung giờ, số tiết, ngày tháng, đếm ngược và số liệu thống kê.
+- [ ] **6. Tài liệu Phản ánh Đúng Code Thực tế**: Cập nhật `COMPONENT_GUIDELINES.md` và `DESIGN_TOKENS.md` ngay khi thay đổi props hoặc token của component.
+- [ ] **7. Vượt qua Cổng Kiểm chứng Tự động**: Chạy thành công `npm run check:design-system`, `node scripts/check-i18n-parity.mjs`, `npm test` và `npm run lint`.

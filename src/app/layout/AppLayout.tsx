@@ -12,10 +12,11 @@ import {
     Sun, Moon
 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
-import { useUIStore, useScheduleStore } from '@/core/stores';
-import { Toast } from '@/ui/primitives';
+import { useUIStore } from '@/core/stores/ui.store';
+import { useScheduleStore } from '@/core/stores/schedule.store';
+import { Toast } from '@/ui/primitives/Toast';
 import { APP_VERSION } from '@/core/constants';
-import { formatSemester } from '@/core/schedule';
+import { formatSemester } from '@/core/schedule/schedule.utils';
 import ThemePicker from '@/ui/composites/ThemePicker';
 import { changeLanguage } from '@/i18n/config';
 import { useAnalytics } from '@/core/hooks/useAnalytics';

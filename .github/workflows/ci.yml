@@ -28,6 +28,9 @@ jobs:
     - name: Check i18n parity
       run: node scripts/check-i18n-parity.mjs
 
+    - name: Check Design System integrity
+      run: npm run check:design-system
+
     - name: Run tests
       run: npm run test
 
