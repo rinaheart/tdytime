@@ -35,9 +35,8 @@ archive/future-features/
 │       │   └── StateInspector.tsx              # Trình kiểm tra trạng thái Zustand store trực tiếp
 │       └── utils/
 │           └── snapshotGenerator.ts            # Xuất snapshot trạng thái phục vụ debug
-└── thresholds/                                 # 5. Module Ngưỡng Cảnh Báo Thủ Công & Thẻ Loại Hình Rời
-    ├── ThresholdsCard.tsx                      # Thẻ tùy chỉnh ngưỡng cảnh báo quá tải (mặc định: 450/20/8 tiết)
-    └── CourseTypeCard.tsx                      # Thẻ phân loại LT/TH độc lập (đã gộp vào AbbreviationsCard)
+└── thresholds/                                 # 5. Module Ngưỡng Cảnh Báo Thủ Công
+    └── ThresholdsCard.tsx                      # Thẻ tùy chỉnh ngưỡng cảnh báo quá tải (mặc định: 450/20/8 tiết)
 ```
 
 ---

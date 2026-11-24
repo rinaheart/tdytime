@@ -349,7 +349,7 @@
         },
         "abbreviations": {
             "title": "Subject Abbreviations",
-            "description": "Abbreviate subject names and assign Theory (45m) or Practice (60m) for each class group.",
+            "description": "Customize short subject names for compact display on weekly and semester schedules.",
             "suggest": "Suggest",
             "autoSuggest": "Auto-Suggest",
             "reset": "Reset",
@@ -467,6 +467,18 @@
         "updateAvailable": "Update to v1.0.1 Now",
         "changelog": "Changelog",
         "history": [
+            {
+                "version": "v2026.11.24",
+                "date": "2026-11-24",
+                "changes": [
+                    "Segmented Bento Hub Settings & Data/PWA Default Tab: Reorganized Settings into 3 focused tabs (opening Data & PWA by default for instant update checks) with on-demand modals for Period Standards and Changelog.",
+                    "2-Step Clear Cache Button: Sends CLEAR_CACHE to the Service Worker to wipe stale precached assets and reload cleanly while preserving 100% of local schedule data.",
+                    "Mobile-Friendly Split Course Tables: Separated Subject Abbreviations and Course Type (LT/TH) tables with compact inline code/class/group metadata on small screens to eliminate horizontal crowding.",
+                    "Post-Deploy PWA White Screen Fix: Included all critical bootstrap chunks in Tier A precache, stamped deterministic build-hashes onto CACHE_NAME, blocked HTML SPA fallbacks from poisoning /assets/* cache, and added vite:preloadError self-recovery.",
+                    "Lightweight Offline Analytics (useAnalytics): Tracks Core Web Vitals and user interactions locally with zero main-thread overhead.",
+                    "Cross-Platform Lockfile Sync (Cloudflare CI): Regenerated package-lock.json with full resolved/integrity metadata and cross-platform optional bindings for Tailwind Oxide, LightningCSS, and Rolldown."
+                ]
+            },
             {
                 "version": "v2026.11.18",
                 "date": "2026-11-18",

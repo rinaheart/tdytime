@@ -348,7 +348,7 @@
         },
         "abbreviations": {
             "title": "Viết tắt tên môn",
-            "description": "Viết tắt tên các môn học và gán loại hình LT (45p) / TH (60p) cho từng nhóm lớp.",
+            "description": "Tùy chỉnh tên viết tắt các môn học để hiển thị gọn trên lịch tuần và học kỳ.",
             "suggest": "Đề xuất",
             "autoSuggest": "Gợi ý viết tắt",
             "reset": "Mặc định",
@@ -466,6 +466,18 @@
         "updateAvailable": "Cập nhật ngay v1.0.1",
         "changelog": "Changelog",
         "history": [
+            {
+                "version": "v2026.11.24",
+                "date": "2026-11-24",
+                "changes": [
+                    "Cài đặt Segmented Bento Hub & Tab mặc định Dữ liệu/PWA: Sắp xếp lại Cài đặt thành 3 tab phân tầng (mở mặc định Dữ liệu & PWA để kiểm tra cập nhật nhanh), chuyển Khung giờ tiết & Changelog sang Modal theo nhu cầu.",
+                    "Nút Xóa bộ nhớ đệm (Clear Cache) 2 bước: Gửi lệnh CLEAR_CACHE tới Service Worker giúp làm sạch bản dựng cũ và tự tải lại trang trong khi giữ nguyên 100% lịch giảng dạy.",
+                    "Tối ưu 2 bảng Môn học trên Mobile: Tách riêng bảng Viết tắt tên môn và bảng Tùy chỉnh LT/TH, gộp Mã/Lớp/Nhóm xuống dòng phụ trên màn hình nhỏ giúp dễ đọc không cần cuộn ngang.",
+                    "Chống màn hình trắng (White Screen) sau Deploy PWA: Đưa toàn bộ bootstrap chunks vào Tier A precache, đóng dấu build-hash vào CACHE_NAME, chặn cache nhầm HTML cho /assets/* và bổ sung tự phục hồi vite:preloadError.",
+                    "Analytics Offline-First (useAnalytics): Ghi nhận nhẹ chỉ số hiệu năng và tương tác người dùng cục bộ không ảnh hưởng tốc độ tải trang.",
+                    "Đồng bộ lockfile đa nền tảng (Cloudflare CI): Tái tạo package-lock.json đầy đủ optionalDependencies cho Tailwind Oxide, LightningCSS và Rolldown giúp npm ci build ổn định."
+                ]
+            },
             {
                 "version": "v2026.11.18",
                 "date": "2026-11-18",

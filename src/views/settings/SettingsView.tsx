@@ -32,6 +32,7 @@ import { useScheduleStore, useUIStore } from '@/core/stores';
 import { useAnalytics } from '@/core/hooks/useAnalytics';
 import { Card, Badge } from '@/ui/primitives';
 import AbbreviationsCard from './AbbreviationsCard';
+import CourseTypeCard from './CourseTypeCard';
 import BackupRestoreCard from './BackupRestoreCard';
 import DangerZoneCard from './DangerZoneCard';
 import PeriodStandardsCard from './PeriodStandardsCard';
@@ -39,7 +40,7 @@ import AboutCard from './AboutCard';
 
 type SettingsTabId = 'courses' | 'data' | 'info';
 
-const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '2026.11.18';
+const APP_VERSION = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : '2026.11.24';
 
 const SettingsView: React.FC = () => {
     const { t } = useTranslation();
@@ -47,9 +48,8 @@ const SettingsView: React.FC = () => {
     const { trackInteraction } = useAnalytics();
     const hasCourses = useScheduleStore((s) => Boolean(s.data && s.data.allCourses.length > 0));
 
-    const [activeTab, setActiveTab] = useState<SettingsTabId>(() =>
-        hasCourses ? 'courses' : 'data'
-    );
+    // Default to 'data' (Dữ liệu & PWA) tab so users can immediately check for updates or clear cache
+    const [activeTab, setActiveTab] = useState<SettingsTabId>('data');
     const [isOnline, setIsOnline] = useState<boolean>(() =>
         typeof navigator !== 'undefined' ? navigator.onLine : true
     );
@@ -96,14 +96,14 @@ const SettingsView: React.FC = () => {
 
     const tabs: { id: SettingsTabId; label: string; icon: React.ReactNode }[] = [
         {
-            id: 'courses',
-            label: t('settings.tabs.courses', 'Môn học'),
-            icon: <BookOpen size={15} />,
-        },
-        {
             id: 'data',
             label: t('settings.tabs.data', 'Dữ liệu & PWA'),
             icon: <Database size={15} />,
+        },
+        {
+            id: 'courses',
+            label: t('settings.tabs.courses', 'Môn học'),
+            icon: <BookOpen size={15} />,
         },
         {
             id: 'info',
@@ -231,7 +231,10 @@ const SettingsView: React.FC = () => {
                     className="animate-in fade-in duration-200"
                 >
                     {hasCourses ? (
-                        <AbbreviationsCard onSuccess={showSuccessToast} />
+                        <div className="space-y-6">
+                            <AbbreviationsCard onSuccess={showSuccessToast} />
+                            <CourseTypeCard onSuccess={showSuccessToast} />
+                        </div>
                     ) : (
                         <Card className="p-8 text-center flex flex-col items-center justify-center gap-3">
                             <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400">

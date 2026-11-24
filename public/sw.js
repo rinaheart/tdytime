@@ -12,7 +12,7 @@
  * 5. Strips cache-busting & tracking parameters (`?v=`, `?utm_*`, `?fbclid`) when matching cached shell assets.
  */
 
-const CACHE_NAME = 'tdytime-pwa-v2026.11.18';
+const CACHE_NAME = 'tdytime-pwa-v2026.11.24';
 
 const PRECACHE_URLS = [
   '/',

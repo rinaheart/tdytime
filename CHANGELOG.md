@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026.11.24] - 2026-11-24
+
+### Added
+- **Bố cục Cài đặt Segmented Bento Hub (3 Tab phân tầng) & Nút Xóa bộ nhớ đệm (`SettingsView.tsx`, `public/sw.js`, `PWAUpdateHandler.tsx`):**
+  - Sắp xếp lại trang Cài đặt thành 3 tab gọn nhẹ (`Dữ liệu & PWA`, `Môn học`, `Thông tin`) với tab **`Dữ liệu & PWA` mở mặc định** để kiểm tra cập nhật/đồng bộ nhanh ngay khi vào Cài đặt.
+  - Bổ sung nút **`Xóa bộ nhớ đệm (Clear Cache)`** với cơ chế xác nhận 2 bước an toàn, gửi thông điệp `CLEAR_CACHE` tới Service Worker để dọn sạch toàn bộ Cache Storage cũ và tự tải lại trang mà **giữ nguyên 100% dữ liệu lịch giảng dạy**.
+  - Chuyển **Quy chuẩn thời gian tiết giảng** (`PeriodStandardsCard`) và **Changelog** (`AboutCard`) thành Modal mở theo nhu cầu nhằm tinh gọn chiều cao trang Cài đặt; lưu trữ `ThresholdsCard` vào `/archive/future-features/thresholds/`.
+- **Hook Phân tích Hiệu năng & Tương tác Ngoại tuyến (`src/core/hooks/useAnalytics.ts`, `src/core/stores/analytics.store.ts`):**
+  - Thu thập nhẹ chỉ số Core Web Vitals và sự kiện tương tác người dùng vào store cục bộ theo hướng Offline-First, hỗ trợ theo dõi hành vi sử dụng mà không làm nặng luồng chính.
+
+### Changed
+- **Tối ưu Mobile-First cho Tab `Môn học` (`AbbreviationsCard.tsx` & `CourseTypeCard.tsx`):**
+  - Tách riêng lại 2 bảng **Viết tắt tên môn** (3 cột gọn gàng theo môn học duy nhất) và **Tùy chỉnh hình thức giảng dạy (LT/TH)** (theo từng mã nhóm lớp) giúp thao tác dễ đọc trên màn hình điện thoại.
+  - Gộp thông tin `Mã nhóm`, `Lớp`, `Nhóm` thành dòng phụ ngay dưới tên môn ở viewport di động (`< 640px`), triệt tiêu tình trạng chen chúc và cuộn ngang khó nhìn.
+
+### Fixed
+- **Khắc phục triệt để lỗi Màn hình trắng (White Screen) sau khi Deploy PWA (`vite.config.ts`, `public/sw.js`, `src/main.tsx`, `PWAUpdateHandler.tsx`):**
+  - Đưa toàn bộ bootstrap chunks (`App`, `Monitoring`, `config`, `vi`/`en`, `useAnalytics`, `createAtomicStore`, `exam.*`, `ui`) vào danh sách precache Tier A và tự động gắn hậu tố build-hash lên `CACHE_NAME` trong `dist/sw.js` sau mỗi bản build.
+  - Chặn Service Worker lưu nhầm phản hồi `text/html` (SPA fallback) vào cache cho các request `/assets/*` nhằm chống nhiễm độc bộ nhớ đệm JS/CSS.
+  - Bổ sung cơ chế tự phục hồi `vite:preloadError` + giao diện khôi phục dự phòng trong `src/main.tsx` và cơ chế tự reload an toàn khi Service Worker mới tiếp quản quyền điều khiển.
+- **Khắc phục lỗi `npm ci` (`EUSAGE`) khi Build trên Cloudflare Pages (`package-lock.json`):**
+  - Tái tạo sạch `package-lock.json` (`lockfileVersion: 3`) từ npm registry với đầy đủ trường `resolved`/`integrity` và trọn bộ `optionalDependencies` đa nền tảng (`@tailwindcss/oxide-*`, `lightningcss-*`, `@rolldown/binding-*`).
+
 ## [2026.11.18] - 2026-11-18
 
 ### Added
