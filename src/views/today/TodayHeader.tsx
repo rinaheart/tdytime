@@ -46,7 +46,7 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                             type="button"
                             onClick={() => navigate('/exam')}
                             aria-label={t('exam.viewAction', 'Xem lịch coi thi')}
-                            className="w-10 h-10 mt-1 bg-accent-action text-accent-on-action rounded-full shadow-sm hover:bg-accent-action-hover transition-all active:scale-95 flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            className="w-10 h-10 mt-1 bg-accent-action text-accent-on-action rounded-full shadow-sm hover:bg-accent-action-hover transition-all active:scale-95 flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                             title={t('exam.viewAction', 'Xem lịch coi thi')}
                         >
                             <CalendarCheck size={16} strokeWidth={2} />
@@ -59,7 +59,7 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                             type="button"
                             onClick={() => navigate('/exam')}
                             aria-label={`${t('exam.viewAction', 'Xem lịch coi thi')}: ${upcomingCount}`}
-                            className="mt-1 px-3 min-h-[36px] py-1.5 bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 border border-accent-200 dark:border-accent-800 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/50 hover:shadow-sm transition-all active:scale-95 flex items-center gap-1.5 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            className="mt-1 px-3 min-h-[36px] py-1.5 bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 border border-accent-200 dark:border-accent-800 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/50 hover:shadow-sm transition-all active:scale-95 flex items-center gap-1.5 shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                         >
                             <CalendarCheck size={14} strokeWidth={2} />
                             <span className="hidden md:inline text-xs font-bold tracking-tight">{t('exam.shortLabel', 'Coi thi')}</span>
@@ -75,7 +75,7 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                             type="button"
                             onClick={() => navigate('/exam')}
                             aria-label={`${t('exam.viewAction', 'Xem lịch coi thi')}: ${upcomingCount || 1}`}
-                            className="mt-1 px-3 min-h-[36px] py-1.5 bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 border border-accent-300 dark:border-accent-700 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/50 hover:shadow-sm transition-all active:scale-95 flex items-center gap-1.5 shrink-0 ring-1 ring-accent-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            className="mt-1 px-3 min-h-[36px] py-1.5 bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 border border-accent-300 dark:border-accent-700 rounded-full hover:bg-accent-100 dark:hover:bg-accent-900/50 hover:shadow-sm transition-all active:scale-95 flex items-center gap-1.5 shrink-0 ring-1 ring-accent-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                         >
                             {/* Red pulsing dot for ongoing */}
                             {isOngoing && (

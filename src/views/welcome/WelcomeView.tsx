@@ -60,7 +60,7 @@ const HistoryCard = React.memo(({ item, isActive, onLoad, onDelete }: {
                     onLoad(item);
                 }
             }}
-            className={`group p-4 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer border shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500
+            className={`group p-4 rounded-2xl flex items-center justify-between transition-all duration-300 cursor-pointer border shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus
                 ${isActive
                     ? 'bg-white dark:bg-slate-900 border-accent-500 dark:border-accent-400 shadow-accent-500/5'
                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 hover:shadow-md hover:border-accent-200 dark:hover:border-accent-900'
@@ -143,7 +143,7 @@ const PasteInput = React.memo(({ onCancel, onSubmit, isProcessing }: {
                 value={pastedContent}
                 onChange={(e) => setPastedContent(e.target.value)}
                 placeholder={t('app.pastePlaceholder')}
-                className="w-full h-[35vh] min-h-[180px] max-h-[450px] p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm text-slate-700 dark:text-slate-300 resize-none focus-visible:ring-2 focus-visible:ring-accent-500 outline-none font-mono shadow-inner custom-scrollbar"
+                className="w-full h-[35vh] min-h-[180px] max-h-[450px] p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm text-slate-700 dark:text-slate-300 resize-none focus-visible:ring-2 focus-visible:ring-accent-focus outline-none font-mono shadow-inner custom-scrollbar"
             />
             <div className="flex gap-2 mt-4">
                 <button onClick={onCancel} className="px-5 py-2.5 text-sm font-medium text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
@@ -367,7 +367,7 @@ const WelcomeView: React.FC = () => {
                         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                         onDragLeave={() => setIsDragging(false)}
                         onDrop={handleDrop}
-                        className={`w-full border-2 border-dashed rounded-2xl p-8 md:p-12 text-center transition-all duration-300 cursor-pointer has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent-500 has-[:focus-visible]:ring-offset-2 dark:has-[:focus-visible]:ring-offset-slate-900 ${isDragging
+                        className={`w-full border-2 border-dashed rounded-2xl p-8 md:p-12 text-center transition-all duration-300 cursor-pointer has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-accent-focus has-[:focus-visible]:ring-offset-2 dark:has-[:focus-visible]:ring-offset-slate-900 ${isDragging
                             ? 'border-accent-600 bg-accent-100/50 dark:bg-accent-900/20 shadow-lg shadow-accent-500/10'
                             : 'border-accent-400 dark:border-accent-500/50 bg-accent-50/10 dark:bg-accent-900/5 hover:border-accent-600 dark:hover:border-accent-400 hover:bg-accent-50/30 dark:hover:bg-accent-900/10 hover:shadow-md'
                             }`}

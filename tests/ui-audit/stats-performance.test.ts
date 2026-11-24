@@ -551,17 +551,21 @@ describe('StatisticsView — Data Integrity, Edge Cases & Legacy Equivalence', (
 
         // 6. Verify TdyTime semantic border-radius tokens in src/styles/tokens.css & wired aliases in src/styles/global.css
         const tokensCssContent = readFileSync(TOKENS_CSS_FILE, 'utf-8');
-        expect(tokensCssContent).toContain('--radius-badge: 6px;');
-        expect(tokensCssContent).toContain('--radius-control: 8px;');
-        expect(tokensCssContent).toContain('--radius-card: 10px;');
-        expect(tokensCssContent).toContain('--radius-dialog: 12px;');
+        expect(tokensCssContent).toContain('--tdy-radius-badge: 6px;');
+        expect(tokensCssContent).toContain('--tdy-radius-control: 8px;');
+        expect(tokensCssContent).toContain('--tdy-radius-card: 10px;');
+        expect(tokensCssContent).toContain('--tdy-radius-dialog: 12px;');
 
         const globalCssContent = readFileSync(GLOBAL_CSS_FILE, 'utf-8');
-        expect(globalCssContent).toContain('--radius-sm: var(--radius-badge);');
-        expect(globalCssContent).toContain('--radius-md: var(--radius-control);');
-        expect(globalCssContent).toContain('--radius-lg: var(--radius-control);');
-        expect(globalCssContent).toContain('--radius-xl: var(--radius-control);');
-        expect(globalCssContent).toContain('--radius-2xl: var(--radius-card);');
-        expect(globalCssContent).toContain('--radius-3xl: var(--radius-dialog);');
+        expect(globalCssContent).toContain('--radius-badge: var(--tdy-radius-badge);');
+        expect(globalCssContent).toContain('--radius-control: var(--tdy-radius-control);');
+        expect(globalCssContent).toContain('--radius-card: var(--tdy-radius-card);');
+        expect(globalCssContent).toContain('--radius-dialog: var(--tdy-radius-dialog);');
+        expect(globalCssContent).toContain('--radius-sm: var(--tdy-radius-badge);');
+        expect(globalCssContent).toContain('--radius-md: var(--tdy-radius-control);');
+        expect(globalCssContent).toContain('--radius-lg: var(--tdy-radius-control);');
+        expect(globalCssContent).toContain('--radius-xl: var(--tdy-radius-control);');
+        expect(globalCssContent).toContain('--radius-2xl: var(--tdy-radius-card);');
+        expect(globalCssContent).toContain('--radius-3xl: var(--tdy-radius-dialog);');
     });
 });

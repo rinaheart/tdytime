@@ -59,7 +59,7 @@ const GroupProgressCard: React.FC<GroupProgressCardProps> = ({ groups }) => {
                 onClick={() => setIsExpanded((prev) => !prev)}
                 aria-expanded={isExpanded}
                 aria-controls={isExpanded ? 'group-progress-panel' : undefined}
-                className="w-full min-h-[44px] px-4 md:px-5 py-3.5 md:py-4 flex items-center justify-between gap-3 text-left hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500"
+                className="w-full min-h-[44px] px-4 md:px-5 py-3.5 md:py-4 flex items-center justify-between gap-3 text-left hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-focus"
             >
                 <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">

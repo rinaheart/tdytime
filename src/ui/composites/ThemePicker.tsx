@@ -46,7 +46,7 @@ const ThemePicker: React.FC = () => {
                 aria-label={t('settings.themes.title', { defaultValue: 'Chọn màu chủ đạo' })}
                 aria-expanded={isOpen}
                 aria-haspopup="true"
-                className={`flex items-center justify-center w-11 h-11 md:w-9 md:h-9 rounded-xl transition-all duration-200 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
+                className={`flex items-center justify-center w-11 h-11 md:w-9 md:h-9 rounded-xl transition-all duration-200 border focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus ${
                     isOpen
                         ? 'bg-accent-50 border-accent-200 text-accent-700 dark:bg-accent-900/30 dark:border-accent-800 dark:text-accent-400'
                         : 'bg-transparent border-transparent text-slate-600 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40'
@@ -81,7 +81,7 @@ const ThemePicker: React.FC = () => {
                                     setIsOpen(false);
                                     triggerRef.current?.focus();
                                 }}
-                                className={`w-full flex items-center justify-between p-2.5 min-h-[40px] rounded-xl transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
+                                className={`w-full flex items-center justify-between p-2.5 min-h-[40px] rounded-xl transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus ${
                                     accentTheme === theme.id
                                         ? 'bg-accent-50 dark:bg-accent-900/20 text-accent-700 dark:text-accent-400'
                                         : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'

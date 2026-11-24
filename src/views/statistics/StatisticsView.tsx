@@ -182,7 +182,7 @@ const StatisticsView: React.FC = () => {
                                     aria-controls={isActive ? `stats-panel-${tab.id}` : undefined}
                                     tabIndex={isActive ? 0 : -1}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`min-h-[44px] px-1.5 sm:px-3 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap min-w-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${
+                                    className={`min-h-[44px] px-1.5 sm:px-3 py-2 rounded-lg text-xs font-bold transition-all duration-150 flex items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap min-w-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus ${
                                         isActive
                                             ? 'bg-white dark:bg-slate-900 text-accent-600 dark:text-accent-400 shadow-sm ring-1 ring-slate-200/80 dark:ring-slate-700/80'
                                             : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
@@ -383,7 +383,7 @@ const StatisticsView: React.FC = () => {
                         <button
                             type="button"
                             onClick={() => navigate('/exam')}
-                            className="w-full min-h-[44px] bg-gradient-to-r from-accent-50 to-transparent dark:from-accent-900/20 dark:to-transparent p-4 rounded-2xl border border-accent-200/60 dark:border-accent-800/40 cursor-pointer transition-all hover:shadow-sm hover:border-accent-300 dark:hover:border-accent-700 active:scale-[0.99] flex items-center justify-between group text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            className="w-full min-h-[44px] bg-gradient-to-r from-accent-50 to-transparent dark:from-accent-900/20 dark:to-transparent p-4 rounded-2xl border border-accent-200/60 dark:border-accent-800/40 cursor-pointer transition-all hover:shadow-sm hover:border-accent-300 dark:hover:border-accent-700 active:scale-[0.99] flex items-center justify-between group text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                         >
                             <div className="flex items-center gap-3 min-w-0">
                                 <CalendarCheck

@@ -112,7 +112,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
             >
                 <div className="flex flex-col items-center text-center">
                     <div
-                        className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${
+                        className={`w-12 h-12 rounded-card flex items-center justify-center mb-4 ${
                             resolvedIsDanger
                                 ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400'
                                 : 'bg-accent-50 dark:bg-accent-900/20 text-accent-600 dark:text-accent-400'
@@ -136,10 +136,10 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                         <button
                             type="button"
                             onClick={onConfirm}
-                            className={`w-full h-11 rounded-2xl font-bold text-sm transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 ${
+                            className={`w-full h-11 rounded-control font-bold text-sm transition-all active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
                                 resolvedIsDanger
-                                    ? 'bg-red-600 hover:bg-red-700 text-white shadow-sm'
-                                    : 'bg-accent-action hover:bg-accent-action-hover text-accent-on-action shadow-sm'
+                                    ? 'bg-red-600 hover:bg-red-700 text-white shadow-sm focus-visible:ring-red-500'
+                                    : 'bg-accent-action hover:bg-accent-action-hover text-accent-on-action shadow-sm focus-visible:ring-accent-focus'
                             }`}
                         >
                             {confirmLabel || confirmText || t('common.confirm') || 'Xác nhận'}
@@ -148,7 +148,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                             ref={cancelBtnRef}
                             type="button"
                             onClick={handleCancel}
-                            className="w-full h-11 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            className="w-full h-11 rounded-control font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                         >
                             {cancelLabel || cancelText || t('common.cancel') || 'Hủy'}
                         </button>
@@ -159,7 +159,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                     onClick={handleCancel}
                     aria-label={t('common.close', 'Đóng hộp thoại xác nhận')}
                     title={t('common.close', 'Đóng')}
-                    className="absolute top-3 right-3 w-11 h-11 flex items-center justify-center rounded-xl text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                    className="absolute top-3 right-3 w-11 h-11 flex items-center justify-center rounded-control text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                 >
                     <X size={18} />
                 </button>

@@ -3,7 +3,7 @@
  * Canonical source of truth for colors, typography, radii, and elevation.
  *
  * COLOR ARCHITECTURE:
- *   A. Accent Colors (Theme-aware):  --accent-50..950, --accent-action-bg/hover/on-action
+ *   A. Accent Colors (Theme-aware):  --accent-50..950, --accent-action-*, --accent-focus-*
  *   B. Status Colors (Fixed):        --semantic-success/warning/danger/info
  *   C. Domain Colors (Fixed):        --semantic-morning/afternoon/evening
  * ============================================ */
@@ -33,6 +33,11 @@
   --accent-action-hover: 29 78 216;   /* #1D4ED8 (6.70:1 vs white) */
   --accent-on-action: 255 255 255;    /* #FFFFFF */
 
+  /* Focus Ring Contrast Tokens (WCAG 2.2 SC 1.4.11 >= 3.0:1 vs adjacent light/dark surfaces) */
+  --accent-focus-light: 37 99 235;    /* #2563EB (5.17:1 vs white, 4.77:1 vs slate-50) */
+  --accent-focus-dark: 96 165 250;    /* #60A5FA (6.78:1 vs slate-900, 7.64:1 vs slate-950) */
+  --accent-focus: var(--accent-focus-light);
+
   /* ── B. Status Colors (Fixed & Stable across all themes) ── */
   --semantic-success-from: #34d399;   /* emerald-400 */
   --semantic-success-to: #059669;     /* emerald-600 */
@@ -51,16 +56,16 @@
   --semantic-evening-from: #818cf8;   /* indigo-400 */
   --semantic-evening-to: #4f46e5;     /* indigo-600 */
 
-  /* ── D. TdyTime Semantic Radius Scale (Single Source of Truth) ── */
-  --radius-badge: 6px;
-  --radius-control: 8px;
-  --radius-card: 10px;
-  --radius-dialog: 12px;
+  /* ── D. TdyTime Semantic Radius Source Tokens (wired via @theme inline in global.css) ── */
+  --tdy-radius-badge: 6px;
+  --tdy-radius-control: 8px;
+  --tdy-radius-card: 10px;
+  --tdy-radius-dialog: 12px;
 
-  /* ── E. Elevation & Shadow Tokens ── */
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.15);
+  /* ── E. Elevation & Shadow Source Tokens (wired via @theme inline in global.css) ── */
+  --tdy-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --tdy-shadow-card-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --tdy-shadow-modal: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
 /* ── Accent Theme Overrides ── */
@@ -81,6 +86,9 @@
   --accent-action-bg: 37 99 235;      /* #2563EB (5.17:1) */
   --accent-action-hover: 29 78 216;   /* #1D4ED8 (6.70:1) */
   --accent-on-action: 255 255 255;
+  --accent-focus-light: 37 99 235;    /* #2563EB (4.77:1 vs slate-50) */
+  --accent-focus-dark: 96 165 250;    /* #60A5FA (6.78:1 vs slate-900) */
+  --accent-focus: var(--accent-focus-light);
 }
 
 /* 🌲 Forest Green */
@@ -99,6 +107,9 @@
   --accent-action-bg: 4 120 87;       /* #047857 / accent-700 (5.48:1) */
   --accent-action-hover: 6 95 70;     /* #065F46 / accent-800 (7.59:1) */
   --accent-on-action: 255 255 255;
+  --accent-focus-light: 4 120 87;     /* #047857 / accent-700 (5.05:1 vs slate-50) */
+  --accent-focus-dark: 52 211 153;    /* #34D399 / accent-400 (8.89:1 vs slate-900) */
+  --accent-focus: var(--accent-focus-light);
 }
 
 /* 🪨 Slate Grey */
@@ -117,6 +128,9 @@
   --accent-action-bg: 71 85 105;      /* #475569 (7.58:1) */
   --accent-action-hover: 51 65 85;    /* #334155 (10.37:1) */
   --accent-on-action: 255 255 255;
+  --accent-focus-light: 71 85 105;    /* #475569 (6.99:1 vs slate-50) */
+  --accent-focus-dark: 148 163 184;   /* #94A3B8 (6.47:1 vs slate-900) */
+  --accent-focus: var(--accent-focus-light);
 }
 
 /* 🌸 Sakura Pink */
@@ -135,6 +149,9 @@
   --accent-action-bg: 219 39 119;     /* #DB2777 (4.60:1) */
   --accent-action-hover: 190 24 93;   /* #BE185D (6.34:1) */
   --accent-on-action: 255 255 255;
+  --accent-focus-light: 219 39 119;   /* #DB2777 (4.24:1 vs slate-50) */
+  --accent-focus-dark: 244 114 182;   /* #F472B6 (6.12:1 vs slate-900) */
+  --accent-focus: var(--accent-focus-light);
 }
 
 /* 🍎 Crimson Red */
@@ -153,6 +170,9 @@
   --accent-action-bg: 220 38 38;      /* #DC2626 (4.83:1) */
   --accent-action-hover: 185 28 28;   /* #B91C1C (6.47:1) */
   --accent-on-action: 255 255 255;
+  --accent-focus-light: 220 38 38;    /* #DC2626 (4.46:1 vs slate-50) */
+  --accent-focus-dark: 248 113 113;   /* #F87171 (5.98:1 vs slate-900) */
+  --accent-focus: var(--accent-focus-light);
 }
 
 /* 💜 Lavender Violet */
@@ -171,6 +191,9 @@
   --accent-action-bg: 124 58 237;     /* #7C3AED (5.70:1) */
   --accent-action-hover: 109 40 217;  /* #6D28D9 (7.18:1) */
   --accent-on-action: 255 255 255;
+  --accent-focus-light: 124 58 237;   /* #7C3AED (5.26:1 vs slate-50) */
+  --accent-focus-dark: 167 139 250;   /* #A78BFA (6.18:1 vs slate-900) */
+  --accent-focus: var(--accent-focus-light);
 }
 
 /* 🍯 Honey Yellow */
@@ -189,4 +212,13 @@
   --accent-action-bg: 161 98 7;       /* #A16207 / accent-700 (4.69:1) */
   --accent-action-hover: 133 77 9;    /* #854D09 / accent-800 (6.36:1) */
   --accent-on-action: 255 255 255;
+  --accent-focus-light: 161 98 7;     /* #A16207 / accent-700 (4.32:1 vs slate-50) */
+  --accent-focus-dark: 250 204 21;    /* #FACC15 / accent-400 (11.42:1 vs slate-900) */
+  --accent-focus: var(--accent-focus-light);
+}
+
+/* ── Dark Mode Focus Ring Switching ── */
+.dark,
+.dark [data-accent] {
+  --accent-focus: var(--accent-focus-dark);
 }

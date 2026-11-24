@@ -3,8 +3,8 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Register accent CSS variables, action contrast tokens, semantic radii, and shadows as Tailwind theme tokens */
-@theme {
+/* Register accent CSS variables, action/focus contrast tokens, semantic radii, and shadows via @theme inline (zero self-reference) */
+@theme inline {
   --color-accent-50: rgb(var(--accent-50));
   --color-accent-100: rgb(var(--accent-100));
   --color-accent-200: rgb(var(--accent-200));
@@ -19,25 +19,26 @@
   --color-accent-action: rgb(var(--accent-action-bg));
   --color-accent-action-hover: rgb(var(--accent-action-hover));
   --color-accent-on-action: rgb(var(--accent-on-action));
+  --color-accent-focus: rgb(var(--accent-focus));
 
-  /* Semantic Radius Utilities (wired to tokens.css) */
-  --radius-badge: var(--radius-badge);
-  --radius-control: var(--radius-control);
-  --radius-card: var(--radius-card);
-  --radius-dialog: var(--radius-dialog);
+  /* Semantic Radius Utilities (wired to tokens.css --tdy-radius-*) */
+  --radius-badge: var(--tdy-radius-badge);
+  --radius-control: var(--tdy-radius-control);
+  --radius-card: var(--tdy-radius-card);
+  --radius-dialog: var(--tdy-radius-dialog);
 
-  /* Tailwind scale compatibility aliases (wired to semantic radius tokens) */
-  --radius-sm: var(--radius-badge);
-  --radius-md: var(--radius-control);
-  --radius-lg: var(--radius-control);
-  --radius-xl: var(--radius-control);
-  --radius-2xl: var(--radius-card);
-  --radius-3xl: var(--radius-dialog);
+  /* Tailwind scale compatibility aliases (wired to semantic radius source tokens) */
+  --radius-sm: var(--tdy-radius-badge);
+  --radius-md: var(--tdy-radius-control);
+  --radius-lg: var(--tdy-radius-control);
+  --radius-xl: var(--tdy-radius-control);
+  --radius-2xl: var(--tdy-radius-card);
+  --radius-3xl: var(--tdy-radius-dialog);
 
-  /* Elevation & Shadow Utilities (wired to tokens.css) */
-  --shadow-card: var(--shadow-card);
-  --shadow-card-hover: var(--shadow-card-hover);
-  --shadow-modal: var(--shadow-modal);
+  /* Elevation & Shadow Utilities (wired to tokens.css --tdy-shadow-*) */
+  --shadow-card: var(--tdy-shadow-card);
+  --shadow-card-hover: var(--tdy-shadow-card-hover);
+  --shadow-modal: var(--tdy-shadow-modal);
 }
 
 /* Design Typography Optimization (Wired to tokens.css --font-body, --font-heading, --font-num) */

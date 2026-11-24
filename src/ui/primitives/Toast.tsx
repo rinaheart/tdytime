@@ -39,7 +39,7 @@ export const Toast: React.FC = () => {
             <button
                 type="button"
                 onClick={() => setIsVisible(false)}
-                className="min-w-[28px] min-h-[28px] p-1.5 flex items-center justify-center cursor-pointer hover:bg-slate-800 dark:hover:bg-slate-700 rounded-md transition-colors ml-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-400"
+                className="min-w-[28px] min-h-[28px] p-1.5 flex items-center justify-center cursor-pointer hover:bg-slate-800 dark:hover:bg-slate-700 rounded-md transition-colors ml-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                 aria-label="Đóng thông báo"
             >
                 <X size={14} className="text-slate-300" />

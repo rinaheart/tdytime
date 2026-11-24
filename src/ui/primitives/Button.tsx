@@ -18,9 +18,9 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-    sm: 'px-3 py-1.5 text-xs gap-1.5',
-    md: 'px-4 py-2 text-sm gap-2',
-    lg: 'px-5 py-2.5 text-base gap-2',
+    sm: 'min-h-[32px] min-w-[32px] px-3 py-1.5 text-xs gap-1.5',
+    md: 'min-h-[36px] min-w-[36px] px-4 py-2 text-sm gap-2',
+    lg: 'min-h-[44px] min-w-[44px] px-5 py-2.5 text-base gap-2',
 };
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -28,7 +28,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         <button
             ref={ref}
             disabled={disabled || loading}
-            className={`inline-flex items-center justify-center font-medium rounded-control cursor-pointer transition-transform transition-colors duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 disabled:opacity-50 disabled:cursor-not-allowed ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${className}`}
+            className={`inline-flex items-center justify-center font-medium rounded-control cursor-pointer transition-transform transition-colors duration-200 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${className}`}
             {...props}
         >
             {loading ? (

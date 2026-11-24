@@ -471,7 +471,7 @@
                 "version": "v2026.11.24",
                 "date": "2026-11-24",
                 "changes": [
-                    "Design System Integrity Standardization (Compact Academic Utility SSOT): Consolidated 7 canonical docs in docs/design-system/, added WCAG 2.2 AA (>= 4.5:1) action contrast tokens (--accent-action-*) across all 7 themes, wired semantic radius/font/shadow tokens, and integrated automated checks into CI.",
+                    "Design System & Runtime Integrity Standardization (Compact Academic Utility SSOT): Consolidated 7 canonical docs in docs/design-system/, unified THEME_PALETTES, added WCAG 2.2 AA action contrast tokens (--accent-action-* >= 4.5:1) and focus ring tokens (--accent-focus-light/dark >= 3.0:1) across all 7 themes, wired --tdy-radius-*/--tdy-shadow-* via @theme inline, and integrated PostCSS compiled CSS verification into CI.",
                     "Segmented Bento Hub Settings & Data/PWA Default Tab: Reorganized Settings into 3 focused tabs (opening Data & PWA by default for instant update checks) with on-demand modals for Period Standards and Changelog.",
                     "2-Step Clear Cache Button: Sends CLEAR_CACHE to the Service Worker to wipe stale precached assets and reload cleanly while preserving 100% of local schedule data.",
                     "Mobile-Friendly Split Course Tables: Separated Subject Abbreviations and Course Type (LT/TH) tables with compact inline code/class/group metadata on small screens to eliminate horizontal crowding.",

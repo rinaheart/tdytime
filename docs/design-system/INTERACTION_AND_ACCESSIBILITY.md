@@ -12,7 +12,7 @@ Mọi phần tử tương tác trong TdyTime phải cung cấp phản hồi th�
 | :--- | :--- | :--- |
 | **Hover** | Đổi sắc độ nền (`hover:bg-accent-action-hover`, `hover:bg-slate-100`) hoặc nâng nhẹ bóng đổ thẻ (`hover:shadow-card-hover`). | `hover:bg-accent-action-hover`, `hover:border-slate-300` |
 | **Active / Press** | Thu nhỏ nhẹ tức thì để tạo cảm giác bấm vật lý trên màn hình cảm ứng + `touch-action: manipulation`. | `active:scale-[0.97]`, `active:scale-[0.98]`, `active:scale-95` |
-| **Focus-Visible** | Hiển thị vòng sáng tiêu điểm `2px` theo màu chủ đề khi điều hướng bằng bàn phím (`Tab`). | `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500` |
+| **Focus-Visible** | Hiển thị vòng sáng tiêu điểm `2px` (`focus-visible:ring-accent-focus`) đạt chuẩn tương phản phi văn bản **WCAG 2.2 SC 1.4.11 (`>= 3.0:1`)** ở cả Light & Dark Mode khi điều hướng bằng bàn phím (`Tab`). | `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus` |
 | **Disabled / Loading** | Giảm độ mờ xuống `50%`, khóa con trỏ chuột và hiển thị vòng xoay `animate-spin` nếu đang xử lý. | `disabled:opacity-50 disabled:cursor-not-allowed` |
 
 ---
@@ -47,11 +47,15 @@ Chuyển động trong TdyTime tuân thủ nguyên tắc **nhanh, có mục đí
 
 ## 4. Chuẩn Trợ năng WCAG 2.2 Level AA & Điều hướng Bàn phím
 
-### 4.1. Kiểm chứng Độ Tương phản Màu sắc trên cả 7 Accent Themes
+### 4.1. Kiểm chứng Độ Tương phản Màu sắc & Vòng Tiêu điểm trên cả 7 Accent Themes
 - **Văn bản thứ cấp (Secondary Text)**: Sử dụng `text-slate-600 dark:text-slate-400` (hoặc `text-slate-500 dark:text-slate-400` trên nền trắng/đen chuẩn), đạt độ tương phản `> 4.5:1`.
-- **Nút hành động chính & Ô ngày hiện tại (`--accent-action-bg` vs `--accent-on-action`)**:
+- **Nút hành động chính & Ô ngày hiện tại (`--accent-action-bg` vs `--accent-on-action` — WCAG 2.2 SC 1.4.3 `>= 4.5:1`)**:
   - Đã được chuẩn hóa riêng cho từng theme trong `src/styles/tokens.css` (sử dụng sắc độ `700` cho `themeGreen` `#047857` đạt **5.48:1** và `themeYellow` `#A16207` đạt **4.69:1**, sắc độ `600` cho 5 theme còn lại đạt từ **4.60:1 đến 7.58:1**).
-  - Được kiểm tra tự động bằng công thức độ chói tương đối (relative luminance) trong `scripts/check-design-system.mjs`.
+- **Vòng sáng tiêu điểm bàn phím (`--accent-focus-light` / `--accent-focus-dark` — WCAG 2.2 SC 1.4.11 `>= 3.0:1`)**:
+  - Tuyệt đối không dùng cứng `focus-visible:ring-accent-500` (vốn chỉ đạt `2.02:1` ở `themeYellow` và `2.54:1` ở `themeGreen` trên nền trắng).
+  - Toàn bộ phần tử tương tác sử dụng `focus-visible:ring-accent-focus` (tự động lấy `--accent-focus-light` đạt **4.32:1–6.99:1** trên nền sáng `#FFFFFF`/`#F8FAFC` và `--accent-focus-dark` đạt **5.98:1–11.42:1** trên nền tối `#0F172A`/`#020617`).
+- **Công thức Độ chói Tương đối Chuẩn WCAG 2.2 (`s <= 0.04045`)**:
+  - Được kiểm tra tự động với cơ chế fail-closed (báo lỗi ngay nếu thiếu token hoặc giá trị RGB nằm ngoài `0..255`) trong `scripts/check-design-system.mjs` và `src/core/themes/designSystem.test.ts`.
 
 ### 4.2. Mẫu Điều hướng Bàn phím WAI-ARIA
 1. **Segmented Tabs (`StatisticsView.tsx` & `SettingsView.tsx`)**:

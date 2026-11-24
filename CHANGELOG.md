@@ -8,10 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2026.11.24] - 2026-11-24
 
 ### Added
-- **Chuẩn hóa Toàn vẹn Hệ thống Thiết kế — Compact Academic Utility SSOT (`docs/design-system/`, `DESIGN.md`, `scripts/check-design-system.mjs`, `.github/workflows/ci.yml`):**
+- **Chuẩn hóa Toàn vẹn Hệ thống Thiết kế & Runtime Integrity Check — Compact Academic Utility SSOT (`docs/design-system/`, `DESIGN.md`, `scripts/check-design-system.mjs`, `.github/workflows/ci.yml`):**
   - Xác lập định danh bản sắc thiết kế chính thức **Compact Academic Utility** và tinh gọn hệ thống tài liệu chuẩn về **7 tài liệu cốt lõi** tại `docs/design-system/` (`README.md`, `DESIGN_DNA.md`, `DESIGN_TOKENS.md`, `COMPONENT_GUIDELINES.md`, `LAYOUT_AND_RESPONSIVE.md`, `INTERACTION_AND_ACCESSIBILITY.md`, `DESIGN_AUDIT_REPORT.md`), lấy `DESIGN.md` làm Root Entry Point và `ARCHITECTURE.md` làm nguồn chuẩn kiến trúc kỹ thuật.
-  - Bổ sung bộ 3 token tương phản hành động chính (`--accent-action-bg`, `--accent-action-hover`, `--accent-on-action`) cho cả 7 Accent Themes trong `src/styles/tokens.css`, đảm bảo tỷ lệ tương phản **WCAG 2.2 Level AA (`>= 4.5:1`)** trên mọi chủ đề (khắc phục lỗi tương phản chữ trắng trên nền `themeYellow` từ `2.94:1` lên **`4.69:1`** và `themeGreen` từ `3.77:1` lên **`5.48:1`**).
-  - Tích hợp công cụ kiểm tra tự động `npm run check:design-system` (`scripts/check-design-system.mjs`) trực tiếp vào GitHub Actions CI (`.github/workflows/ci.yml`) và bộ kiểm thử Vitest (`src/core/themes/designSystem.test.ts`) để kiểm chứng độ tương phản WCAG 2.2 AA, tính toàn vẹn 11 sắc độ × 7 chủ đề và sự đấu nối thực tế của mọi CSS token.
+  - Bổ sung bộ 3 token tương phản hành động chính (`--accent-action-bg`, `--accent-action-hover`, `--accent-on-action`) đạt chuẩn **WCAG 2.2 Level AA (`>= 4.5:1`)** (nâng `themeYellow` từ `2.94:1` lên **`4.69:1`** và `themeGreen` từ `3.77:1` lên **`5.48:1`**) cùng bộ token vòng sáng tiêu điểm bàn phím (`--accent-focus-light`, `--accent-focus-dark`, `--accent-focus` ⟶ `ring-accent-focus`) đạt chuẩn tương phản phi văn bản **WCAG 2.2 SC 1.4.11 (`>= 3.0:1`, thực tế đạt `4.32:1–11.42:1`)** trên cả 7 chủ đề ở cả chế độ Sáng và Tối.
+  - Thiết lập `THEME_PALETTES` tại `src/core/config/constants.ts` (re-export qua `src/core/themes/theme.registry.ts`) làm nguồn dữ liệu bảng màu duy nhất (16 token RGB × 7 chủ đề) và đối chiếu tự động 1:1 với `src/styles/tokens.css`.
+  - Tích hợp công cụ kiểm tra tự động `npm run check:design-system` (`scripts/check-design-system.mjs`) vào GitHub Actions CI (`.github/workflows/ci.yml`) và Vitest (`src/core/themes/designSystem.test.ts`) với công thức độ chói chuẩn WCAG 2.2 (`0.04045`), cơ chế fail-closed RGB validation, kiểm tra chống biến CSS tự tham chiếu (`--x: var(--x)`) và kiểm chứng CSS biên dịch thực tế qua PostCSS + `@tailwindcss/postcss`.
 - **Bố cục Cài đặt Segmented Bento Hub (3 Tab phân tầng) & Nút Xóa bộ nhớ đệm (`SettingsView.tsx`, `public/sw.js`, `PWAUpdateHandler.tsx`):**
   - Sắp xếp lại trang Cài đặt thành 3 tab gọn nhẹ (`Dữ liệu & PWA`, `Môn học`, `Thông tin`) với tab **`Dữ liệu & PWA` mở mặc định** để kiểm tra cập nhật/đồng bộ nhanh ngay khi vào Cài đặt.
   - Bổ sung nút **`Xóa bộ nhớ đệm (Clear Cache)`** với cơ chế xác nhận 2 bước an toàn, gửi thông điệp `CLEAR_CACHE` tới Service Worker để dọn sạch toàn bộ Cache Storage cũ và tự tải lại trang mà **giữ nguyên 100% dữ liệu lịch giảng dạy**.
@@ -19,25 +20,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Hook Phân tích Hiệu năng & Tương tác Ngoại tuyến (`src/core/hooks/useAnalytics.ts`, `src/core/stores/analytics.store.ts`):**
   - Thu thập nhẹ chỉ số Core Web Vitals và sự kiện tương tác người dùng vào store cục bộ theo hướng Offline-First, hỗ trợ theo dõi hành vi sử dụng mà không làm nặng luồng chính.
 - **Tập trung hóa Cấu hình & Structured Scoped Logger (`src/core/config/constants.ts`, `src/core/utils/logger.ts`):**
-  - Gom toàn bộ hằng số ứng dụng & build (`API_ENDPOINTS`, `APP_LINKS`, `STORAGE_KEYS`, `PWA_CONFIG`, `PWA_BUILD_CONFIG`, `THEMES`, `PERIOD_TIMES`, `DEFAULT_THRESHOLDS`) về một nguồn sự thật duy nhất (tree-shake sạch cấu hình build khỏi bundle trình duyệt).
+  - Gom toàn bộ hằng số ứng dụng & build (`API_ENDPOINTS`, `APP_LINKS`, `STORAGE_KEYS`, `PWA_CONFIG`, `PWA_BUILD_CONFIG`, `THEMES`, `THEME_PALETTES`, `PERIOD_TIMES`, `DEFAULT_THRESHOLDS`) về một nguồn sự thật duy nhất (tree-shake sạch cấu hình build khỏi bundle trình duyệt).
   - Thay toàn bộ 15 lời gọi `console.*` bằng logger có cấu trúc `createLogger(scope)` hỗ trợ tự động ẩn khóa nhạy cảm (`[REDACTED]`), lược bỏ dữ liệu nhị phân/base64 và tắt log `debug` trên production.
 
 ### Changed
-- **Hợp nhất & Đấu nối Hệ thống Design Tokens (`src/styles/tokens.css`, `src/styles/global.css`, `Button.tsx`, `Card.tsx`, `Badge.tsx`, `ConfirmModal.tsx`):**
+- **Hợp nhất & Đấu nối Hệ thống Design Tokens qua `@theme inline` (`src/styles/tokens.css`, `src/styles/global.css`, `Button.tsx`, `Card.tsx`, `Badge.tsx`, `ConfirmModal.tsx`):**
   - Phân tách rõ 3 tầng màu sắc: **Accent Colors** (thay đổi theo 7 chủ đề), **Status Colors** (`success`, `warning`, `danger`, `info` cố định trên mọi chủ đề) và **Domain Colors** (ca học `morning`, `afternoon`, `evening` cố định trên mọi chủ đề).
-  - Chuyển hệ thống bo góc về một nguồn khai báo duy nhất theo chức năng trong `tokens.css` (`--radius-badge: 6px`, `--radius-control: 8px`, `--radius-card: 10px`, `--radius-dialog: 12px`) và ánh xạ qua `var(--radius-*)` trong `@theme` của `global.css`, xóa bỏ hoàn toàn khai báo trùng lặp.
-  - Đấu nối thực tế các biến `--font-body`, `--font-heading`, `--font-num` và `--shadow-card`, `--shadow-card-hover`, `--shadow-modal` từ `tokens.css` vào `global.css`, `Card.tsx` và `ConfirmModal.tsx` (xóa bỏ 100% token debt).
+  - Khai báo các token nguồn hình khối và bóng đổ trong `tokens.css` (`--tdy-radius-badge: 6px`, `--tdy-radius-control: 8px`, `--tdy-radius-card: 10px`, `--tdy-radius-dialog: 12px` và `--tdy-shadow-card`, `--tdy-shadow-card-hover`, `--tdy-shadow-modal`) rồi đấu nối qua `@theme inline` trong `global.css`, triệt tiêu hoàn toàn khai báo trùng lặp lẫn hiện tượng biến CSS tự tham chiếu (`--radius-badge: var(--radius-badge)`).
+  - Đấu nối thực tế các biến `--font-body`, `--font-heading`, `--font-num` và các utility `rounded-badge/control/card/dialog`, `shadow-card/card-hover/modal`, `ring-accent-focus` vào `Button.tsx` (kèm kích thước tối thiểu `min-h`/`min-w` cho từng size `sm/md/lg`), `Card.tsx` và `ConfirmModal.tsx` (xóa bỏ 100% token debt).
   - Loại bỏ toàn bộ định danh thương hiệu ngoại lai (`TdyTripZ`) khỏi quy chuẩn hiện hành, code comment và nội dung hiển thị cho người dùng.
 - **Tối ưu Mobile-First cho Tab `Môn học` (`AbbreviationsCard.tsx` & `CourseTypeCard.tsx`):**
   - Tách riêng lại 2 bảng **Viết tắt tên môn** (3 cột gọn gàng theo môn học duy nhất) và **Tùy chỉnh hình thức giảng dạy (LT/TH)** (theo từng mã nhóm lớp) giúp thao tác dễ đọc trên màn hình điện thoại.
   - Gộp thông tin `Mã nhóm`, `Lớp`, `Nhóm` thành dòng phụ ngay dưới tên môn ở viewport di động (`< 640px`), triệt tiêu tình trạng chen chúc và cuộn ngang khó nhìn.
 - **Cập nhật Thông tin Liên hệ & Tài liệu Kiến trúc (`SettingsView.tsx`, `DESIGN.md`, `ARCHITECTURE.md`):**
   - Cập nhật thông tin chính thức tại mục Thông tin (About): Email (`tdyphan@gmail.com`), GitHub (`https://github.com/rinaheart/tdytime`), và Web (`https://time.tdy.io.vn/`).
-  - Đồng bộ `DESIGN.md` và `ARCHITECTURE.md` khớp 100% với trạng thái triển khai thực tế của các component (`Button`, `Card`, `Badge`).
+  - Đồng bộ `DESIGN.md` và `ARCHITECTURE.md` khớp 100% với trạng thái triển khai thực tế của các component (`Button`, `Card`, `Badge`, `ConfirmModal`).
 
 ### Fixed
-- **Khắc phục lỗi Tương phản Màu sắc & Điều khiển Chấm tròn `Badge` (`Button.tsx`, `Badge.tsx`, `WeekTableLayout.tsx`, `WeekNavigation.tsx`, `WeekAccordion.tsx`):**
-  - Sử dụng `bg-accent-action hover:bg-accent-action-hover text-accent-on-action` cho nút chính, huy hiệu tuần hiện tại và cột ngày hôm nay trên bảng lịch tuần để đảm bảo độ tương phản WCAG 2.2 AA trên cả 7 chủ đề.
+- **Khắc phục lỗi Tương phản Hành động, Vòng Focus Bàn phím & Điều khiển Chấm tròn `Badge` (`Button.tsx`, `Badge.tsx`, `ConfirmModal.tsx`, `WeekTableLayout.tsx`, `WeekNavigation.tsx`, `WeekAccordion.tsx`):**
+  - Sử dụng `bg-accent-action hover:bg-accent-action-hover text-accent-on-action` cho nút chính, huy hiệu tuần hiện tại và cột ngày hôm nay trên bảng lịch tuần để đảm bảo độ tương phản WCAG 2.2 AA (`>= 4.5:1`) trên cả 7 chủ đề.
+  - Chuyển toàn bộ vòng sáng tiêu điểm bàn phím từ `ring-accent-500/400` sang `ring-accent-focus` (`--accent-focus-light` / `--accent-focus-dark`), khắc phục lỗi tương phản focus ring trên nền sáng ở `themeYellow` (từ `2.02:1` lên **`4.32:1–4.69:1`**) và `themeGreen` (từ `2.54:1` lên **`5.05:1–5.48:1`**).
   - Sửa lỗi logic `hasDot = showDot ?? dot ?? Boolean(dotColors)` trong `src/ui/primitives/Badge.tsx`, cho phép truyền `showDot={false}` hoặc `dot={false}` để tắt chấm tròn mặc định của các variant ngữ nghĩa.
 - **Khắc phục triệt để lỗi Màn hình trắng (White Screen) sau khi Deploy PWA (`vite.config.ts`, `public/sw.js`, `src/main.tsx`, `PWAUpdateHandler.tsx`):**
   - Đưa toàn bộ bootstrap chunks (`App`, `Monitoring`, `config`, `vi`/`en`, `useAnalytics`, `createAtomicStore`, `exam.*`, `ui`) vào danh sách precache Tier A và tự động gắn hậu tố build-hash lên `CACHE_NAME` trong `dist/sw.js` sau mỗi bản build.

@@ -27,22 +27,28 @@ Mỗi chủ đề định nghĩa đủ 11 kênh màu RGB không dấu phẩy đ�
 | **`themeYellow`** | Honey Yellow | `254 252 232` | `254 249 195` | `234 179 8` | `202 138 4` | `161 98 7` | `113 63 18` | `66 32 6` |
 | **`themeGrey`** | Slate Grey | `248 250 252` | `241 245 249` | `100 116 139` | `71 85 105` | `51 65 85` | `15 23 42` | `2 6 23` |
 
-#### 2. Token Tương phản Hành động Chính (`--accent-action-*`)
-Vì sắc độ `accent-600` của `themeGreen` (`#059669`, tỷ lệ `3.77:1`) và `themeYellow` (`#CA8A04`, tỷ lệ `2.94:1`) không đạt ngưỡng tương phản WCAG AA (`4.5:1`) khi kết hợp với chữ trắng, TdyTime thiết lập bộ 3 token hành động chuyên biệt:
+#### 2. Token Tương phản Hành động Chính (`--accent-action-*`) & Vòng Tiêu điểm (`--accent-focus-*`)
+Vì sắc độ `accent-600` của `themeGreen` (`#059669`, tỷ lệ `3.77:1`) và `themeYellow` (`#CA8A04`, tỷ lệ `2.94:1`) không đạt ngưỡng tương phản WCAG AA (`4.5:1`) với chữ trắng, đồng thời `accent-500` của `themeYellow` (`#EAB308`, tỷ lệ `2.02:1` với nền trắng / `1.86:1` với `slate-50`) không đạt ngưỡng tương phản phi văn bản WCAG 2.2 SC 1.4.11 (`3.0:1`), TdyTime thiết lập bộ token tương phản chuyên biệt đồng bộ 1:1 với `THEME_PALETTES` trong `src/core/config/constants.ts`:
 
-- `--accent-action-bg` ⟶ Utility Tailwind: `bg-accent-action`, `border-accent-action`
-- `--accent-action-hover` ⟶ Utility Tailwind: `hover:bg-accent-action-hover`
-- `--accent-on-action` ⟶ Utility Tailwind: `text-accent-on-action`
+- **Action Contrast Tokens (WCAG 2.2 AA `>= 4.5:1`)**:
+  - `--accent-action-bg` ⟶ Utility Tailwind: `bg-accent-action`, `border-accent-action`
+  - `--accent-action-hover` ⟶ Utility Tailwind: `hover:bg-accent-action-hover`
+  - `--accent-on-action` ⟶ Utility Tailwind: `text-accent-on-action`
+- **Focus Ring Contrast Tokens (WCAG 2.2 SC 1.4.11 `>= 3.0:1` ở cả Light & Dark Mode)**:
+  - `--accent-focus-light`: Sắc độ vòng focus ở Light Mode (đạt `>= 4.24:1` so với `slate-50` `#F8FAFC` và `>= 4.60:1` so với `#FFFFFF`).
+  - `--accent-focus-dark`: Sắc độ vòng focus ở Dark Mode (đạt `>= 5.98:1` so với `slate-900` `#0F172A` và `>= 6.74:1` so với `slate-950` `#020617`).
+  - `--accent-focus`: Tự động trỏ tới `var(--accent-focus-light)` ở chế độ sáng và chuyển sang `var(--accent-focus-dark)` trong `.dark, .dark [data-accent]`.
+  - Utility Tailwind: `focus-visible:ring-accent-focus`, `focus:ring-accent-focus`.
 
-| Theme ID | `--accent-action-bg` (HEX) | `--accent-action-hover` (HEX) | `--accent-on-action` | Tỷ lệ tương phản WCAG 2.2 AA |
-| :--- | :---: | :---: | :---: | :---: |
-| **`themeBlue`** | `37 99 235` (`#2563EB`) | `29 78 216` (`#1D4ED8`) | `255 255 255` (`#FFFFFF`) | **5.17 : 1** (Hover: 6.70 : 1) ✅ |
-| **`themeGreen`** | `4 120 87` (`#047857` / `700`) | `6 95 70` (`#065F46` / `800`) | `255 255 255` (`#FFFFFF`) | **5.48 : 1** (Hover: 7.59 : 1) ✅ |
-| **`themePink`** | `219 39 119` (`#DB2777`) | `190 24 93` (`#BE185D`) | `255 255 255` (`#FFFFFF`) | **4.60 : 1** (Hover: 6.34 : 1) ✅ |
-| **`themeViolet`** | `124 58 237` (`#7C3AED`) | `109 40 217` (`#6D28D9`) | `255 255 255` (`#FFFFFF`) | **5.70 : 1** (Hover: 7.18 : 1) ✅ |
-| **`themeRed`** | `220 38 38` (`#DC2626`) | `185 28 28` (`#B91C1C`) | `255 255 255` (`#FFFFFF`) | **4.83 : 1** (Hover: 6.47 : 1) ✅ |
-| **`themeYellow`** | `161 98 7` (`#A16207` / `700`) | `133 77 9` (`#854D09` / `800`) | `255 255 255` (`#FFFFFF`) | **4.69 : 1** (Hover: 6.36 : 1) ✅ |
-| **`themeGrey`** | `71 85 105` (`#475569`) | `51 65 85` (`#334155`) | `255 255 255` (`#FFFFFF`) | **7.58 : 1** (Hover: 10.37 : 1) ✅ |
+| Theme ID | `--accent-action-bg` (HEX) | `--accent-action-hover` (HEX) | Action Contrast (vs `#FFF`) | `--accent-focus-light` (vs `slate-50`) | `--accent-focus-dark` (vs `slate-900`) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **`themeBlue`** | `37 99 235` (`#2563EB`) | `29 78 216` (`#1D4ED8`) | **5.17 : 1** (Hover: 6.70 : 1) ✅ | `37 99 235` (**4.77 : 1**) ✅ | `96 165 250` (**6.78 : 1**) ✅ |
+| **`themeGreen`** | `4 120 87` (`#047857` / `700`) | `6 95 70` (`#065F46` / `800`) | **5.48 : 1** (Hover: 7.59 : 1) ✅ | `4 120 87` (**5.05 : 1**) ✅ | `52 211 153` (**8.89 : 1**) ✅ |
+| **`themePink`** | `219 39 119` (`#DB2777`) | `190 24 93` (`#BE185D`) | **4.60 : 1** (Hover: 6.34 : 1) ✅ | `219 39 119` (**4.24 : 1**) ✅ | `244 114 182` (**6.12 : 1**) ✅ |
+| **`themeViolet`** | `124 58 237` (`#7C3AED`) | `109 40 217` (`#6D28D9`) | **5.70 : 1** (Hover: 7.18 : 1) ✅ | `124 58 237` (**5.26 : 1**) ✅ | `167 139 250` (**6.18 : 1**) ✅ |
+| **`themeRed`** | `220 38 38` (`#DC2626`) | `185 28 28` (`#B91C1C`) | **4.83 : 1** (Hover: 6.47 : 1) ✅ | `220 38 38` (**4.46 : 1**) ✅ | `248 113 113` (**5.98 : 1**) ✅ |
+| **`themeYellow`** | `161 98 7` (`#A16207` / `700`) | `133 77 9` (`#854D09` / `800`) | **4.69 : 1** (Hover: 6.36 : 1) ✅ | `161 98 7` (**4.32 : 1**) ✅ | `250 204 21` (**11.42 : 1**) ✅ |
+| **`themeGrey`** | `71 85 105` (`#475569`) | `51 65 85` (`#334155`) | **7.58 : 1** (Hover: 10.37 : 1) ✅ | `71 85 105` (**6.99 : 1**) ✅ | `148 163 184` (**6.47 : 1**) ✅ |
 
 ---
 
@@ -89,27 +95,25 @@ Khai báo tại `src/styles/tokens.css` và được đấu nối trực tiếp 
 
 ---
 
-## 3. Semantic Radius Tokens (Thang Bo góc theo Chức năng)
+## 3. Semantic Radius Tokens (`--tdy-radius-*` ⟶ `@theme inline`)
 
-Để tránh việc khai báo trùng lặp giá trị pixel ở hai tệp, `src/styles/tokens.css` là nơi duy nhất định nghĩa 4 token bo góc theo chức năng, và `src/styles/global.css` ánh xạ chúng vào `@theme`:
+Để tránh cả hai lỗi: (1) khai báo trùng lặp giá trị pixel ở hai tệp và (2) biến CSS tự tham chiếu (`--radius-badge: var(--radius-badge)` gây chu trình phụ thuộc), `src/styles/tokens.css` định nghĩa nguồn token `--tdy-radius-*`, và `src/styles/global.css` đấu nối qua `@theme inline`:
 
-| Semantic Token (`tokens.css`) | Giá trị | Semantic Utility (`@theme`) | Alias tương thích Tailwind (`@theme`) | Mục đích sử dụng chuẩn |
-| :--- | :---: | :--- | :--- | :--- |
-| **`--radius-badge`** | `6px` | `rounded-badge` | `rounded-sm` | Huy hiệu (`Badge`, `TypeBadge`), tag trạng thái nhỏ. |
-| **`--radius-control`** | `8px` | `rounded-control` | `rounded-md`, `rounded-lg`, `rounded-xl` | Nút bấm (`Button`), ô nhập liệu, bộ lọc (`FilterBar`), nút chuyển tab. |
-| **`--radius-card`** | `10px` | `rounded-card` | `rounded-2xl` | Thẻ bề mặt chính (`Card`), thẻ ca học (`SessionCard`), khung bảng lịch tuần. |
-| **`--radius-dialog`** | `12px` | `rounded-dialog` | `rounded-3xl` | Hộp thoại xác nhận (`ConfirmModal`), modal cài đặt, khung dropzone lớn. |
-
-> **Lộ trình sử dụng**: Các primitive cốt lõi (`Badge`, `Button`, `Card`, `ConfirmModal`) đã sử dụng trực tiếp semantic utilities (`rounded-badge`, `rounded-control`, `rounded-card`, `rounded-dialog`). Các view hiện hữu tiếp tục được hỗ trợ tương thích qua alias `rounded-sm`..`rounded-3xl` và khuyến khích dùng semantic utilities khi viết mới.
+| Nguồn Token (`tokens.css`) | Giá trị | Đấu nối `@theme inline` (`global.css`) | Semantic Utility | Alias tương thích Tailwind | Mục đích sử dụng chuẩn |
+| :--- | :---: | :--- | :--- | :--- | :--- |
+| **`--tdy-radius-badge`** | `6px` | `--radius-badge: var(--tdy-radius-badge);` | `rounded-badge` | `rounded-sm` | Huy hiệu (`Badge`, `TypeBadge`), tag trạng thái nhỏ. |
+| **`--tdy-radius-control`** | `8px` | `--radius-control: var(--tdy-radius-control);` | `rounded-control` | `rounded-md`, `rounded-lg`, `rounded-xl` | Nút bấm (`Button`, nút trong `ConfirmModal`), ô nhập liệu, bộ lọc (`FilterBar`). |
+| **`--tdy-radius-card`** | `10px` | `--radius-card: var(--tdy-radius-card);` | `rounded-card` | `rounded-2xl` | Thẻ bề mặt chính (`Card`), thẻ ca học (`SessionCard`), khung bảng lịch tuần, hộp icon. |
+| **`--tdy-radius-dialog`** | `12px` | `--radius-dialog: var(--tdy-radius-dialog);` | `rounded-dialog` | `rounded-3xl` | Hộp thoại xác nhận (`ConfirmModal`), modal cài đặt, khung dropzone lớn. |
 
 ---
 
-## 4. Elevation & Shadow Tokens
+## 4. Elevation & Shadow Tokens (`--tdy-shadow-*` ⟶ `@theme inline`)
 
-Định nghĩa tại `src/styles/tokens.css`, đăng ký trong `@theme` tại `src/styles/global.css` và được sử dụng trực tiếp trong `Card.tsx` và `ConfirmModal.tsx`:
+Định nghĩa nguồn tại `src/styles/tokens.css` với tiền tố `--tdy-shadow-*`, ánh xạ trong `@theme inline` tại `src/styles/global.css` và được kiểm thử biên dịch thực tế qua PostCSS:
 
-| Token (`tokens.css` & `@theme`) | Utility Class | Giá trị CSS | Thành phần sử dụng |
-| :--- | :--- | :--- | :--- |
-| **`--shadow-card`** | `shadow-card` | `0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)` | `Card.tsx` (trạng thái mặc định). |
-| **`--shadow-card-hover`** | `hover:shadow-card-hover` | `0 4px 12px rgba(0, 0, 0, 0.08)` | `Card.tsx` (khi `interactive={true}`). |
-| **`--shadow-modal`** | `shadow-modal` | `0 20px 60px rgba(0, 0, 0, 0.15)` | `ConfirmModal.tsx` (hộp thoại nổi). |
+| Nguồn Token (`tokens.css`) | Đấu nối `@theme inline` (`global.css`) | Utility Class | Giá trị CSS | Thành phần sử dụng |
+| :--- | :--- | :--- | :--- | :--- |
+| **`--tdy-shadow-card`** | `--shadow-card: var(--tdy-shadow-card);` | `shadow-card` | `0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04)` | `Card.tsx` (trạng thái mặc định). |
+| **`--tdy-shadow-card-hover`** | `--shadow-card-hover: var(--tdy-shadow-card-hover);` | `hover:shadow-card-hover` | `0 4px 12px rgba(0, 0, 0, 0.08)` | `Card.tsx` (khi `interactive={true}`). |
+| **`--tdy-shadow-modal`** | `--shadow-modal: var(--tdy-shadow-modal);` | `shadow-modal` | `0 20px 60px rgba(0, 0, 0, 0.15)` | `ConfirmModal.tsx` (hộp thoại nổi). |

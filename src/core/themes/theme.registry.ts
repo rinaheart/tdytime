@@ -11,9 +11,11 @@ export {
     THEME_IDS,
     DEFAULT_THEME,
     THEMES,
+    THEME_PALETTES,
     THEME_MIGRATION,
     type AccentTheme,
     type ThemeDefinition,
+    type ThemePalette,
 } from '../config/constants';
 
 /** Returns the theme metadata definition for an AccentTheme ID (defaults to first theme). */

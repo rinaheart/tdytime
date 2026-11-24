@@ -54,7 +54,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({ isCollapsed = false, onToggle
                         onClick={onToggle}
                         aria-expanded={!isCollapsed}
                         aria-label={isCollapsed ? t('common.expandAll') : t('common.collapseAll')}
-                        className={`absolute top-3 right-3 w-11 h-11 rounded-full transition-all duration-300 flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500
+                        className={`absolute top-3 right-3 w-11 h-11 rounded-full transition-all duration-300 flex items-center justify-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus
                             ${!isCollapsed ? 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rotate-180' : 'bg-accent-50 dark:bg-accent-900/40 text-accent-600 dark:text-accent-400'}`}
                     >
                         <ChevronDown size={18} />

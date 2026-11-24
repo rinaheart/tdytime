@@ -487,7 +487,7 @@ const ExamHeader: React.FC<{
                             : t('exam.compactView', 'Chế độ gọn')
                     }
                     className={`
-                        flex items-center gap-2 px-3 min-h-[38px] py-1.5 rounded-full border transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500
+                        flex items-center gap-2 px-3 min-h-[38px] py-1.5 rounded-full border transition-all active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus
                         ${
                             viewMode === 'table-detailed'
                                 ? 'bg-accent-50 border-accent-200 text-accent-700 dark:bg-accent-950/30 dark:border-accent-800 dark:text-accent-300'

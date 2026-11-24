@@ -145,23 +145,177 @@ export type AccentTheme = (typeof THEME_IDS)[number];
 
 export const DEFAULT_THEME: AccentTheme = 'themeBlue';
 
+export interface ThemePalette {
+    readonly '50': string;
+    readonly '100': string;
+    readonly '200': string;
+    readonly '300': string;
+    readonly '400': string;
+    readonly '500': string;
+    readonly '600': string;
+    readonly '700': string;
+    readonly '800': string;
+    readonly '900': string;
+    readonly '950': string;
+    readonly actionBg: string;
+    readonly actionHover: string;
+    readonly onAction: string;
+    readonly focusLight: string;
+    readonly focusDark: string;
+}
+
+/**
+ * Single Source of Truth for all 7 Accent Theme RGB palettes & WCAG contrast tokens.
+ * Synchronized 1:1 with `src/styles/tokens.css` and verified automatically by `scripts/check-design-system.mjs`.
+ */
+export const THEME_PALETTES: Record<AccentTheme, ThemePalette> = {
+    themeBlue: {
+        '50': '239 246 255',
+        '100': '219 234 254',
+        '200': '191 219 254',
+        '300': '147 197 253',
+        '400': '96 165 250',
+        '500': '59 130 246',
+        '600': '37 99 235',
+        '700': '29 78 216',
+        '800': '30 64 175',
+        '900': '30 58 138',
+        '950': '23 37 84',
+        actionBg: '37 99 235',
+        actionHover: '29 78 216',
+        onAction: '255 255 255',
+        focusLight: '37 99 235',
+        focusDark: '96 165 250',
+    },
+    themeGreen: {
+        '50': '236 253 245',
+        '100': '209 250 229',
+        '200': '167 243 208',
+        '300': '110 231 183',
+        '400': '52 211 153',
+        '500': '16 185 129',
+        '600': '5 150 105',
+        '700': '4 120 87',
+        '800': '6 95 70',
+        '900': '6 78 59',
+        '950': '2 44 34',
+        actionBg: '4 120 87',
+        actionHover: '6 95 70',
+        onAction: '255 255 255',
+        focusLight: '4 120 87',
+        focusDark: '52 211 153',
+    },
+    themePink: {
+        '50': '253 242 248',
+        '100': '252 231 243',
+        '200': '251 207 232',
+        '300': '249 168 212',
+        '400': '244 114 182',
+        '500': '236 72 153',
+        '600': '219 39 119',
+        '700': '190 24 93',
+        '800': '157 23 77',
+        '900': '131 24 67',
+        '950': '80 7 36',
+        actionBg: '219 39 119',
+        actionHover: '190 24 93',
+        onAction: '255 255 255',
+        focusLight: '219 39 119',
+        focusDark: '244 114 182',
+    },
+    themeViolet: {
+        '50': '245 243 255',
+        '100': '237 233 254',
+        '200': '221 214 254',
+        '300': '196 181 253',
+        '400': '167 139 250',
+        '500': '139 92 246',
+        '600': '124 58 237',
+        '700': '109 40 217',
+        '800': '91 33 182',
+        '900': '76 29 149',
+        '950': '46 16 101',
+        actionBg: '124 58 237',
+        actionHover: '109 40 217',
+        onAction: '255 255 255',
+        focusLight: '124 58 237',
+        focusDark: '167 139 250',
+    },
+    themeRed: {
+        '50': '254 242 242',
+        '100': '254 226 226',
+        '200': '254 202 202',
+        '300': '252 165 165',
+        '400': '248 113 113',
+        '500': '239 68 68',
+        '600': '220 38 38',
+        '700': '185 28 28',
+        '800': '153 27 27',
+        '900': '127 29 29',
+        '950': '69 10 10',
+        actionBg: '220 38 38',
+        actionHover: '185 28 28',
+        onAction: '255 255 255',
+        focusLight: '220 38 38',
+        focusDark: '248 113 113',
+    },
+    themeYellow: {
+        '50': '254 252 232',
+        '100': '254 249 195',
+        '200': '254 240 138',
+        '300': '253 224 71',
+        '400': '250 204 21',
+        '500': '234 179 8',
+        '600': '202 138 4',
+        '700': '161 98 7',
+        '800': '133 77 9',
+        '900': '113 63 18',
+        '950': '66 32 6',
+        actionBg: '161 98 7',
+        actionHover: '133 77 9',
+        onAction: '255 255 255',
+        focusLight: '161 98 7',
+        focusDark: '250 204 21',
+    },
+    themeGrey: {
+        '50': '248 250 252',
+        '100': '241 245 249',
+        '200': '226 232 240',
+        '300': '203 213 225',
+        '400': '148 163 184',
+        '500': '100 116 139',
+        '600': '71 85 105',
+        '700': '51 65 85',
+        '800': '30 41 59',
+        '900': '15 23 42',
+        '950': '2 6 23',
+        actionBg: '71 85 105',
+        actionHover: '51 65 85',
+        onAction: '255 255 255',
+        focusLight: '71 85 105',
+        focusDark: '148 163 184',
+    },
+};
+
 export interface ThemeDefinition {
     id: AccentTheme;
     /** i18n key for display name: settings.themes.{id} */
     nameKey: string;
     /** Tailwind classes for preview swatches in ThemePicker (light shades → dark) */
     preview: [string, string, string, string];
+    /** Canonical 11-shade RGB & WCAG action/focus token palette */
+    palette: ThemePalette;
 }
 
 /** All registered themes — order here determines display order in ThemePicker */
 export const THEMES: ThemeDefinition[] = [
-    { id: 'themeBlue', nameKey: 'settings.themes.themeBlue', preview: ['bg-blue-100', 'bg-blue-300', 'bg-blue-500', 'bg-blue-700'] },
-    { id: 'themeGreen', nameKey: 'settings.themes.themeGreen', preview: ['bg-emerald-100', 'bg-emerald-300', 'bg-emerald-500', 'bg-emerald-700'] },
-    { id: 'themePink', nameKey: 'settings.themes.themePink', preview: ['bg-pink-100', 'bg-pink-300', 'bg-pink-500', 'bg-pink-700'] },
-    { id: 'themeViolet', nameKey: 'settings.themes.themeViolet', preview: ['bg-violet-100', 'bg-violet-300', 'bg-violet-500', 'bg-violet-700'] },
-    { id: 'themeRed', nameKey: 'settings.themes.themeRed', preview: ['bg-red-100', 'bg-red-300', 'bg-red-500', 'bg-red-700'] },
-    { id: 'themeYellow', nameKey: 'settings.themes.themeYellow', preview: ['bg-yellow-100', 'bg-yellow-300', 'bg-yellow-500', 'bg-yellow-700'] },
-    { id: 'themeGrey', nameKey: 'settings.themes.themeGrey', preview: ['bg-slate-200', 'bg-slate-400', 'bg-slate-600', 'bg-slate-800'] },
+    { id: 'themeBlue', nameKey: 'settings.themes.themeBlue', preview: ['bg-blue-100', 'bg-blue-300', 'bg-blue-500', 'bg-blue-700'], palette: THEME_PALETTES.themeBlue },
+    { id: 'themeGreen', nameKey: 'settings.themes.themeGreen', preview: ['bg-emerald-100', 'bg-emerald-300', 'bg-emerald-500', 'bg-emerald-700'], palette: THEME_PALETTES.themeGreen },
+    { id: 'themePink', nameKey: 'settings.themes.themePink', preview: ['bg-pink-100', 'bg-pink-300', 'bg-pink-500', 'bg-pink-700'], palette: THEME_PALETTES.themePink },
+    { id: 'themeViolet', nameKey: 'settings.themes.themeViolet', preview: ['bg-violet-100', 'bg-violet-300', 'bg-violet-500', 'bg-violet-700'], palette: THEME_PALETTES.themeViolet },
+    { id: 'themeRed', nameKey: 'settings.themes.themeRed', preview: ['bg-red-100', 'bg-red-300', 'bg-red-500', 'bg-red-700'], palette: THEME_PALETTES.themeRed },
+    { id: 'themeYellow', nameKey: 'settings.themes.themeYellow', preview: ['bg-yellow-100', 'bg-yellow-300', 'bg-yellow-500', 'bg-yellow-700'], palette: THEME_PALETTES.themeYellow },
+    { id: 'themeGrey', nameKey: 'settings.themes.themeGrey', preview: ['bg-slate-200', 'bg-slate-400', 'bg-slate-600', 'bg-slate-800'], palette: THEME_PALETTES.themeGrey },
 ];
 
 /** Migration map from legacy theme identifiers to current AccentTheme IDs */

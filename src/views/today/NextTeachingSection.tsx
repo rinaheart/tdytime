@@ -71,7 +71,7 @@ const NextTeachingSection: React.FC<NextTeachingSectionProps> = ({ nextTeaching,
             <button
                 type="button"
                 onClick={handleClick}
-                className={`w-full text-left rounded-2xl p-5 border-2 transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${showHighlight
+                className={`w-full text-left rounded-2xl p-5 border-2 transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus ${showHighlight
                     ? 'bg-white dark:bg-slate-900 border-accent-600 dark:border-accent-500 shadow-sm ring-1 ring-accent-500/10'
                     : 'bg-white/50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800'
                     } hover:border-accent-400 dark:hover:border-accent-600 shadow-sm`}

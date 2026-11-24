@@ -36,7 +36,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({ data }) => {
             tabIndex={0}
             role="region"
             aria-label={t('stats.heatmapTitle', { defaultValue: 'Biểu đồ phân bố giờ giảng' })}
-            className="w-full overflow-x-auto pb-3 custom-scrollbar scrollbar-mobile-visible touch-pan-x focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 rounded-lg flex justify-start sm:justify-center"
+            className="w-full overflow-x-auto pb-3 custom-scrollbar scrollbar-mobile-visible touch-pan-x focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus rounded-lg flex justify-start sm:justify-center"
         >
             <div className="min-w-max px-2 py-1 flex flex-col items-center">
                 <div className="flex">

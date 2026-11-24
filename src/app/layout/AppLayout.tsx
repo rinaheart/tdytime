@@ -90,7 +90,7 @@ const AppLayout: React.FC = () => {
                         <button
                             type="button"
                             onClick={toggleSidebar}
-                            className="hidden lg:flex w-11 h-11 md:w-9 md:h-9 items-center justify-center rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            className="hidden lg:flex w-11 h-11 md:w-9 md:h-9 items-center justify-center rounded-xl cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                             aria-label={sidebarCollapsed ? t('nav.expandSidebar', { defaultValue: 'Mở rộng thanh bên' }) : t('nav.collapseSidebar', { defaultValue: 'Thu gọn thanh bên' })}
                             aria-expanded={!sidebarCollapsed}
                             title={sidebarCollapsed ? t('nav.expandSidebar', { defaultValue: 'Mở rộng' }) : t('nav.collapseSidebar', { defaultValue: 'Thu gọn' })}
@@ -113,7 +113,7 @@ const AppLayout: React.FC = () => {
                         <button
                             type="button"
                             onClick={toggleLanguage}
-                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-600 dark:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-600 dark:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                             aria-label={t('common.switchLanguage')}
                             title={i18n.language === 'vi' ? 'English' : 'Tiếng Việt'}
                         >
@@ -123,7 +123,7 @@ const AppLayout: React.FC = () => {
                         <button
                             type="button"
                             onClick={toggleDarkMode}
-                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-600 dark:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-600 dark:text-slate-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                             aria-label={darkMode ? t('common.lightMode', 'Sáng') : t('common.darkMode', 'Tối')}
                             title={darkMode ? t('common.lightMode', 'Chế độ sáng') : t('common.darkMode', 'Chế độ tối')}
                         >
@@ -132,7 +132,7 @@ const AppLayout: React.FC = () => {
                         <button
                             type="button"
                             onClick={handleReset}
-                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-600 dark:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            className="w-11 h-11 md:w-9 md:h-9 flex items-center justify-center rounded-xl cursor-pointer hover:bg-accent-50 dark:hover:bg-accent-950/40 text-slate-600 dark:text-slate-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                             aria-label={t('nav.loadData')}
                             title={t('nav.loadData')}
                         >
@@ -161,7 +161,7 @@ const AppLayout: React.FC = () => {
                                     aria-label={t(labelKey)}
                                     aria-current={isActive ? 'page' : undefined}
                                     title={sidebarCollapsed ? t(labelKey) : undefined}
-                                    className={`w-full flex items-center gap-0 px-2 py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${isActive
+                                    className={`w-full flex items-center gap-0 px-2 py-2.5 rounded-xl text-sm font-medium cursor-pointer transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus ${isActive
                                         ? 'bg-accent-50 dark:bg-accent-900/30 text-accent-700 dark:text-accent-400 font-bold'
                                         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
                                         }`}
@@ -210,7 +210,7 @@ const AppLayout: React.FC = () => {
                                 onClick={() => navigate(path)}
                                 aria-label={t(labelKey)}
                                 aria-current={isActive ? 'page' : undefined}
-                                className={`flex-1 flex flex-col items-center justify-center h-full pb-1 cursor-pointer transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500 ${isActive ? 'text-accent-600 dark:text-accent-400' : 'text-slate-600 dark:text-slate-400'}`}
+                                className={`flex-1 flex flex-col items-center justify-center h-full pb-1 cursor-pointer transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-focus ${isActive ? 'text-accent-600 dark:text-accent-400' : 'text-slate-600 dark:text-slate-400'}`}
                             >
                                 <div>
                                     <Icon size={22} className={isActive ? 'opacity-100' : 'opacity-75'} strokeWidth={isActive ? 2.5 : 2} />

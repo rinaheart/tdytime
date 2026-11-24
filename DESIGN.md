@@ -14,11 +14,11 @@ Tài liệu này là **cổng điều hướng gốc (Root Entry Point)** cho nh
 TdyTime mang bản sắc **Compact Academic Utility** — giao diện công cụ lịch giảng dạy và coi thi học thuật mật độ cao, tối ưu tốc độ quét thông tin:
 
 - **Information-first**: Ưu tiên hiển thị tức thì *Tiết học → Thời gian → Phòng học → Môn học → Giảng viên*.
-- **Compact but readable**: Bán kính bo góc theo chức năng (`--radius-badge: 6px`, `--radius-control: 8px`, `--radius-card: 10px`, `--radius-dialog: 12px`). Nội dung đọc thường xuyên `>= 12px`; micro-badges ngắn (`LT`, `TH`, `LIVE`) dùng `9px–10px` in hoa.
-- **Flat and structured surfaces**: Bề mặt phẳng một lớp (`Card`), phân tách bằng viền mảnh `1px` và bóng đổ tinh tế (`--shadow-card`).
+- **Compact but readable**: Bán kính bo góc theo chức năng (`--tdy-radius-badge: 6px`, `--tdy-radius-control: 8px`, `--tdy-radius-card: 10px`, `--tdy-radius-dialog: 12px` đấu nối qua `@theme inline` thành `rounded-badge/control/card/dialog`). Nội dung đọc thường xuyên `>= 12px`; micro-badges ngắn (`LT`, `TH`, `LIVE`) dùng `9px–10px` in hoa.
+- **Flat and structured surfaces**: Bề mặt phẳng một lớp (`Card`), phân tách bằng viền mảnh `1px` và bóng đổ tinh tế (`--tdy-shadow-card` ⟶ `shadow-card`).
 - **Clear typographic hierarchy**: `Be Vietnam Pro` (`--font-body`) cho văn bản tiếng Việt + `Montserrat` (`--font-heading`, `--font-num` kèm `tabular-nums`) cho tiêu đề và toàn bộ con số thời gian/thống kê.
 - **Three-Tier Color Architecture**:
-  - **A. Accent Colors (7 Themes)**: Cá nhân hóa giao diện kèm bộ token tương phản hành động chính (`--accent-action-bg`, `--accent-action-hover`, `--accent-on-action`) đạt chuẩn **WCAG 2.2 AA (`>= 4.5:1`)** trên cả 7 chủ đề.
+  - **A. Accent Colors (7 Themes — `THEME_PALETTES` SSOT)**: Cá nhân hóa giao diện kèm bộ token tương phản hành động chính (`--accent-action-bg`, `--accent-action-hover`, `--accent-on-action` đạt chuẩn **WCAG 2.2 AA `>= 4.5:1`**) và token vòng tiêu điểm (`--accent-focus-light`, `--accent-focus-dark` ⟶ `ring-accent-focus` đạt chuẩn **WCAG 2.2 SC 1.4.11 `>= 3.0:1`** ở cả Light & Dark Mode) trên cả 7 chủ đề.
   - **B. Status Colors (Fixed)**: `Success`, `Warning`, `Danger`, `Info` giữ nguyên sắc độ ngữ nghĩa trên mọi theme.
   - **C. Domain Colors (Fixed)**: Ca học `Morning` (Cyan), `Afternoon` (Orange), `Evening` (Indigo) và loại học phần `LT`/`TH` giữ nguyên ngôn ngữ nghiệp vụ trên mọi theme.
 

@@ -92,7 +92,7 @@ const WeekAccordion: React.FC<WeekAccordionProps> = ({
                 onClick={onToggle}
                 aria-expanded={isExpanded}
                 aria-controls={isExpanded ? panelId : undefined}
-                className={`w-full flex items-center text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-500 ${
+                className={`w-full flex items-center text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-focus ${
                     isExpanded
                         ? 'bg-slate-50/50 dark:bg-slate-800/20'
                         : 'hover:bg-slate-50 dark:hover:bg-slate-800/20'
