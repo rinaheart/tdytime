@@ -344,8 +344,8 @@ export const SESSION_COLORS = {
 
 /** Accent badges (S/C/T legend) */
 export const SESSION_ACCENT_COLORS = {
-    morning: { bg: 'bg-blue-500', text: 'text-white', label: 'Sáng', translationKey: 'shifts.morning', short: 'S' },
-    afternoon: { bg: 'bg-orange-500', text: 'text-white', label: 'Chiều', translationKey: 'shifts.afternoon', short: 'C' },
+    morning: { bg: 'bg-blue-600', text: 'text-white', label: 'Sáng', translationKey: 'shifts.morning', short: 'S' },
+    afternoon: { bg: 'bg-orange-700', text: 'text-white', label: 'Chiều', translationKey: 'shifts.afternoon', short: 'C' },
     evening: { bg: 'bg-purple-600', text: 'text-white', label: 'Tối', translationKey: 'shifts.evening', short: 'T' },
 };
 

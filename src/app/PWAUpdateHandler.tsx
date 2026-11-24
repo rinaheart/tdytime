@@ -536,10 +536,10 @@ export const PWAUpdateHandler: React.FC = () => {
                             checkStatus === 'checking'
                                 ? 'animate-spin'
                                 : checkStatus === 'offline'
-                                ? 'bg-amber-500 rounded-full p-1 text-white'
+                                ? 'bg-amber-700 rounded-full p-1 text-white'
                                 : checkStatus === 'error'
-                                ? 'bg-red-500 rounded-full p-0.5 text-white'
-                                : 'bg-green-500 rounded-full p-0.5 text-white'
+                                ? 'bg-red-600 rounded-full p-0.5 text-white'
+                                : 'bg-green-700 rounded-full p-0.5 text-white'
                         }`}>
                             {checkStatus === 'checking' ? (
                                 <RefreshCw size={14} />

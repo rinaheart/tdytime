@@ -22,6 +22,7 @@ import {
 import {
     PERIOD_TIMES,
     PERIOD_TIMES_TH,
+    SESSION_ACCENT_COLORS,
     getPeriodTimes,
 } from '../config/constants';
 import Badge from '../../ui/primitives/Badge';
@@ -76,7 +77,7 @@ describe('Design System Theme Registry, WCAG 2.2 Contrast & Compiled CSS Runtime
         expect(THEME_MIGRATION.themeAmber).toBe('themeYellow');
     });
 
-    it('enforces 1:1 palette parity between THEME_PALETTES and tokens.css, WCAG 2.2 AA (>= 4.5:1) action contrast, and SC 1.4.11 (>= 3.0:1) focus contrast in Light & Dark modes', () => {
+    it('enforces 1:1 palette parity between THEME_PALETTES and tokens.css (:root fallback + all 7 themes), WCAG 2.2 AA (>= 4.5:1) action contrast, and SC 1.4.11 (>= 3.0:1) focus contrast in Light & Dark modes', () => {
         const tokensPath = path.resolve(process.cwd(), 'src/styles/tokens.css');
         const tokensCss = fs.readFileSync(tokensPath, 'utf8');
 
@@ -85,6 +86,23 @@ describe('Design System Theme Registry, WCAG 2.2 Contrast & Compiled CSS Runtime
         const darkSlate900: [number, number, number] = [15, 23, 42];
         const darkSlate950: [number, number, number] = [2, 6, 23];
 
+        // 1. Verify :root fallback block matches THEME_PALETTES.themeBlue 1:1 across all 16 tokens
+        const rootMatch = tokensCss.match(/:root\s*\{([^}]*)\}/m);
+        expect(rootMatch).not.toBeNull();
+        const rootBlock = rootMatch![1];
+        const bluePalette = THEME_PALETTES.themeBlue;
+        for (const shade of ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'] as const) {
+            const match = rootBlock.match(new RegExp(`--accent-${shade}:\\s*([0-9\\s]+);`));
+            expect(match, `:root missing --accent-${shade}`).not.toBeNull();
+            expect(match![1].trim()).toBe(bluePalette[shade]);
+        }
+        expect(rootBlock.match(/--accent-action-bg:\s*([0-9\s]+);/)?.[1].trim()).toBe(bluePalette.actionBg);
+        expect(rootBlock.match(/--accent-action-hover:\s*([0-9\s]+);/)?.[1].trim()).toBe(bluePalette.actionHover);
+        expect(rootBlock.match(/--accent-on-action:\s*([0-9\s]+);/)?.[1].trim()).toBe(bluePalette.onAction);
+        expect(rootBlock.match(/--accent-focus-light:\s*([0-9\s]+);/)?.[1].trim()).toBe(bluePalette.focusLight);
+        expect(rootBlock.match(/--accent-focus-dark:\s*([0-9\s]+);/)?.[1].trim()).toBe(bluePalette.focusDark);
+
+        // 2. Verify all 7 theme blocks
         for (const themeId of THEME_IDS) {
             const escaped = `[data-accent="${themeId}"]`.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             const blockMatch = tokensCss.match(new RegExp(`${escaped}\\s*\\{([^}]*)\\}`, 'm'));
@@ -93,7 +111,6 @@ describe('Design System Theme Registry, WCAG 2.2 Contrast & Compiled CSS Runtime
             const block = blockMatch![1];
             const palette = THEME_PALETTES[themeId];
 
-            // Verify all 11 shades match THEME_PALETTES
             for (const shade of ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'] as const) {
                 const match = block.match(new RegExp(`--accent-${shade}:\\s*([0-9\\s]+);`));
                 expect(match, `${themeId} missing --accent-${shade}`).not.toBeNull();
@@ -135,7 +152,36 @@ describe('Design System Theme Registry, WCAG 2.2 Contrast & Compiled CSS Runtime
         }
     });
 
-    it('compiles global.css via PostCSS + @tailwindcss/postcss with zero self-referencing variables and valid radius/shadow/action/focus utility rules', async () => {
+    it('verifies fixed semantic color exceptions (BackupRestoreCard amber-700, destructive red-600/ring-red-500, SESSION_ACCENT_COLORS) meet WCAG 2.2 text (>= 4.5:1) and non-text focus (>= 3.0:1) contrast', () => {
+        const white: [number, number, number] = [255, 255, 255];
+        const slate50: [number, number, number] = [248, 250, 252];
+        const slate900: [number, number, number] = [15, 23, 42];
+        const slate950: [number, number, number] = [2, 6, 23];
+
+        // Amber 700 (#B45309) used in BackupRestoreCard confirm button & focus ring
+        const amber700: [number, number, number] = [180, 83, 9];
+        expect(getContrastRatio(amber700, white)).toBeGreaterThanOrEqual(4.5); // 5.02:1
+        expect(getContrastRatio(amber700, slate50)).toBeGreaterThanOrEqual(3.0); // 4.80:1
+        expect(getContrastRatio(amber700, slate900)).toBeGreaterThanOrEqual(3.0); // 3.56:1
+        expect(getContrastRatio(amber700, slate950)).toBeGreaterThanOrEqual(3.0); // 4.02:1
+
+        // Verify BackupRestoreCard.tsx uses bg-amber-700 and focus-visible:ring-amber-700 (not amber-600/500)
+        const backupCardSource = fs.readFileSync(
+            path.resolve(process.cwd(), 'src/views/settings/BackupRestoreCard.tsx'),
+            'utf8'
+        );
+        expect(backupCardSource).toContain('bg-amber-700 hover:bg-amber-800 text-white');
+        expect(backupCardSource).toContain('focus-visible:ring-amber-700');
+        expect(backupCardSource).not.toContain('bg-amber-600');
+        expect(backupCardSource).not.toContain('focus-visible:ring-amber-500');
+
+        // Verify SESSION_ACCENT_COLORS use WCAG AA compliant shades with text-white
+        expect(SESSION_ACCENT_COLORS.morning.bg).toBe('bg-blue-600');
+        expect(SESSION_ACCENT_COLORS.afternoon.bg).toBe('bg-orange-700');
+        expect(SESSION_ACCENT_COLORS.evening.bg).toBe('bg-purple-600');
+    });
+
+    it('compiles global.css via PostCSS + @tailwindcss/postcss with zero self-referencing variables and exact radius/shadow/action/focus selector rules', async () => {
         const globalCssPath = path.resolve(process.cwd(), 'src/styles/global.css');
         const rawCss = fs.readFileSync(globalCssPath, 'utf8');
         const result = await postcss([tailwindcssPostcss()]).process(rawCss, {
@@ -153,14 +199,17 @@ describe('Design System Theme Registry, WCAG 2.2 Contrast & Compiled CSS Runtime
         expect(compiled).toMatch(/\.rounded-card\s*\{[^}]*border-radius:\s*var\(--tdy-radius-card\)/);
         expect(compiled).toMatch(/\.rounded-dialog\s*\{[^}]*border-radius:\s*var\(--tdy-radius-dialog\)/);
 
-        // 3. Shadow utilities must resolve to --tdy-shadow-* source tokens
+        // 3. Shadow utilities (including hover:shadow-card-hover) must resolve to --tdy-shadow-* source tokens
         expect(compiled).toMatch(/\.shadow-card\s*\{[^}]*--tw-shadow:\s*var\(--tdy-shadow-card\)/);
+        expect(compiled).toMatch(/\.hover\\:shadow-card-hover:hover\s*\{[^}]*--tw-shadow:\s*var\(--tdy-shadow-card-hover\)/);
         expect(compiled).toMatch(/\.shadow-modal\s*\{[^}]*--tw-shadow:\s*var\(--tdy-shadow-modal\)/);
 
-        // 4. Action and Focus color utilities must resolve to --accent-action-* and --accent-focus
+        // 4. Action and Focus color utilities must resolve to exact selectors and --accent-action-* / --accent-focus
         expect(compiled).toMatch(/\.bg-accent-action\s*\{[^}]*background-color:\s*rgb\(var\(--accent-action-bg\)\)/);
+        expect(compiled).toMatch(/\.hover\\:bg-accent-action-hover:hover\s*\{[^}]*background-color:\s*rgb\(var\(--accent-action-hover\)\)/);
         expect(compiled).toMatch(/\.text-accent-on-action\s*\{[^}]*color:\s*rgb\(var\(--accent-on-action\)\)/);
-        expect(compiled).toMatch(/--tw-ring-color:\s*rgb\(var\(--accent-focus\)\)/);
+        expect(compiled).toMatch(/\.focus-visible\\:ring-accent-focus:focus-visible\s*\{[^}]*--tw-ring-color:\s*rgb\(var\(--accent-focus\)\)/);
+        expect(compiled).toMatch(/\.focus\\:ring-accent-focus:focus\s*\{[^}]*--tw-ring-color:\s*rgb\(var\(--accent-focus\)\)/);
     });
 
     it('supports explicit showDot={false} and dot={false} on Badge to suppress automatic semantic dots', () => {

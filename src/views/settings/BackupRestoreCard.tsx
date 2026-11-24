@@ -206,7 +206,7 @@ const BackupRestoreCard: React.FC<BackupRestoreCardProps> = ({ onSuccess, onErro
                             <button
                                 type="button"
                                 onClick={() => setIsConfirmModalOpen(false)}
-                                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"
+                                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                                 aria-label={t('common.close', 'Đóng')}
                             >
                                 <X size={18} />
@@ -262,7 +262,7 @@ const BackupRestoreCard: React.FC<BackupRestoreCardProps> = ({ onSuccess, onErro
                                 type="button"
                                 onClick={() => setIsConfirmModalOpen(false)}
                                 disabled={isRestoring}
-                                className="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                                className="px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-control transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-focus"
                             >
                                 {t('settings.backup.cancelBtn')}
                             </button>
@@ -271,7 +271,7 @@ const BackupRestoreCard: React.FC<BackupRestoreCardProps> = ({ onSuccess, onErro
                                 type="button"
                                 onClick={handleConfirmRestore}
                                 disabled={isRestoring}
-                                className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50"
+                                className="px-5 py-2.5 bg-amber-700 hover:bg-amber-800 text-white rounded-control text-xs font-bold transition-all shadow-sm flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700 disabled:opacity-50"
                             >
                                 {isRestoring ? (
                                     <>

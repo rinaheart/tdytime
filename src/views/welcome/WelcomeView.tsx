@@ -100,7 +100,7 @@ const HistoryCard = React.memo(({ item, isActive, onLoad, onDelete }: {
                         </button>
                         <button
                             onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
-                            className="p-1.5 text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-lg shadow-red-500/20 transition-all active:scale-90"
+                            className="p-1.5 text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg shadow-red-600/20 transition-all active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
                             aria-label={t('settings.dangerZone.confirmButton')}
                         >
                             <Check size={14} strokeWidth={3} />

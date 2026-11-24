@@ -53,9 +53,13 @@ Chuyển động trong TdyTime tuân thủ nguyên tắc **nhanh, có mục đí
   - Đã được chuẩn hóa riêng cho từng theme trong `src/styles/tokens.css` (sử dụng sắc độ `700` cho `themeGreen` `#047857` đạt **5.48:1** và `themeYellow` `#A16207` đạt **4.69:1**, sắc độ `600` cho 5 theme còn lại đạt từ **4.60:1 đến 7.58:1**).
 - **Vòng sáng tiêu điểm bàn phím (`--accent-focus-light` / `--accent-focus-dark` — WCAG 2.2 SC 1.4.11 `>= 3.0:1`)**:
   - Tuyệt đối không dùng cứng `focus-visible:ring-accent-500` (vốn chỉ đạt `2.02:1` ở `themeYellow` và `2.54:1` ở `themeGreen` trên nền trắng).
-  - Toàn bộ phần tử tương tác sử dụng `focus-visible:ring-accent-focus` (tự động lấy `--accent-focus-light` đạt **4.32:1–6.99:1** trên nền sáng `#FFFFFF`/`#F8FAFC` và `--accent-focus-dark` đạt **5.98:1–11.42:1** trên nền tối `#0F172A`/`#020617`).
-- **Công thức Độ chói Tương đối Chuẩn WCAG 2.2 (`s <= 0.04045`)**:
-  - Được kiểm tra tự động với cơ chế fail-closed (báo lỗi ngay nếu thiếu token hoặc giá trị RGB nằm ngoài `0..255`) trong `scripts/check-design-system.mjs` và `src/core/themes/designSystem.test.ts`.
+  - Toàn bộ phần tử tương tác theo màu chủ đề sử dụng `focus-visible:ring-accent-focus` (tự động lấy `--accent-focus-light` đạt **4.32:1–6.99:1** trên nền sáng `#FFFFFF`/`#F8FAFC` và `--accent-focus-dark` đạt **5.98:1–11.42:1** trên nền tối `#0F172A`/`#020617`).
+- **Ngoại lệ Màu Ngữ nghĩa Cố định (Semantic Fixed-Color Exceptions)**:
+  - Khi sử dụng màu cố định cho hành động cảnh báo hoặc xóa dữ liệu (ví dụ nút Xác nhận khôi phục trong `BackupRestoreCard.tsx` hoặc nút Xóa trong `ConfirmModal.tsx`), sắc độ nền và focus ring bắt buộc phải tự đạt chuẩn tương phản trên cả nền Sáng và Tối:
+    - **Cảnh báo / Khôi phục (Amber)**: Sử dụng `bg-amber-700 hover:bg-amber-800 text-white` (**5.02:1** vs `#FFFFFF`) và `focus-visible:ring-amber-700` (**4.80:1** vs `slate-50`, **3.56:1** vs `slate-900`) — không dùng `bg-amber-600 text-white` (`3.19:1`) hay `ring-amber-500` (`2.15:1`).
+    - **Phá hủy / Xóa (Red)**: Sử dụng `bg-red-600 hover:bg-red-700 text-white` (**4.83:1** vs `#FFFFFF`) và `focus-visible:ring-red-500` (**3.60:1** vs `slate-50`, **4.74:1** vs `slate-900`).
+- **Công thức Độ chói Tương đối Chuẩn WCAG 2.2 (`s <= 0.04045`) & Bộ Quét 3 Tầng**:
+  - Được kiểm tra tự động với cơ chế fail-closed (quét cả Accent tokens lẫn mọi cặp màu cố định `bg-<color>-<shade> + text-white` và `ring-<color>-<shade>`) trong `scripts/check-design-system.mjs` và `src/core/themes/designSystem.test.ts`.
 
 ### 4.2. Mẫu Điều hướng Bàn phím WAI-ARIA
 1. **Segmented Tabs (`StatisticsView.tsx` & `SettingsView.tsx`)**:

@@ -46,31 +46,35 @@ Tài liệu này ghi nhận kết quả đối chiếu trực tiếp giữa mã 
    - Tích hợp bước `Check Design System integrity` vào `.github/workflows/ci.yml`.
    - Mở rộng bộ kiểm thử Vitest tại `src/core/themes/designSystem.test.ts`.
 
-### Đợt 4 — Design System Runtime Integrity Check (Refinement Patch)
+### Đợt 4 — Design System Runtime Integrity Check & Semantic Contrast Hardening
 1. **Khắc phục Cầu nối `@theme inline` cho Radius & Shadow (Triệt tiêu Self-Referencing CSS Variables)**:
    - Đổi tên biến nguồn trong `:root` của `src/styles/tokens.css` thành `--tdy-radius-badge` (`6px`), `--tdy-radius-control` (`8px`), `--tdy-radius-card` (`10px`), `--tdy-radius-dialog` (`12px`), `--tdy-shadow-card`, `--tdy-shadow-card-hover`, `--tdy-shadow-modal`.
    - Sử dụng `@theme inline` trong `src/styles/global.css` để ánh xạ `--radius-badge: var(--tdy-radius-badge)` và `--shadow-card: var(--tdy-shadow-card)`, đảm bảo Tailwind v4 sinh ra các utility `.rounded-badge/control/card/dialog` và `.shadow-card/card-hover/modal` sạch, không có bất kỳ biến tự tham chiếu `--x: var(--x)` nào.
-2. **Chuẩn hóa Tương phản Vòng Tiêu điểm (`--accent-focus-light/dark` — WCAG 2.2 SC 1.4.11 >= 3.0:1)**:
+2. **Chuẩn hóa Tương phản Vòng Tiêu điểm (`--accent-focus-light/dark` — WCAG 2.2 SC 1.4.11 >= 3.0:1) & Tương phản Màu Ngữ nghĩa Cố định (`BackupRestoreCard.tsx`)**:
    - Định nghĩa `--accent-focus-light`, `--accent-focus-dark` và `--accent-focus` trên cả 7 chủ đề trong `src/styles/tokens.css` cùng quy tắc `.dark, .dark [data-accent] { --accent-focus: var(--accent-focus-dark); }`.
-   - Đăng ký `--color-accent-focus: rgb(var(--accent-focus));` trong `src/styles/global.css` và chuyển toàn bộ 18 component tương tác sang `focus-visible:ring-accent-focus` / `focus:ring-accent-focus`.
-3. **Hợp nhất Nguồn Dữ liệu Bảng màu (`THEME_PALETTES` trong `src/core/config/constants.ts`)**:
+   - Đăng ký `--color-accent-focus: rgb(var(--accent-focus));` trong `src/styles/global.css` và chuyển các phần tử theo màu chủ đề sang `focus-visible:ring-accent-focus` / `focus:ring-accent-focus`.
+   - Khắc phục lỗi tương phản màu cảnh báo cố định trên nút xác nhận khôi phục trong `BackupRestoreCard.tsx` (chuyển từ `bg-amber-600 text-white` `3.19:1` và `focus-visible:ring-amber-500` `2.15:1` sang **`bg-amber-700 hover:bg-amber-800 text-white rounded-control`** đạt **`5.02:1`** với chữ trắng và **`focus-visible:ring-amber-700`** đạt **`4.80:1`** trên `slate-50`, **`3.56:1`** trên `slate-900`, **`4.02:1`** trên `slate-950`), đồng thời nâng cấp các huy hiệu màu cố định có `text-white` trong `PWAUpdateHandler.tsx`, `WelcomeView.tsx` và `SESSION_ACCENT_COLORS`.
+3. **Hợp nhất Nguồn Dữ liệu Bảng màu (`THEME_PALETTES` trong `src/core/config/constants.ts`) & Đối chiếu `:root` Fallback**:
    - Thiết lập `THEME_PALETTES` tại `src/core/config/constants.ts` (và re-export qua `src/core/themes/theme.registry.ts`) chứa đầy đủ 16 token RGB cho mỗi chủ đề (`50..950`, `actionBg`, `actionHover`, `onAction`, `focusLight`, `focusDark`).
-   - Cập nhật `scripts/check-design-system.mjs` đọc trực tiếp `THEME_PALETTES` từ `constants.ts` để đối chiếu 1:1 với `tokens.css`, loại bỏ hoàn toàn bảng dữ liệu cứng riêng lẻ trong script.
-4. **Chuẩn hóa Công thức Luminance WCAG 2.2 (`0.04045`), Fail-Closed Validation & Kiểm chứng CSS Biên dịch**:
-   - Cập nhật ngưỡng tuyến tính hóa sRGB sang `0.04045` và fail-closed ngay nếu thiếu token hoặc giá trị kênh RGB nằm ngoài `0..255`.
-   - Bổ sung bước biên dịch CSS thực tế bằng `postcss` + `@tailwindcss/postcss` ngay trong `scripts/check-design-system.mjs` và `src/core/themes/designSystem.test.ts` để xác minh output của các class `.rounded-card`, `.rounded-control`, `.rounded-dialog`, `.shadow-card`, `.bg-accent-action`, `.focus-visible\:ring-accent-focus`.
+   - Cập nhật `scripts/check-design-system.mjs` đối chiếu 1:1 cả khối `:root` fallback (khớp 16/16 token với `THEME_PALETTES.themeBlue`) lẫn cả 7 khối `[data-accent="theme..."]`.
+4. **Bộ Quét Tương phản 3 Tầng (Text / Non-Text / Semantic Exceptions) & Kiểm chứng Selector CSS Biên dịch**:
+   - Nâng cấp `scripts/check-design-system.mjs` thành bộ quét tương phản WCAG 2.2 3 tầng trên toàn bộ `src/`:
+     - **Text Contrast (`>= 4.5:1`)**: Kiểm tra cả token chủ đề lẫn mọi cặp màu Tailwind cố định `bg-<color>-<shade>` đi kèm `text-white`.
+     - **Non-Text Focus Contrast (`>= 3.0:1`)**: Kiểm tra cả `ring-accent-focus` lẫn mọi vòng tiêu điểm màu cố định `(?:focus|focus-visible):ring-<color>-<shade>` trên cả bề mặt Sáng (`#FFFFFF`, `slate-50`) và Tối (`slate-900`, `slate-950`).
+     - **Semantic Exceptions**: Xác minh có định lượng toàn bộ các ngoại lệ màu ngữ nghĩa cố định (Amber 700, Red 600/500, Green 700, Slate 600/800/900).
+   - Xác minh chính xác selector và khai báo trong CSS biên dịch qua PostCSS + `@tailwindcss/postcss` (bao gồm `.hover\:shadow-card-hover:hover`, `.focus-visible\:ring-accent-focus:focus-visible`, `.focus\:ring-accent-focus:focus`) và cấu hình `SKIP_DESIGN_SYSTEM_CHECK=1` ở bước `Build` trong `.github/workflows/ci.yml` để tránh chạy trùng lặp 2 lần trong cùng một lượt CI.
 
 ---
 
-## 3. Phân tầng Cơ chế Kiểm chứng (Verification Architecture)
+## 3. Phân tầng Cơ chế Kiểm chứng: Tự động trên CI vs Thủ công trong IDE
 
-Để đảm bảo tính trung thực kỹ thuật, hệ thống kiểm chứng của TdyTime phân biệt rõ 3 tầng kiểm tra độc lập:
+Hệ thống kiểm chứng phân biệt minh bạch giữa các chốt chặn tự động trên GitHub Actions CI và bước kiểm tra trực quan thủ công trong môi trường phát triển:
 
-| Tầng Kiểm chứng | Công cụ Thực thi | Phạm vi Kiểm chứng Thực tế |
-| :--- | :--- | :--- |
-| **1. Kiểm tra Tĩnh & Biên dịch CSS trên CI** | `npm run check:design-system` (`scripts/check-design-system.mjs`) | Đối chiếu 1:1 `THEME_PALETTES` (`constants.ts`) ↔ `tokens.css` (7 themes × 16 tokens), kiểm tra không có biến tự tham chiếu `--x: var(--x)`, tính toán tương phản WCAG 2.2 cho action tokens (`>= 4.5:1`) và focus ring (`>= 3.0:1` trên Light & Dark surfaces), kiểm tra barrel imports và biên dịch CSS thực tế qua PostCSS + `@tailwindcss/postcss`. |
-| **2. Kiểm thử Đơn vị & Component (Vitest)** | `npm test` (`src/core/themes/designSystem.test.ts`, `src/ui/primitives/Badge.test.tsx`) | Kiểm thử logic `THEME_PALETTES`, công thức tương phản WCAG 2.2 (`0.04045`), CSS output biên dịch từ `@tailwindcss/postcss`, và hành vi DOM/props của các UI primitives (`Badge` `showDot={false}` / `dot={false}`). |
-| **3. Kiểm chứng Runtime Trình duyệt Thực tế** | Headless Chromium (`playwright-cli` / DevTools Computed Styles) | Kiểm tra trực tiếp `getComputedStyle()` trên DOM đang chạy (`http://localhost:3000`): xác nhận giá trị `border-radius` (`6px/8px/10px/12px`), `box-shadow`, màu nền/chữ của nút chính và màu vòng focus khi chuyển đổi giữa Light/Dark Mode và các chủ đề `themeYellow`, `themeGreen`. |
+| Tầng Kiểm chứng | Trạng thái Tự động hóa | Công cụ Thực thi | Phạm vi Kiểm chứng Thực tế |
+| :--- | :---: | :--- | :--- |
+| **1. Kiểm tra Tĩnh, Tương phản 3 Tầng & Biên dịch PostCSS** | **Tự động 100% trên CI** (`.github/workflows/ci.yml` & `npm run build`) | `npm run check:design-system` (`scripts/check-design-system.mjs`) | Đối chiếu 1:1 `THEME_PALETTES` ↔ `:root` fallback + 7 themes × 16 tokens; kiểm tra tương phản WCAG 2.2 cho Text (`>= 4.5:1`), Non-Text Focus (`>= 3.0:1`) và Semantic Exceptions trên toàn bộ `src/`; kiểm tra chống biến tự tham chiếu `--x: var(--x)`; biên dịch CSS thực tế qua PostCSS + `@tailwindcss/postcss` và kiểm tra chính xác từng selector. |
+| **2. Kiểm thử Đơn vị & Component (Vitest)** | **Tự động 100% trên CI** (`.github/workflows/ci.yml`) | `npm test` (`src/core/themes/designSystem.test.ts`, `src/ui/primitives/Badge.test.tsx`) | Kiểm thử logic `THEME_PALETTES`, `:root` parity, tương phản ngoại lệ ngữ nghĩa (`BackupRestoreCard` Amber 700, `SESSION_ACCENT_COLORS`), selector CSS biên dịch từ `@tailwindcss/postcss`, và hành vi DOM/props của các UI primitives. |
+| **3. Kiểm chứng Computed Styles trên Headless Chromium** | **Kiểm chứng Thủ công trong IDE** *(Không chạy tự động trong `ci.yml`)* | Headless Chromium (`playwright-cli` `getComputedStyle()`) | Kiểm tra đối chiếu thủ công `getComputedStyle()` trên DOM thực tế (`http://localhost:3000`) trong quá trình audit để xác nhận `border-radius`, `box-shadow` và biến màu theo theme. *(Lưu ý: Lighthouse CI trong `audit.yml` đánh giá hiệu năng/trợ năng trang deploy, không thay thế kiểm thử `getComputedStyle()` từng selector).* |
 
 ---
 

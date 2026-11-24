@@ -5,15 +5,19 @@
  * 1. Canonical 7-document Design System structure in `docs/design-system/`.
  * 2. Zero external project branding (`TdyTripZ`) in active code, CSS, docs, or i18n locales.
  * 3. Single Source of Palette Parity: parses `THEME_PALETTES` directly from `src/core/config/constants.ts`
- *    (no duplicate hardcoded RGB tables) and verifies 100% 1:1 parity across all 7 themes × 16 tokens
- *    (11 `--accent-50..950` shades + 3 `--accent-action-*` tokens + 2 `--accent-focus-*` tokens) in `tokens.css`.
+ *    and verifies 100% 1:1 parity across:
+ *    - `:root` fallback palette in `src/styles/tokens.css` (must match `THEME_PALETTES.themeBlue` across all 16 tokens).
+ *    - All 7 `[data-accent="theme..."]` blocks × 16 tokens (11 `--accent-50..950` shades + 3 `--accent-action-*` + 2 `--accent-focus-*`).
  * 4. Fail-closed RGB validation & WCAG 2.2 (0.04045 relative luminance threshold) contrast verification:
- *    - `--accent-action-bg` & `--accent-action-hover` vs `--accent-on-action` >= 4.5:1 (WCAG 2.2 AA).
+ *    - `--accent-action-bg` & `--accent-action-hover` vs `--accent-on-action` >= 4.5:1 (WCAG 2.2 SC 1.4.3).
  *    - `--accent-focus-light` vs Light Mode surfaces (`#FFFFFF` & `slate-50` `#F8FAFC`) >= 3.0:1 (WCAG 2.2 SC 1.4.11).
  *    - `--accent-focus-dark` vs Dark Mode surfaces (`slate-900` `#0F172A` & `slate-950` `#020617`) >= 3.0:1 (WCAG 2.2 SC 1.4.11).
  * 5. Zero CSS Variable Self-Reference (`--x: var(--x)`) and `@theme inline` wiring of `--tdy-radius-*` and `--tdy-shadow-*`.
- * 6. Compiled CSS Runtime Utility Verification via PostCSS + `@tailwindcss/postcss` on `src/styles/global.css`.
- * 7. Component & Critical-Path Guardrails (`Button`, `Card`, `Badge`, `ConfirmModal`, and no raw accent focus/text-white).
+ * 6. Compiled CSS Runtime Selector & Declaration Verification via PostCSS + `@tailwindcss/postcss` on `src/styles/global.css`.
+ * 7. 3-Tier Semantic & Fixed-Color Contrast Scanner across `src/`:
+ *    - Group A (Text Contrast >= 4.5:1): Accent and fixed Tailwind `bg-<color>-<shade>` paired with `text-white`.
+ *    - Group B (Non-Text Focus Contrast >= 3.0:1): Accent and fixed Tailwind `(?:focus|focus-visible):ring-<color>-<shade>` across Light & Dark surfaces.
+ *    - Group C (Semantic Exceptions Audit): Verifies all intentional fixed-color semantic patterns meet WCAG 2.2 thresholds.
  *
  * Usage:
  *   node scripts/check-design-system.mjs
@@ -24,6 +28,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import postcss from 'postcss';
 import tailwindcssPostcss from '@tailwindcss/postcss';
+
+if (process.env.SKIP_DESIGN_SYSTEM_CHECK === '1') {
+    console.log('⏭️  Skipping duplicate Design System check (SKIP_DESIGN_SYSTEM_CHECK=1 already verified in CI step).');
+    process.exit(0);
+}
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
@@ -68,7 +77,130 @@ const LIGHT_SURFACE_SLATE_50 = [248, 250, 252]; // #F8FAFC
 const DARK_SURFACE_SLATE_900 = [15, 23, 42]; // #0F172A
 const DARK_SURFACE_SLATE_950 = [2, 6, 23]; // #020617
 
+/**
+ * Standard Tailwind CSS v4 RGB palette lookup for verifying fixed semantic colors
+ * (Amber, Red, Green, Emerald, Orange, Blue, Sky, Cyan, Purple, Violet, Pink, Rose, Slate, Gray, Yellow)
+ */
+const TAILWIND_COLOR_RGB = {
+    amber: {
+        400: [251, 191, 36],
+        500: [245, 158, 11],
+        600: [217, 119, 6],
+        700: [180, 83, 9],
+        800: [146, 64, 14],
+        900: [120, 53, 15],
+    },
+    yellow: {
+        400: [250, 204, 21],
+        500: [234, 179, 8],
+        600: [202, 138, 4],
+        700: [161, 98, 7],
+        800: [133, 77, 9],
+    },
+    orange: {
+        400: [251, 146, 60],
+        500: [249, 115, 22],
+        600: [234, 88, 12],
+        700: [194, 65, 12],
+        800: [154, 52, 18],
+    },
+    red: {
+        400: [248, 113, 113],
+        500: [239, 68, 68],
+        600: [220, 38, 38],
+        700: [185, 28, 28],
+        800: [153, 27, 27],
+    },
+    rose: {
+        400: [251, 113, 133],
+        500: [244, 63, 94],
+        600: [225, 29, 72],
+        700: [190, 18, 60],
+    },
+    pink: {
+        400: [244, 114, 182],
+        500: [236, 72, 153],
+        600: [219, 39, 119],
+        700: [190, 24, 93],
+    },
+    purple: {
+        400: [192, 132, 252],
+        500: [168, 85, 247],
+        600: [147, 51, 234],
+        700: [126, 34, 206],
+    },
+    violet: {
+        400: [167, 139, 250],
+        500: [139, 92, 246],
+        600: [124, 58, 237],
+        700: [109, 40, 217],
+    },
+    indigo: {
+        400: [129, 140, 248],
+        500: [99, 102, 241],
+        600: [79, 70, 229],
+        700: [67, 56, 202],
+    },
+    blue: {
+        400: [96, 165, 250],
+        500: [59, 130, 246],
+        600: [37, 99, 235],
+        700: [29, 78, 216],
+        800: [30, 64, 175],
+    },
+    sky: {
+        400: [56, 189, 248],
+        500: [14, 165, 233],
+        600: [2, 132, 199],
+        700: [3, 105, 161],
+    },
+    cyan: {
+        400: [34, 211, 238],
+        500: [6, 182, 212],
+        600: [8, 145, 178],
+        700: [14, 116, 144],
+    },
+    teal: {
+        400: [45, 212, 191],
+        500: [20, 184, 166],
+        600: [13, 148, 136],
+        700: [15, 118, 110],
+    },
+    emerald: {
+        400: [52, 211, 153],
+        500: [16, 185, 129],
+        600: [5, 150, 105],
+        700: [4, 120, 87],
+        800: [6, 95, 70],
+    },
+    green: {
+        400: [74, 222, 128],
+        500: [34, 197, 94],
+        600: [22, 163, 74],
+        700: [21, 128, 61],
+        800: [22, 101, 52],
+    },
+    slate: {
+        400: [148, 163, 184],
+        500: [100, 116, 139],
+        600: [71, 85, 105],
+        700: [51, 65, 85],
+        800: [30, 41, 59],
+        900: [15, 23, 42],
+        950: [2, 6, 23],
+    },
+    gray: {
+        400: [156, 163, 175],
+        500: [107, 114, 128],
+        600: [75, 85, 99],
+        700: [55, 65, 81],
+        800: [31, 41, 55],
+        900: [17, 24, 39],
+    },
+};
+
 const errors = [];
+let verifiedSemanticExceptionCount = 0;
 
 function readFileSafe(relPath) {
     const full = path.join(rootDir, relPath);
@@ -243,6 +375,38 @@ if (tokensCss && globalCss && constantsTs) {
             if (!rootVars[token]) {
                 errors.push(`src/styles/tokens.css :root is missing required token ${token}.`);
             }
+        }
+
+        // Section 4.2: Verify :root fallback palette matches THEME_PALETTES.themeBlue 1:1 across all 16 tokens
+        const bluePalette = canonicalPalettes.themeBlue || {};
+        for (const shade of ACCENT_SHADES) {
+            const varName = `--accent-${shade}`;
+            if (!rootVars[varName]) {
+                errors.push(`src/styles/tokens.css :root is missing fallback ${varName}.`);
+            } else if (rootVars[varName] !== bluePalette[shade]) {
+                errors.push(
+                    `Root fallback palette mismatch for ${varName}: :root has "${rootVars[varName]}" vs THEME_PALETTES.themeBlue "${bluePalette[shade]}".`
+                );
+            }
+        }
+        const rootTokenParityMap = {
+            '--accent-action-bg': 'actionBg',
+            '--accent-action-hover': 'actionHover',
+            '--accent-on-action': 'onAction',
+            '--accent-focus-light': 'focusLight',
+            '--accent-focus-dark': 'focusDark',
+        };
+        for (const [cssVar, paletteKey] of Object.entries(rootTokenParityMap)) {
+            if (!rootVars[cssVar]) {
+                errors.push(`src/styles/tokens.css :root is missing fallback ${cssVar}.`);
+            } else if (rootVars[cssVar] !== bluePalette[paletteKey]) {
+                errors.push(
+                    `Root fallback palette mismatch for ${cssVar}: :root has "${rootVars[cssVar]}" vs THEME_PALETTES.themeBlue "${bluePalette[paletteKey]}".`
+                );
+            }
+        }
+        if (rootVars['--accent-focus'] !== 'var(--accent-focus-light)') {
+            errors.push('src/styles/tokens.css :root must set --accent-focus: var(--accent-focus-light);');
         }
     }
 
@@ -441,7 +605,7 @@ if (tokensCss && globalCss && constantsTs) {
     }
 }
 
-// 5. Compiled CSS Runtime Utility Check via PostCSS + @tailwindcss/postcss
+// 5. Compiled CSS Runtime Selector & Declaration Check via PostCSS + @tailwindcss/postcss
 try {
     const globalCssPath = path.join(rootDir, 'src/styles/global.css');
     const rawGlobalCss = fs.readFileSync(globalCssPath, 'utf8');
@@ -453,27 +617,31 @@ try {
     // Ensure compiled CSS has zero self-referencing variables
     detectSelfReferencingCssVars(compiledCss, 'compiled global.css output');
 
+    // Section 4.1: Verify exact compiled CSS selectors and declarations
     const expectedCompiledSnippets = [
         { label: '.rounded-badge utility', pattern: /\.rounded-badge\s*\{[^}]*border-radius:\s*var\(--tdy-radius-badge\)/ },
         { label: '.rounded-control utility', pattern: /\.rounded-control\s*\{[^}]*border-radius:\s*var\(--tdy-radius-control\)/ },
         { label: '.rounded-card utility', pattern: /\.rounded-card\s*\{[^}]*border-radius:\s*var\(--tdy-radius-card\)/ },
         { label: '.rounded-dialog utility', pattern: /\.rounded-dialog\s*\{[^}]*border-radius:\s*var\(--tdy-radius-dialog\)/ },
         { label: '.shadow-card utility', pattern: /\.shadow-card\s*\{[^}]*--tw-shadow:\s*var\(--tdy-shadow-card\)/ },
+        { label: '.hover:shadow-card-hover utility', pattern: /\.hover\\:shadow-card-hover:hover\s*\{[^}]*--tw-shadow:\s*var\(--tdy-shadow-card-hover\)/ },
         { label: '.shadow-modal utility', pattern: /\.shadow-modal\s*\{[^}]*--tw-shadow:\s*var\(--tdy-shadow-modal\)/ },
         { label: '.bg-accent-action utility', pattern: /\.bg-accent-action\s*\{[^}]*background-color:\s*rgb\(var\(--accent-action-bg\)\)/ },
+        { label: '.hover:bg-accent-action-hover utility', pattern: /\.hover\\:bg-accent-action-hover:hover\s*\{[^}]*background-color:\s*rgb\(var\(--accent-action-hover\)\)/ },
         { label: '.text-accent-on-action utility', pattern: /\.text-accent-on-action\s*\{[^}]*color:\s*rgb\(var\(--accent-on-action\)\)/ },
-        { label: '.focus-visible:ring-accent-focus utility', pattern: /--tw-ring-color:\s*rgb\(var\(--accent-focus\)\)/ },
+        { label: '.focus-visible:ring-accent-focus selector', pattern: /\.focus-visible\\:ring-accent-focus:focus-visible\s*\{[^}]*--tw-ring-color:\s*rgb\(var\(--accent-focus\)\)/ },
+        { label: '.focus:ring-accent-focus selector', pattern: /\.focus\\:ring-accent-focus:focus\s*\{[^}]*--tw-ring-color:\s*rgb\(var\(--accent-focus\)\)/ },
     ];
     for (const { label, pattern } of expectedCompiledSnippets) {
         if (!pattern.test(compiledCss)) {
-            errors.push(`Compiled CSS verification failed: ${label} did not compile to expected token binding.`);
+            errors.push(`Compiled CSS verification failed: ${label} did not compile to expected selector & token binding.`);
         }
     }
 } catch (compileErr) {
     errors.push(`Failed to compile src/styles/global.css via PostCSS: ${compileErr instanceof Error ? compileErr.message : String(compileErr)}`);
 }
 
-// 6. Verify Component Alignment (Button, Card, Badge, ConfirmModal) & Scan TSX files for unsafe contrast or raw focus rings
+// 6. Verify Component Alignment (Button, Card, Badge, ConfirmModal) & 3-Tier Semantic Contrast Scanner
 const buttonTsx = readFileSafe('src/ui/primitives/Button.tsx');
 if (buttonTsx) {
     if (!buttonTsx.includes('bg-accent-action')) {
@@ -499,30 +667,112 @@ if (confirmModalTsx && (!confirmModalTsx.includes('rounded-dialog') || !confirmM
     errors.push('src/ui/primitives/ConfirmModal.tsx must use rounded-dialog on container and rounded-control on buttons.');
 }
 
-function scanTsxForUnsafeAccentPatterns(dirPath) {
+/**
+ * 3-Tier Semantic & Fixed-Color Contrast Scanner across `src/`:
+ * - Group A (Text Contrast >= 4.5:1): Accent and fixed Tailwind `bg-<color>-<shade>` paired with `text-white` (non-dark prefix).
+ * - Group B (Non-Text Focus Contrast >= 3.0:1): Accent and fixed Tailwind `(?:focus|focus-visible):ring-<color>-<shade>` against Light & Dark surfaces.
+ * - Group C (Semantic Exceptions Audit): Counts and validates all fixed-color semantic patterns.
+ */
+function scanSourceForContrastCompliance(dirPath) {
+    const colorNamesPattern = Object.keys(TAILWIND_COLOR_RGB).join('|');
+    const fixedBgRegex = new RegExp(`(?<!dark:|hover:)\\bbg-(${colorNamesPattern})-(\\d{3})\\b`, 'g');
+    const fixedFocusRingRegex = new RegExp(`(?<!dark:)\\b(?:focus|focus-visible):ring-(${colorNamesPattern})-(\\d{3})\\b`, 'g');
+    const darkFocusRingRegex = new RegExp(`\\bdark:(?:focus|focus-visible):ring-(${colorNamesPattern})-(\\d{3})\\b`);
+
     for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
         const fullPath = path.join(dirPath, entry.name);
         if (entry.isDirectory()) {
-            scanTsxForUnsafeAccentPatterns(fullPath);
-        } else if (entry.name.endsWith('.tsx')) {
+            scanSourceForContrastCompliance(fullPath);
+        } else if (
+            (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts')) &&
+            !entry.name.endsWith('.test.tsx') &&
+            !entry.name.endsWith('.test.ts')
+        ) {
             const rel = path.relative(rootDir, fullPath);
             const lines = fs.readFileSync(fullPath, 'utf8').split('\n');
             lines.forEach((line, idx) => {
-                if (/bg-accent-(400|500|600)\b/.test(line) && /\btext-white\b/.test(line)) {
+                // Ignore pure comment lines
+                if (/^\s*(\/\/|\/\*|\*)/.test(line)) return;
+
+                // Group A1: Accent background paired with text-white
+                if (/bg-accent-(400|500|600)\b/.test(line) && /(?<!dark:)\btext-white\b/.test(line)) {
                     errors.push(
-                        `${rel}:${idx + 1} pairs bg-accent-400/500/600 directly with text-white (fails 3:1 in themeYellow). Use bg-accent-action and text-accent-on-action instead.`
+                        `[Text Contrast] ${rel}:${idx + 1} pairs bg-accent-400/500/600 directly with text-white (fails 4.5:1 in themeYellow/themeGreen). Use bg-accent-action and text-accent-on-action.`
                     );
                 }
+
+                // Group A2 & C: Fixed semantic background paired with non-dark text-white
+                if (/(?<!dark:)\btext-white\b/.test(line)) {
+                    let bgMatch;
+                    fixedBgRegex.lastIndex = 0;
+                    while ((bgMatch = fixedBgRegex.exec(line)) !== null) {
+                        const [, colorName, shade] = bgMatch;
+                        const rgb = TAILWIND_COLOR_RGB[colorName]?.[shade];
+                        if (!rgb) {
+                            errors.push(
+                                `[Text Contrast] ${rel}:${idx + 1} uses unverified background class bg-${colorName}-${shade} with text-white.`
+                            );
+                            continue;
+                        }
+                        const ratio = getContrastRatio(rgb, LIGHT_SURFACE_WHITE);
+                        if (ratio < 4.5) {
+                            errors.push(
+                                `[Text Contrast Failure] ${rel}:${idx + 1} pairs bg-${colorName}-${shade} with text-white (${ratio.toFixed(2)}:1 < 4.5:1 WCAG 2.2 SC 1.4.3).`
+                            );
+                        } else {
+                            verifiedSemanticExceptionCount++;
+                        }
+                    }
+                }
+
+                // Group B1: Raw accent focus ring
                 if (/(?:focus|focus-visible):ring-accent-(400|500|600)\b/.test(line)) {
                     errors.push(
-                        `${rel}:${idx + 1} uses raw focus ring accent shade (fails 3:1 in themeYellow/themeGreen). Use focus-visible:ring-accent-focus instead.`
+                        `[Non-Text Focus Contrast] ${rel}:${idx + 1} uses raw focus ring accent shade (fails 3.0:1 in themeYellow/themeGreen). Use focus-visible:ring-accent-focus.`
                     );
+                }
+
+                // Group B2 & C: Fixed semantic focus ring (e.g. ring-amber-*, ring-red-*)
+                let ringMatch;
+                fixedFocusRingRegex.lastIndex = 0;
+                while ((ringMatch = fixedFocusRingRegex.exec(line)) !== null) {
+                    const [fullRingClass, colorName, shade] = ringMatch;
+                    const lightRgb = TAILWIND_COLOR_RGB[colorName]?.[shade];
+                    if (!lightRgb) {
+                        errors.push(
+                            `[Non-Text Focus Contrast] ${rel}:${idx + 1} uses unverified focus ring class ${fullRingClass}.`
+                        );
+                        continue;
+                    }
+                    const ratioWhite = getContrastRatio(lightRgb, LIGHT_SURFACE_WHITE);
+                    const ratioSlate50 = getContrastRatio(lightRgb, LIGHT_SURFACE_SLATE_50);
+                    if (ratioWhite < 3.0 || ratioSlate50 < 3.0) {
+                        errors.push(
+                            `[Non-Text Focus Contrast Failure] ${rel}:${idx + 1} ${fullRingClass} fails Light Mode 3.0:1 threshold (vs white=${ratioWhite.toFixed(2)}:1, vs slate-50=${ratioSlate50.toFixed(2)}:1).`
+                        );
+                    }
+
+                    // Check Dark Mode focus ring (either explicit dark:focus-visible:ring-* or same class used in dark mode)
+                    const darkMatch = line.match(darkFocusRingRegex);
+                    const darkRgb = darkMatch
+                        ? TAILWIND_COLOR_RGB[darkMatch[1]]?.[darkMatch[2]]
+                        : lightRgb;
+                    if (darkRgb) {
+                        const ratioSlate900 = getContrastRatio(darkRgb, DARK_SURFACE_SLATE_900);
+                        const ratioSlate950 = getContrastRatio(darkRgb, DARK_SURFACE_SLATE_950);
+                        if (ratioSlate900 < 3.0 || ratioSlate950 < 3.0) {
+                            errors.push(
+                                `[Non-Text Focus Contrast Failure] ${rel}:${idx + 1} ${fullRingClass} fails Dark Mode 3.0:1 threshold (vs slate-900=${ratioSlate900.toFixed(2)}:1, vs slate-950=${ratioSlate950.toFixed(2)}:1).`
+                            );
+                        }
+                    }
+                    verifiedSemanticExceptionCount++;
                 }
             });
         }
     }
 }
-scanTsxForUnsafeAccentPatterns(path.join(rootDir, 'src'));
+scanSourceForContrastCompliance(path.join(rootDir, 'src'));
 
 // 7. Verify Critical Path No-Barrel Guardrail on main.tsx, App.tsx, router.tsx, AppLayout.tsx
 const criticalStartupFiles = [
@@ -551,6 +801,6 @@ if (errors.length > 0) {
     process.exit(1);
 } else {
     console.log(
-        `✅ Design System & Runtime Integrity Check Passed: ${CANONICAL_DOCS.length} canonical docs, ${THEME_IDS.length} themes × 16 palette/action/focus tokens (WCAG 2.2 AA >= 4.5:1 & Focus SC 1.4.11 >= 3.0:1), compiled PostCSS utilities, zero self-references, and component guardrails verified.`
+        `✅ Design System & Runtime Integrity Check Passed: ${CANONICAL_DOCS.length} canonical docs, :root + ${THEME_IDS.length} themes × 16 palette/action/focus tokens (WCAG 2.2 AA >= 4.5:1 & Focus SC 1.4.11 >= 3.0:1), ${verifiedSemanticExceptionCount} semantic fixed-color exceptions verified, compiled PostCSS selector rules, zero self-references, and component guardrails verified.`
     );
 }

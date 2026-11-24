@@ -470,7 +470,7 @@
                 "version": "v2026.11.24",
                 "date": "2026-11-24",
                 "changes": [
-                    "Chuẩn hóa Design System & Runtime Integrity Check (Compact Academic Utility SSOT): Thiết lập bộ 7 tài liệu chuẩn trong docs/design-system/, hợp nhất bảng màu THEME_PALETTES, bổ sung token tương phản hành động (--accent-action-* >= 4.5:1) và vòng tiêu điểm (--accent-focus-light/dark >= 3.0:1) đạt chuẩn WCAG 2.2 AA trên cả 7 chủ đề, đấu nối --tdy-radius-*/--tdy-shadow-* qua @theme inline và kiểm chứng CSS biên dịch thực tế bằng PostCSS trên CI.",
+                    "Chuẩn hóa Design System & Runtime Integrity Check (Compact Academic Utility SSOT): Thiết lập bộ 7 tài liệu chuẩn trong docs/design-system/, hợp nhất bảng màu THEME_PALETTES (:root + 7 chủ đề), bổ sung token tương phản hành động (--accent-action-* >= 4.5:1) và vòng tiêu điểm (--accent-focus-light/dark >= 3.0:1), nâng cấp tương phản nút khôi phục BackupRestoreCard (Amber 700 5.02:1), đấu nối --tdy-radius-*/--tdy-shadow-* qua @theme inline và tích hợp bộ quét tương phản 3 tầng + PostCSS selector check vào CI.",
                     "Cài đặt Segmented Bento Hub & Tab mặc định Dữ liệu/PWA: Sắp xếp lại Cài đặt thành 3 tab phân tầng (mở mặc định Dữ liệu & PWA để kiểm tra cập nhật nhanh), chuyển Khung giờ tiết & Changelog sang Modal theo nhu cầu.",
                     "Nút Xóa bộ nhớ đệm (Clear Cache) 2 bước: Gửi lệnh CLEAR_CACHE tới Service Worker giúp làm sạch bản dựng cũ và tự tải lại trang trong khi giữ nguyên 100% lịch giảng dạy.",
                     "Tối ưu 2 bảng Môn học trên Mobile: Tách riêng bảng Viết tắt tên môn và bảng Tùy chỉnh LT/TH, gộp Mã/Lớp/Nhóm xuống dòng phụ trên màn hình nhỏ giúp dễ đọc không cần cuộn ngang.",
