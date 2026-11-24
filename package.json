@@ -8,7 +8,7 @@
     "pnpm": ">=9.0.0"
   },
   "scripts": {
-    "build": "tsc --noEmit && vite build",
+    "build": "node scripts/check-design-system.mjs && tsc --noEmit && vite build",
     "deploy": "npm run build && wrangler deploy",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "check:design-system": "node scripts/check-design-system.mjs",

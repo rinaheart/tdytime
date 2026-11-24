@@ -145,7 +145,7 @@ const CourseTypeCard: React.FC<CourseTypeCardProps> = ({ onSuccess }) => {
                                             aria-label={`Chọn Lý thuyết (LT) cho ${c.name} (${c.code})`}
                                             aria-pressed={isLT}
                                             onClick={() => setTempOverrides({ ...tempOverrides, [c.code]: CourseType.LT })}
-                                            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center mx-auto cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${isLT ? 'bg-accent-600 border-accent-600 text-white shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
+                                            className={`w-8 h-8 rounded-full border-2 flex items-center justify-center mx-auto cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 ${isLT ? 'bg-accent-action border-accent-action text-accent-on-action shadow-sm' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
                                         >
                                             {isLT && <Check size={16} />}
                                         </button>
@@ -169,7 +169,7 @@ const CourseTypeCard: React.FC<CourseTypeCardProps> = ({ onSuccess }) => {
             </div>
 
             <div className="p-4 bg-slate-50 dark:bg-slate-800/50 flex justify-end border-t border-slate-100 dark:border-slate-800">
-                <button type="button" onClick={handleSave} className="w-full sm:w-auto px-6 h-11 bg-accent-600 text-white text-sm font-bold rounded-xl shadow-sm hover:bg-accent-700 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
+                <button type="button" onClick={handleSave} className="w-full sm:w-auto px-6 h-11 bg-accent-action text-accent-on-action text-sm font-bold rounded-xl shadow-sm hover:bg-accent-action-hover active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500">
                     <Save size={18} /> {t('common.save')}
                 </button>
             </div>

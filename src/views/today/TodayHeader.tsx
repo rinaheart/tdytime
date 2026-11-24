@@ -46,7 +46,7 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                             type="button"
                             onClick={() => navigate('/exam')}
                             aria-label={t('exam.viewAction', 'Xem lịch coi thi')}
-                            className="w-10 h-10 mt-1 bg-accent-600 dark:bg-accent-500 text-white rounded-full shadow-sm hover:bg-accent-700 dark:hover:bg-accent-600 transition-all active:scale-95 flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
+                            className="w-10 h-10 mt-1 bg-accent-action text-accent-on-action rounded-full shadow-sm hover:bg-accent-action-hover transition-all active:scale-95 flex items-center justify-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
                             title={t('exam.viewAction', 'Xem lịch coi thi')}
                         >
                             <CalendarCheck size={16} strokeWidth={2} />
@@ -63,7 +63,7 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                         >
                             <CalendarCheck size={14} strokeWidth={2} />
                             <span className="hidden md:inline text-xs font-bold tracking-tight">{t('exam.shortLabel', 'Coi thi')}</span>
-                            <span className="text-[10px] font-black bg-accent-600 dark:bg-accent-500 text-white rounded-full w-5 h-5 flex items-center justify-center leading-none">
+                            <span className="text-[10px] font-black bg-accent-action text-accent-on-action rounded-full w-5 h-5 flex items-center justify-center leading-none">
                                 {upcomingCount}
                             </span>
                         </button>
@@ -87,7 +87,7 @@ const TodayHeader: React.FC<TodayHeaderProps> = ({ dayOfWeekIdx, dateInfo, greet
                             <span className="hidden md:inline text-xs font-bold tracking-tight">
                                 {isOngoing ? t('exam.ongoingShort', 'Đang thi') : t('exam.shortLabel', 'Coi thi')}
                             </span>
-                            <span className="text-[10px] font-black bg-accent-600 dark:bg-accent-500 text-white rounded-full w-5 h-5 flex items-center justify-center leading-none">
+                            <span className="text-[10px] font-black bg-accent-action text-accent-on-action rounded-full w-5 h-5 flex items-center justify-center leading-none">
                                 {upcomingCount || '!'}
                             </span>
                         </button>

@@ -42,7 +42,7 @@ const RouteError = () => {
             </p>
             <button
                 onClick={() => window.location.href = '#/'}
-                className="px-8 py-3 bg-accent-600 hover:bg-accent-700 text-white rounded-2xl font-bold shadow-xl shadow-accent-500/20 active:scale-95 transition-all outline-none"
+                className="px-8 py-3 bg-accent-action hover:bg-accent-action-hover text-accent-on-action rounded-2xl font-bold shadow-xl shadow-accent-500/20 active:scale-95 transition-all outline-none"
             >
                 Return Home
             </button>

@@ -145,7 +145,7 @@ const BackupRestoreCard: React.FC<BackupRestoreCardProps> = ({ onSuccess, onErro
                         type="button"
                         onClick={handleExport}
                         disabled={isExporting}
-                        className="w-full h-11 px-4 bg-accent-600 hover:bg-accent-700 active:scale-[0.98] text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 disabled:opacity-50"
+                        className="w-full h-11 px-4 bg-accent-action hover:bg-accent-action-hover active:scale-[0.98] text-accent-on-action rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 disabled:opacity-50"
                     >
                         {isExporting ? (
                             <Loader2 size={16} className="animate-spin" />

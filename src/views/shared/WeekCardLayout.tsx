@@ -38,7 +38,7 @@ const WeekCardLayout: React.FC<WeekTableLayoutProps> = ({ grouped, weekRange, no
                                     {weekRange ? getDayDateString(weekRange, idx) : ''}
                                 </span>
                             </div>
-                            {isToday && <div className="text-[10px] font-black text-white bg-accent-600 px-2 py-0.5 rounded-full uppercase">Today</div>}
+                            {isToday && <div className="text-[10px] font-black text-accent-on-action bg-accent-action px-2 py-0.5 rounded-full uppercase">Today</div>}
                         </div>
                         {/* Sessions List - Compact Padding & Divide & Zebra */}
                         <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-950">

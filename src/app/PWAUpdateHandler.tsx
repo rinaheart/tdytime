@@ -445,7 +445,7 @@ export const PWAUpdateHandler: React.FC = () => {
                         <button
                             type="button"
                             onClick={handleInstall}
-                            className="w-full py-2.5 bg-accent-600 hover:bg-accent-700 text-white text-xs font-bold rounded-xl transition-colors shadow-sm shadow-accent-500/20 flex justify-center items-center gap-2"
+                            className="w-full py-2.5 bg-accent-action hover:bg-accent-action-hover text-accent-on-action text-xs font-bold rounded-xl transition-colors shadow-sm shadow-accent-500/20 flex justify-center items-center gap-2"
                         >
                             <Download size={15} strokeWidth={2.5} />
                             {t('pwa.install_button')}
@@ -489,7 +489,7 @@ export const PWAUpdateHandler: React.FC = () => {
                         <button
                             type="button"
                             onClick={() => setShowInstallGuide(false)}
-                            className="mt-4 w-full rounded-xl bg-accent-600 hover:bg-accent-700 py-2.5 text-xs font-bold text-white transition-colors cursor-pointer"
+                            className="mt-4 w-full rounded-xl bg-accent-action hover:bg-accent-action-hover py-2.5 text-xs font-bold text-accent-on-action transition-colors cursor-pointer"
                         >
                             {t('common.close', 'Đóng')}
                         </button>
@@ -518,7 +518,7 @@ export const PWAUpdateHandler: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={handleUpdate}
-                                className="w-full flex items-center justify-center gap-2 py-2 bg-accent-500 text-white rounded-xl text-xs font-bold hover:bg-accent-600 transition-colors shadow-lg shadow-accent-500/20"
+                                className="w-full flex items-center justify-center gap-2 py-2 bg-accent-action text-accent-on-action rounded-xl text-xs font-bold hover:bg-accent-action-hover transition-colors shadow-lg shadow-accent-500/20"
                             >
                                 <RefreshCw size={14} />
                                 {t('pwa.reloadButton')}

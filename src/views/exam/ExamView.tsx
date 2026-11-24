@@ -55,7 +55,7 @@ const ExamRow = React.memo(function ExamRow({
                             relative w-7 h-7 rounded-full flex items-center justify-center font-black text-[12px] font-num
                             ${
                                 isOngoing
-                                    ? 'bg-accent-500 text-white animate-pulse ring-2 ring-accent-500 ring-offset-2 dark:ring-offset-slate-900 shadow-sm'
+                                    ? 'bg-accent-action text-accent-on-action animate-pulse ring-2 ring-accent-500 ring-offset-2 dark:ring-offset-slate-900 shadow-sm'
                                     : 'bg-accent-100 dark:bg-accent-950/40 text-accent-700 dark:text-accent-400 ring-1 ring-accent-200 dark:ring-accent-800'
                             }
                         `}

@@ -255,7 +255,7 @@ const SettingsView: React.FC = () => {
                             <button
                                 type="button"
                                 onClick={() => navigate('/')}
-                                className="mt-1 px-4 h-10 bg-accent-600 hover:bg-accent-700 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer"
+                                className="mt-1 px-4 h-10 bg-accent-action hover:bg-accent-action-hover text-accent-on-action rounded-xl text-xs font-bold flex items-center gap-2 transition-colors cursor-pointer"
                             >
                                 <Upload size={14} />
                                 {t('nav.changeFile', 'Đổi file lịch')}
@@ -343,7 +343,7 @@ const SettingsView: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={handleTriggerInstall}
-                                    className="w-full min-h-[44px] px-4 rounded-xl bg-accent-600 hover:bg-accent-700 text-white flex items-center justify-center gap-2 text-xs font-bold transition-colors shadow-sm cursor-pointer"
+                                    className="w-full min-h-[44px] px-4 rounded-xl bg-accent-action hover:bg-accent-action-hover text-accent-on-action flex items-center justify-center gap-2 text-xs font-bold transition-colors shadow-sm cursor-pointer"
                                 >
                                     <Download size={15} />
                                     {t('pwa.install_app', 'Cài đặt ứng dụng')}

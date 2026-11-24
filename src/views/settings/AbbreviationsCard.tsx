@@ -147,7 +147,7 @@ const AbbreviationsCard: React.FC<AbbreviationsCardProps> = ({ onSuccess }) => {
                 <button
                     type="button"
                     onClick={handleSave}
-                    className="w-full sm:w-auto px-6 h-11 bg-accent-600 text-white text-sm font-bold rounded-xl shadow-sm hover:bg-accent-700 active:scale-95 transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 cursor-pointer"
+                    className="w-full sm:w-auto px-6 h-11 bg-accent-action text-accent-on-action text-sm font-bold rounded-xl shadow-sm hover:bg-accent-action-hover active:scale-95 transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 cursor-pointer"
                 >
                     <Save size={18} /> {t('settings.abbreviations.save')}
                 </button>

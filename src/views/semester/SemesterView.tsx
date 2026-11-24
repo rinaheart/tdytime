@@ -174,7 +174,7 @@ const SemesterView: React.FC = () => {
                         <button
                             onClick={scrollToCurrentWeek}
                             aria-label={t('common.current')}
-                            className="flex items-center gap-2 h-11 px-4 bg-accent-600 dark:bg-accent-500 text-white rounded-xl text-xs font-bold transition-all hover:bg-accent-700 dark:hover:bg-accent-600 shadow-sm shadow-accent-500/20 active:scale-95"
+                            className="flex items-center gap-2 h-11 px-4 bg-accent-action text-accent-on-action rounded-xl text-xs font-bold transition-all hover:bg-accent-action-hover shadow-sm shadow-accent-500/20 active:scale-95"
                         >
                             <Zap size={16} className="fill-current" />
                             <span className="hidden sm:inline">{t('common.current')}</span>
@@ -206,13 +206,13 @@ const SemesterView: React.FC = () => {
                             aria-label={t('common.filter')}
                             className={`flex items-center gap-2 h-11 px-4 border rounded-xl text-xs font-bold transition-all shadow-sm relative ${
                                 isFilterOpen
-                                    ? 'bg-accent-600 border-accent-600 text-white'
+                                    ? 'bg-accent-action border-accent-action text-accent-on-action'
                                     : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-accent-50 dark:hover:bg-accent-950/40'
                             }`}
                         >
                             <Search
                                 size={16}
-                                className={isFilterOpen ? 'text-white' : 'text-accent-500'}
+                                className={isFilterOpen ? 'text-accent-on-action' : 'text-accent-500'}
                             />
                             <span className="hidden sm:inline">{t('common.filter')}</span>
                             {hasActiveFilters && !isFilterOpen && (

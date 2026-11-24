@@ -242,7 +242,11 @@ if (tokensCss && globalCss && constantsTs) {
 
         if (bgRgb && onRgb) {
             const ratio = getContrastRatio(bgRgb, onRgb);
-            if (ratio < 4.5) {
+            if (ratio < 3.0) {
+                errors.push(
+                    `WCAG 3:1 Contrast Failure in ${themeId}: --accent-action-bg vs --accent-on-action is ${ratio.toFixed(2)}:1 (< 3.0:1).`
+                );
+            } else if (ratio < 4.5) {
                 errors.push(
                     `WCAG AA Contrast Failure in ${themeId}: --accent-action-bg vs --accent-on-action is ${ratio.toFixed(2)}:1 (< 4.5:1).`
                 );
@@ -306,10 +310,10 @@ if (tokensCss && globalCss && constantsTs) {
     }
 }
 
-// 5. Verify Component Alignment (Button, Card, Badge)
+// 5. Verify Component Alignment (Button, Card, Badge) & Scan TSX files for unoverridden bg-accent-500/600 + text-white
 const buttonTsx = readFileSafe('src/ui/primitives/Button.tsx');
 if (buttonTsx && !buttonTsx.includes('bg-accent-action')) {
-    errors.push('src/ui/primitives/Button.tsx primary variant must use bg-accent-action for WCAG AA compliance.');
+    errors.push('src/ui/primitives/Button.tsx primary variant must use bg-accent-action for WCAG compliance.');
 }
 
 const cardTsx = readFileSafe('src/ui/primitives/Card.tsx');
@@ -321,6 +325,29 @@ const badgeTsx = readFileSafe('src/ui/primitives/Badge.tsx');
 if (badgeTsx && !badgeTsx.includes('showDot ?? dot ?? Boolean(dotColors)')) {
     errors.push('src/ui/primitives/Badge.tsx must allow explicit dot={false} / showDot={false} override.');
 }
+
+function scanTsxForUnsafeAccentContrast(dirPath) {
+    for (const entry of fs.readdirSync(dirPath, { withFileTypes: true })) {
+        const fullPath = path.join(dirPath, entry.name);
+        if (entry.isDirectory()) {
+            scanTsxForUnsafeAccentContrast(fullPath);
+        } else if (entry.name.endsWith('.tsx')) {
+            const rel = path.relative(rootDir, fullPath);
+            const lines = fs.readFileSync(fullPath, 'utf8').split('\n');
+            lines.forEach((line, idx) => {
+                if (
+                    /bg-accent-(400|500|600)\b/.test(line) &&
+                    /\btext-white\b/.test(line)
+                ) {
+                    errors.push(
+                        `${rel}:${idx + 1} pairs bg-accent-400/500/600 directly with text-white (fails 3:1 in themeYellow). Use bg-accent-action and text-accent-on-action instead.`
+                    );
+                }
+            });
+        }
+    }
+}
+scanTsxForUnsafeAccentContrast(path.join(rootDir, 'src'));
 
 // 6. Verify Critical Path No-Barrel Guardrail on main.tsx, App.tsx, router.tsx, AppLayout.tsx
 const criticalStartupFiles = [
@@ -342,13 +369,13 @@ for (const relPath of criticalStartupFiles) {
 }
 
 if (errors.length > 0) {
-    console.error(`❌ Design System Integrity Check Failed (${errors.length} issue(s)):`);
+    console.error(`❌ Design System & Contrast Check Failed (${errors.length} issue(s)):`);
     for (const err of errors) {
         console.error(`   - ${err}`);
     }
     process.exit(1);
 } else {
     console.log(
-        `✅ Design System Integrity Check Passed: ${CANONICAL_DOCS.length} canonical docs, ${THEME_IDS.length} themes × (${ACCENT_SHADES.length} shades + 3 WCAG AA action tokens), wired font/radius/shadow tokens, and component guardrails verified.`
+        `✅ Design System & WCAG Contrast Check Passed: ${CANONICAL_DOCS.length} canonical docs, ${THEME_IDS.length} themes × (${ACCENT_SHADES.length} shades + 3 WCAG contrast-verified action tokens >= 4.5:1), wired font/radius/shadow tokens, and component guardrails verified.`
     );
 }

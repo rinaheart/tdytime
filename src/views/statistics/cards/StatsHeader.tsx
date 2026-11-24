@@ -36,7 +36,7 @@ const StatsHeader: React.FC<StatsHeaderProps> = ({ isCollapsed = false, onToggle
             <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-6 relative">
                 {/* Teacher info — left side */}
                 <div className="lg:col-span-2 flex items-center gap-3 p-4 md:p-5 min-w-0 pr-16 lg:pr-5 relative">
-                    <div className="w-10 h-10 rounded-full bg-accent-600 flex items-center justify-center shrink-0 text-white text-sm font-black font-sans shadow-sm shadow-accent-600/20 uppercase">
+                    <div className="w-10 h-10 rounded-full bg-accent-action flex items-center justify-center shrink-0 text-accent-on-action text-sm font-black font-sans shadow-sm shadow-accent-600/20 uppercase">
                         {metadata.teacher.trim().split(' ').pop()?.charAt(0) || '?'}
                     </div>
                     <div className="min-w-0 flex-1">

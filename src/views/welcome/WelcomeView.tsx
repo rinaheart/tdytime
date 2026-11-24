@@ -68,7 +68,7 @@ const HistoryCard = React.memo(({ item, isActive, onLoad, onDelete }: {
         >
             <div className="flex items-center gap-4">
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-xs shadow-md uppercase transition-all
-                    ${isActive ? 'bg-accent-600 text-white shadow-accent-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
+                    ${isActive ? 'bg-accent-action text-accent-on-action shadow-accent-500/20' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'}`}>
                     {avatarChar}
                 </div>
                 <div className="min-w-0">
@@ -152,7 +152,7 @@ const PasteInput = React.memo(({ onCancel, onSubmit, isProcessing }: {
                 <button
                     onClick={() => pastedContent.trim() && onSubmit(pastedContent)}
                     disabled={isProcessing || !pastedContent.trim()}
-                    className="flex-1 px-5 py-2.5 bg-accent-600 hover:bg-accent-700 disabled:opacity-50 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors transition-transform shadow-lg shadow-accent-500/20 active:scale-[0.98]"
+                    className="flex-1 px-5 py-2.5 bg-accent-action hover:bg-accent-action-hover disabled:opacity-50 text-accent-on-action rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-colors transition-transform shadow-lg shadow-accent-500/20 active:scale-[0.98]"
                 >
                     {isProcessing ? (
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
